@@ -17,3 +17,5 @@
 local
 logs
 local.md
+
+.DS_Store
