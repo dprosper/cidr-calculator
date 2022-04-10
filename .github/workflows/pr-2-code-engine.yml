@@ -63,7 +63,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Setup the IBM Cloud CLI and Login
-        uses: dprosper/ic-setup-cli
+        uses: dprosper/ic-setup-cli@v0.1.0
         with:
           API_KEY: ${{ secrets.API_KEY }}
           INSTALL_PLUGINS: code-engine
@@ -71,7 +71,7 @@ jobs:
           # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
 
       - name: Deploy to IBM Cloud Code Engine
-        uses: dprosper/icce-cud-cli
+        uses: dprosper/icce-cud-cli@v0.1.0
         with:
           IMAGE: ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
           REGISTRY_USER: ${{ secrets.DOCKERHUB_USER }}
@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup the IBM Cloud CLI and Login
-        uses: dprosper/ic-setup-cli
+        uses: dprosper/ic-setup-cli@v0.1.0
         with:
           API_KEY: ${{ secrets.API_KEY }}
           INSTALL_PLUGINS: code-engine
@@ -99,7 +99,7 @@ jobs:
           # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
 
       - name: Delete from IBM Cloud Code Engine
-        uses: dprosper/icce-cud-cli
+        uses: dprosper/icce-cud-cli@v0.1.0
         with:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
           CE_PROJECT_NAME: project-${{ github.event.pull_request.head.sha }}
@@ -127,7 +127,7 @@ jobs:
           docker buildx imagetools create ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }} --tag ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:latest
 
       - name: Setup the IBM Cloud CLI and Login
-        uses: dprosper/ic-setup-cli
+        uses: dprosper/ic-setup-cli@v0.1.0
         with:
           API_KEY: ${{ secrets.API_KEY }}
           INSTALL_PLUGINS: code-engine
@@ -135,7 +135,7 @@ jobs:
           # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
 
       - name: Update in IBM Cloud Code Engine
-        uses: dprosper/icce-cud-cli
+        uses: dprosper/icce-cud-cli@v0.1.0
         with:
           CE_PROJECT_NAME: project-production
           CE_APP_NAME: app-production
