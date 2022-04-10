@@ -1,0 +1,9 @@
+{
+   "configmapsfromfile": [
+      {
+         "name": "datacenters.json",
+         "file": "./data/datacenters.json",
+         "path": "/data"
+      }
+   ]
+}
