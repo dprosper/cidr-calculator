@@ -282,7 +282,7 @@ export const App: React.FunctionComponent = () => {
     <React.Fragment>
       <Stack horizontalAlign="start" verticalAlign="center" styles={stackStyles} tokens={stackTokens}>
         <Text variant="xxLarge" styles={boldStyle}>
-          Subnet Calculator for IBM Cloud (Unofficial)
+          CIDR Calculator for IBM Cloud (Unofficial)
         </Text>
         <Text>Use this tool to help to identify potential conflicts with IP addresses ranges in your on-premises environment(s) and IP address ranges used in IBM Cloud.</Text>
         <Separator></Separator>
