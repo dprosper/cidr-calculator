@@ -25,7 +25,7 @@ on:
 
 env:
   REGISTRY_ORG_NAMESPACE: dprosper
-  REGISTRY_REPOSITORY: ic-cidr-calculator
+  REGISTRY_REPOSITORY: cidr-calculator
   # REGION: us-east
   # RESOURCE_GROUP: default
   # CE_REGISTRY_SECRET: docker-hub
