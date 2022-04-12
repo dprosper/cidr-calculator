@@ -34,7 +34,8 @@ import (
 )
 
 type SubmittedCidr struct {
-	Cidr string `json:"cidr"`
+	Cidr   string `json:"cidr"`
+	Filter string `json:"filter"`
 }
 
 type SubnetCalculatorResponse struct {
@@ -167,6 +168,7 @@ func ReadMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var json SubmittedCidr
 		cidr := "0.0.0.0/0"
+		filter := ""
 		if err := c.ShouldBindJSON(&json); err == nil {
 			if json.Cidr == "0.0.0.0/0" {
 				success := true
@@ -184,6 +186,7 @@ func ReadMiddleware() gin.HandlerFunc {
 				cidr = "0.0.0.0/0"
 			} else {
 				cidr = json.Cidr
+				filter = json.Filter
 			}
 		} else {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Message": "Invalid json was provided in the post."})
@@ -191,7 +194,7 @@ func ReadMiddleware() gin.HandlerFunc {
 		}
 
 		success := true
-		data, err := runSubnetCalculator(cidr)
+		data, err := runSubnetCalculator(cidr, filter)
 		if err != nil {
 			success = false
 			c.JSON(http.StatusOK, success)
@@ -202,8 +205,20 @@ func ReadMiddleware() gin.HandlerFunc {
 	}
 }
 
-func runSubnetCalculator(requestedCidr string) (Config, error) {
-	var dataCenters []map[string]interface{}
+func applyFilter(dataCenters []DataCenter, f filterFunc) []DataCenter {
+	var filteredDataCenters []DataCenter
+	for _, dataCenter := range dataCenters {
+		if f(dataCenter) {
+			filteredDataCenters = append(filteredDataCenters, dataCenter)
+		}
+	}
+	return filteredDataCenters
+}
+
+type filterFunc func(dataCenter DataCenter) bool
+
+func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
+	var dataCenters []DataCenter
 	err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
@@ -225,7 +240,11 @@ func runSubnetCalculator(requestedCidr string) (Config, error) {
 		LastAssignableHost:  requestedDetails.LastAssignableHost,
 	}
 
-	for _, value := range dataCenters {
+	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
+		return strings.Contains(dataCenter.Name, filter)
+	})
+
+	for _, value := range dataCentersFiltered {
 		dataCenter := DataCenter{}
 
 		mapstructure.Decode(value, &dataCenter)
