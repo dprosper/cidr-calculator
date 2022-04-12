@@ -90,13 +90,14 @@ const overflowButtonProps: IButtonProps = { ariaLabel: 'More commands' };
 
 export const App: React.FunctionComponent = () => {
   const [cidrValue, setcidrValue] = React.useState('');
+  const [filterValue, setFilterValue] = React.useState<string | undefined>('');
   const [items, setItemsValue] = React.useState<(DataCenter)[] | undefined>(_items);
   const [requestedCidrNetwork, setRequestedCidrNetwork] = React.useState<(CidrNetwork | null)>();
   const [panelContent, setPanelContent] = React.useState<(CidrNetwork | null)[]>();
   const [isPanelOpen, setIsPanelOpen] = React.useState(false);
   const [elementDisabled, setElementDisabled] = React.useState(false);
 
-  const openPanel = React.useCallback((cidrDetails) => {
+  const openPanel = React.useCallback((cidrDetails: any) => {
     if (cidrDetails) {
       setIsPanelOpen(true);
       setPanelContent(cidrDetails);
@@ -179,6 +180,8 @@ export const App: React.FunctionComponent = () => {
   const onFilter = React.useCallback(
     (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
       newValue ? setItemsValue(_allItems.filter(i => i.data_center.toLowerCase().indexOf(newValue) > -1)) : setItemsValue(_allItems);
+      // TODO: Set a value for the filter
+      setFilterValue(newValue)
     },
     [_allItems],
   );
@@ -225,8 +228,10 @@ export const App: React.FunctionComponent = () => {
       setCidrMessage(false);
       setElementDisabled(true);
 
+      // TODO: Pass the current filter and use it server side to only process the data centers / regions that are filtered.
       axios.post(`/api/subnetcalc`, {
-        cidr: cidrValue
+        cidr: cidrValue,
+        filter: filterValue
       }, {
         headers: {
           'content-type': 'application/json',
