@@ -164,11 +164,11 @@ export const App: React.FunctionComponent = () => {
         column.onRender = (item: DataCenter) => (
           item.conflict ?
             <Link rel="noopener" target="_blank" href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" data-selection-invoke={true}>
-              Conflict 😮
+              Conflict found 😮
             </Link>
             :
             <Link rel="noopener" target="_blank" href="https://cloud.ibm.com/docs" data-selection-invoke={true}>
-              No Conflict 😎
+              No conflict found 😎
             </Link>
         );
       }
