@@ -58,6 +58,12 @@ func main() {
 		zap.String("last_updated", viper.GetString("last_updated")),
 	)
 
+	// viper.WatchConfig()
+
+	// viper.OnConfigChange(func(e fsnotify.Event) {
+	// 	logger.SystemLogger.Info("config file changed", zap.String("location", e.Name))
+	// })
+	
 	// comment this next line to debug during development
 	gin.SetMode(gin.ReleaseMode)
 
