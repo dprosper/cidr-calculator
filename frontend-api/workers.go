@@ -39,7 +39,7 @@ func newWorker(interval time.Duration) *Worker {
 }
 
 func (w *Worker) indexRun(isReady chan bool) {
-	network.Index("networks.bluge", "network", "data/networks/")
+	network.Index("networks.bluge", "network", "networks/")
 	isReady <- true
 
 	for {
@@ -54,7 +54,7 @@ func (w *Worker) indexRun(isReady chan bool) {
 
 		started := time.Now()
 
-		network.Index("networks.bluge", "network", "data/networks/")
+		network.Index("networks.bluge", "network", "networks/")
 
 		finished := time.Now()
 		duration := finished.Sub(started)
