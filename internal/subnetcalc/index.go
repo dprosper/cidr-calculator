@@ -180,7 +180,7 @@ func GetSubnetDetails(cidr string) *Address {
 				logger.ErrorLogger.Fatal(fmt.Sprintf("error marshaling struct: %v", err))
 			}
 
-			err = ioutil.WriteFile(fmt.Sprintf("data/networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
+			err = ioutil.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
 			if err != nil {
 				logger.ErrorLogger.Fatal(fmt.Sprintf("error writing file: %v", err))
 			}
