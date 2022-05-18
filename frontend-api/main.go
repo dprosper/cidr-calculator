@@ -22,6 +22,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"dprosper/calculator/internal/logger"
 	"dprosper/calculator/internal/middleware/common"
@@ -107,6 +108,14 @@ func main() {
 		Addr:    addr,
 		Handler: router,
 	}
+
+	// Create a worker to initialize and update the index every 5 minutes.
+	indexIsReady := make(chan bool, 1)
+	indexWorker := newWorker(300 * time.Second)
+	go indexWorker.indexRun(indexIsReady)
+
+	// Wait for the index to be initialzed by the worker before starting the HTTP server.
+	<-indexIsReady
 
 	logger.SystemLogger.Info("starting server", zap.String("start", "true"))
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,8 +30,10 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/tidwall/gjson"
+	"go.uber.org/zap"
 
 	"dprosper/calculator/internal/logger"
+	"dprosper/calculator/internal/network"
 )
 
 type SubmittedCidr struct {
@@ -48,6 +51,7 @@ type SubnetCalculatorResponse struct {
 }
 
 type Address struct {
+	Type                string `json:"type,omitempty"`
 	CidrNotation        string `json:"cidr_notation"`
 	SubnetBits          int    `json:"subnet_bits"`
 	SubnetMask          string `json:"subnet_mask"`
@@ -70,6 +74,7 @@ type Config struct {
 }
 
 type DataCenter struct {
+	Key        string   `mapstructure:"key"`
 	Name       string   `mapstructure:"name"`
 	City       string   `mapstructure:"city"`
 	State      string   `mapstructure:"state"`
@@ -78,6 +83,7 @@ type DataCenter struct {
 }
 
 type DataCenterResult struct {
+	Key          string        `json:"key"`
 	DataCenter   string        `json:"data_center"`
 	City         string        `json:"city"`
 	State        string        `json:"state"`
@@ -97,69 +103,96 @@ type CidrNetwork struct {
 	AssignableHosts     int    `json:"assignable_hosts"`
 	FirstAssignableHost string `json:"first_assignable_host"`
 	LastAssignableHost  string `json:"last_assignable_host"`
+	Conflict            bool   `json:"conflict"`
 }
 
 // GetSubnetDetails function
 func GetSubnetDetails(cidr string) *Address {
-	requestURL := fmt.Sprintf("https://networkcalc.com/api/ip/%s", cidr)
+	cidrAddress := strings.Split(cidr, "/")[0]
+	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
+	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
 
-	// TODO: Should indicate if I need a data loader
-	fmt.Println(requestURL)
+	if len(indexResponse) > 0 {
+		logger.SystemLogger.Info(fmt.Sprintf("checking for cidrAddress %s in the index.", cidrAddress))
 
-	url1, err := url.ParseRequestURI(requestURL)
-	if err != nil || url1.Scheme == "" {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
-		return nil
-	}
+		var indexResponseAddress Address
 
-	logger.SystemLogger.Info(fmt.Sprintf("checking for subnet %s ", requestURL))
-
-	httpRequest, err := http.NewRequest("GET", requestURL, nil)
-	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
-	}
-	httpRequest.Header.Set("Accept", "application/json")
-
-	httpClient := &http.Client{
-		Timeout: time.Duration(30 * time.Second),
-	}
-
-	httpResponse, err := httpClient.Do(httpRequest)
-	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
-	}
-	defer httpResponse.Body.Close()
-
-	logger.SystemLogger.Info(fmt.Sprintf("response: %s", httpResponse.Status))
-
-	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
-		body, _ := ioutil.ReadAll(httpResponse.Body)
-
-		address := gjson.GetBytes(body, "address")
-
-		addressRaw := json.RawMessage(address.Raw)
-
-		var subnetCalculatorResponse SubnetCalculatorResponse
-		err := json.Unmarshal(body, &subnetCalculatorResponse)
+		err := json.Unmarshal(indexResponse, &indexResponseAddress)
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrorLogger.Fatal("error unmarshalling index response", zap.String("error: ", err.Error()))
 		}
-		logger.SystemLogger.Info(fmt.Sprintln(subnetCalculatorResponse))
+		logger.SystemLogger.Info(fmt.Sprintln(indexResponseAddress))
 
-		var addressResponse Address
-		err = json.Unmarshal(addressRaw, &addressResponse)
+		return &indexResponseAddress
+	} else {
+		requestURL := fmt.Sprintf("https://networkcalc.com/api/ip/%s", cidr)
+		logger.SystemLogger.Info(fmt.Sprintf("checking for cidrAddress %s at url %s.", cidrAddress, requestURL))
+
+		url1, err := url.ParseRequestURI(requestURL)
+		if err != nil || url1.Scheme == "" {
+			logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+			return nil
+		}
+
+		// http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		httpRequest, err := http.NewRequest("GET", requestURL, nil)
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 		}
-		logger.SystemLogger.Info(fmt.Sprintln(addressResponse))
-		return &addressResponse
-	}
+		httpRequest.Header.Set("Accept", "application/json")
 
-	if httpResponse.StatusCode >= 300 {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
-		return nil
-	}
+		httpClient := &http.Client{
+			Timeout: time.Duration(30 * time.Second),
+		}
 
+		httpResponse, err := httpClient.Do(httpRequest)
+		if err != nil {
+			logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+		}
+		defer httpResponse.Body.Close()
+
+		logger.SystemLogger.Info(fmt.Sprintf("response: %s", httpResponse.Status))
+
+		if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
+			body, _ := ioutil.ReadAll(httpResponse.Body)
+
+			address := gjson.GetBytes(body, "address")
+
+			addressRaw := json.RawMessage(address.Raw)
+
+			var subnetCalculatorResponse SubnetCalculatorResponse
+			err := json.Unmarshal(body, &subnetCalculatorResponse)
+			if err != nil {
+				logger.ErrorLogger.Fatal(fmt.Sprintf("error unmarshaling body: %v", err))
+			}
+			logger.SystemLogger.Info(fmt.Sprintln(subnetCalculatorResponse))
+
+			// var addressResponse Address
+			addressResponse := Address{Type: "network"}
+			err = json.Unmarshal(addressRaw, &addressResponse)
+			if err != nil {
+				logger.ErrorLogger.Fatal(fmt.Sprintf("error unmarshaling raw data: %v", err))
+			}
+			logger.SystemLogger.Info(fmt.Sprintln(addressResponse))
+
+			content, err := json.Marshal(&addressResponse)
+			if err != nil {
+				logger.ErrorLogger.Fatal(fmt.Sprintf("error marshaling struct: %v", err))
+			}
+
+			err = ioutil.WriteFile(fmt.Sprintf("data/networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
+			if err != nil {
+				logger.ErrorLogger.Fatal(fmt.Sprintf("error writing file: %v", err))
+			}
+
+			return &addressResponse
+		}
+
+		if httpResponse.StatusCode >= 300 {
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
+			return nil
+		}
+	}
 	return nil
 }
 
@@ -241,19 +274,22 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 	}
 
 	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
-		return strings.Contains(dataCenter.Name, filter)
+		return strings.Contains(strings.ToLower(dataCenter.Country), strings.ToLower(filter))
 	})
 
 	for _, value := range dataCentersFiltered {
 		dataCenter := DataCenter{}
 
 		mapstructure.Decode(value, &dataCenter)
-		conflict := false
+		cidrConflict := false
+		dataCenterConflict := false
 
 		cloudCidrNetworks := []CidrNetwork{}
 		for _, cloudCidr := range dataCenter.CidrBlocks {
 
 			cloudDetails := GetSubnetDetails(cloudCidr)
+			cidrConflict = compareCidrNetworks(requestedCidr, cloudCidr)
+
 			cloudCidrNetwork := CidrNetwork{
 				CidrNotation:        cloudDetails.CidrNotation,
 				SubnetBits:          cloudDetails.SubnetBits,
@@ -264,21 +300,25 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				AssignableHosts:     cloudDetails.AssignableHosts,
 				FirstAssignableHost: cloudDetails.FirstAssignableHost,
 				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            cidrConflict,
 			}
 
-			conflict = compareCidrNetworks(requestedCidr, cloudCidr)
+			if cidrConflict {
+				dataCenterConflict = true
+			}
 
 			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
 		}
 
 		dataCenterJson := DataCenterResult{
+			Key:          dataCenter.Key,
 			DataCenter:   dataCenter.Name,
 			City:         dataCenter.City,
 			State:        dataCenter.State,
 			Country:      dataCenter.Country,
 			CidrBlocks:   dataCenter.CidrBlocks,
 			CidrNetworks: cloudCidrNetworks,
-			Conflict:     conflict,
+			Conflict:     dataCenterConflict,
 		}
 
 		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
@@ -336,6 +376,7 @@ func readDataCenters(requestedCidr string) (Config, error) {
 		conflict := false
 
 		dataCenterJson := DataCenterResult{
+			Key:        dataCenter.Key,
 			DataCenter: dataCenter.Name,
 			City:       dataCenter.City,
 			State:      dataCenter.State,

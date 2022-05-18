@@ -19,3 +19,6 @@ logs
 local.md
 
 .DS_Store
+
+*.bluge
+webui.fluentui

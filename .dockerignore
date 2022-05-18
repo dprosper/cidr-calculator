@@ -2,3 +2,5 @@ local
 logs
 node_modules
 local.md
+*.bluge
+webui.fluentui
