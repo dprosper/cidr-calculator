@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/tidwall/gjson"
@@ -37,7 +38,7 @@ import (
 )
 
 type SubmittedCidr struct {
-	Cidr   string `json:"cidr"`
+	Cidr   string `json:"cidr" validate:"required,cidrv4"`
 	Filter string `json:"filter"`
 }
 
@@ -196,13 +197,36 @@ func GetSubnetDetails(cidr string) *Address {
 	return nil
 }
 
+type IError struct {
+	Field string
+	Tag   string
+	Value string
+}
+
 // ReadMiddleware function
 func ReadMiddleware() gin.HandlerFunc {
+
 	return func(c *gin.Context) {
-		var json SubmittedCidr
+		var Validator = validator.New()
+		var errors []*IError
+
+		json := new(SubmittedCidr)
 		cidr := "0.0.0.0/0"
 		filter := ""
 		if err := c.ShouldBindJSON(&json); err == nil {
+			errValidate := Validator.Struct(json)
+			if errValidate != nil {
+				for _, err := range errValidate.(validator.ValidationErrors) {
+					var el IError
+					el.Field = err.Field()
+					el.Tag = err.Tag()
+					el.Value = err.Param()
+					errors = append(errors, &el)
+				}
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Message": "Invalid json was provided in the post.", "errors": errors})
+				return
+			}
+
 			if json.Cidr == "0.0.0.0/0" {
 				success := true
 				data, err := readDataCenters(cidr)
@@ -215,8 +239,6 @@ func ReadMiddleware() gin.HandlerFunc {
 					c.JSON(http.StatusOK, data)
 					return
 				}
-			} else if json.Cidr == "" {
-				cidr = "0.0.0.0/0"
 			} else {
 				cidr = json.Cidr
 				filter = json.Filter
