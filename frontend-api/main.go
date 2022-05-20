@@ -26,6 +26,7 @@ import (
 
 	"dprosper/calculator/internal/logger"
 	"dprosper/calculator/internal/middleware/common"
+	"dprosper/calculator/internal/network"
 	"dprosper/calculator/internal/subnetcalc"
 
 	"github.com/fsnotify/fsnotify"
@@ -35,6 +36,46 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
+
+type Worker struct {
+	Stopped         bool
+	ShutdownChannel chan string
+	Interval        time.Duration
+	period          time.Duration
+}
+
+func newWorker(interval time.Duration) *Worker {
+	return &Worker{
+		Stopped:         false,
+		ShutdownChannel: make(chan string),
+		Interval:        interval,
+		period:          interval,
+	}
+}
+
+func (w *Worker) indexRun(isReady chan bool) {
+	network.Index("networks.bluge", "network", "networks/")
+	isReady <- true
+
+	for {
+		select {
+		case <-w.ShutdownChannel:
+			w.ShutdownChannel <- "Down"
+			return
+		case <-time.After(w.period):
+			// This breaks out of the select, not the for loop.
+			break
+		}
+
+		started := time.Now()
+
+		network.Index("networks.bluge", "network", "networks/")
+
+		finished := time.Now()
+		duration := finished.Sub(started)
+		w.period = w.Interval - duration
+	}
+}
 
 func main() {
 	logger.InitLogger(true, true, true)
