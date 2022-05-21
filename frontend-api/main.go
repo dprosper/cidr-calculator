@@ -91,10 +91,10 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		logger.ErrorLogger.Fatal("data file not found in all search paths, expecting datacenters.json in $HOME, . or ./data.")
+		logger.ErrorLogger.Fatal("Data file not found in all search paths, expecting datacenters.json in $HOME, . or ./data.")
 	}
 
-	logger.SystemLogger.Info("data file used",
+	logger.SystemLogger.Info("Data file used",
 		zap.String("name", viper.GetString("name")),
 		zap.String("type", viper.GetString("type")),
 		zap.String("version", viper.GetString("version")),
@@ -104,7 +104,7 @@ func main() {
 	viper.WatchConfig()
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		logger.SystemLogger.Info("config file changed", zap.String("location", e.Name))
+		logger.SystemLogger.Info("Config file changed", zap.String("location", e.Name))
 	})
 
 	// comment this next line to debug during development
@@ -158,8 +158,8 @@ func main() {
 	// Wait for the index to be initialzed by the worker before starting the HTTP server.
 	<-indexIsReady
 
-	logger.SystemLogger.Info("starting server", zap.String("start", "true"))
+	logger.SystemLogger.Info("Starting server")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.ErrorLogger.Fatal("error starting server", zap.String("error: ", err.Error()))
+		logger.ErrorLogger.Fatal("Error starting server", zap.String("error: ", err.Error()))
 	}
 }
