@@ -23,7 +23,7 @@ import {
 
 import 'rsuite/dist/rsuite.min.css'
 import IconButton from 'rsuite/IconButton';
-import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsLayoutSidebarReverse } from 'react-icons/bs';
+import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsLayoutSidebarReverse, BsDownload } from 'react-icons/bs';
 import { FiFilter } from 'react-icons/fi';
 
 import axios from "axios";
@@ -240,6 +240,16 @@ export const App: React.FunctionComponent = () => {
     [_allItems],
   );
 
+  const onDownloadJSON = () => {
+    const json = JSON.stringify(items);
+    const url = window.URL.createObjectURL(new Blob([json]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'ibmcloud.json');
+    document.body.appendChild(link);
+    link.click();
+  }
+
   return (
     <CustomProvider theme={isLight ? "light" : "dark"}>
       <Container>
@@ -302,6 +312,10 @@ export const App: React.FunctionComponent = () => {
               </Row>
             </Grid>
             <hr />
+
+            <Button color="blue" appearance="primary" onClick={onDownloadJSON}>
+              <BsDownload /> Download
+            </Button>
 
             <Table
               virtualized
