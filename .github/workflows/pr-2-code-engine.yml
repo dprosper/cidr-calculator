@@ -102,7 +102,7 @@ jobs:
         uses: dprosper/icce-cud-cli@v0.4.2
         with:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
-          CE_PROJECT_NAME: project-${{ github.event.pull_request.head.sha }}
+          # CE_PROJECT_NAME: project-${{ github.event.pull_request.head.sha }}
           CE_ACTION: delete
 
   update:
