@@ -114,7 +114,7 @@ func GetSubnetDetails(cidr string) *Address {
 	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
 
 	if len(indexResponse) > 0 {
-		logger.SystemLogger.Info(fmt.Sprintf("checking for cidrAddress %s in the index.", cidrAddress))
+		logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
 
 		var indexResponseAddress Address
 
