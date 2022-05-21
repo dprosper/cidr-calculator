@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  Affix,
   Button,
   Col,
   Container,
@@ -253,16 +254,18 @@ export const App: React.FunctionComponent = () => {
   return (
     <CustomProvider theme={isLight ? "light" : "dark"}>
       <Container>
-        <Header>
-          <Navbar appearance="inverse">
-            <Navbar.Brand >
-              CIDR Calculator for IBM Cloud (Unofficial)
-            </Navbar.Brand>
-            <Nav pullRight>
-              <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
-            </Nav>
-          </Navbar>
-        </Header>
+        <Affix>
+          <Header>
+            <Navbar appearance="inverse">
+              <Navbar.Brand >
+                CIDR Calculator for IBM Cloud (Unofficial)
+              </Navbar.Brand>
+              <Nav pullRight>
+                <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
+              </Nav>
+            </Navbar>
+          </Header>
+        </Affix>
 
         <Container>
           <Sidebar></Sidebar>
@@ -322,7 +325,7 @@ export const App: React.FunctionComponent = () => {
               autoHeight
               // bordered
               // cellBordered
-              affixHeader
+              affixHeader={50}
               height={420}
               data={getData()}
               sortColumn={sortColumn}
