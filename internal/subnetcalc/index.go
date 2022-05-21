@@ -200,7 +200,7 @@ func GetSubnetDetails(cidr string) *Address {
 type IError struct {
 	Field string
 	Tag   string
-	Value string
+	Value interface{}
 }
 
 // ReadMiddleware function
@@ -220,9 +220,10 @@ func ReadMiddleware() gin.HandlerFunc {
 					var el IError
 					el.Field = err.Field()
 					el.Tag = err.Tag()
-					el.Value = err.Param()
+					el.Value = err.Value()
 					errors = append(errors, &el)
 				}
+
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post.", "errors": errors})
 				return
 			}
