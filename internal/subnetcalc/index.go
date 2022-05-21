@@ -214,6 +214,7 @@ func ReadMiddleware() gin.HandlerFunc {
 		cidr := "0.0.0.0/0"
 		filter := ""
 		if err := c.ShouldBindJSON(&json); err == nil {
+
 			errValidate := Validator.Struct(json)
 			if errValidate != nil {
 				for _, err := range errValidate.(validator.ValidationErrors) {
