@@ -27,7 +27,7 @@ import (
 func RequestHeaders() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestUUID := uuid.New().String()
-		c.Writer.Header().Set("x-dd-request-uuid", requestUUID)
+		c.Writer.Header().Set("x-cs-request-uuid", requestUUID)
 		c.Writer.Header().Set("User-Agent", "calculator/server")
 	}
 }
