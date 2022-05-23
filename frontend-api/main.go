@@ -22,9 +22,11 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"dprosper/calculator/internal/logger"
 	"dprosper/calculator/internal/middleware/common"
+	"dprosper/calculator/internal/network"
 	"dprosper/calculator/internal/subnetcalc"
 
 	"github.com/fsnotify/fsnotify"
@@ -34,6 +36,46 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
+
+type Worker struct {
+	Stopped         bool
+	ShutdownChannel chan string
+	Interval        time.Duration
+	period          time.Duration
+}
+
+func newWorker(interval time.Duration) *Worker {
+	return &Worker{
+		Stopped:         false,
+		ShutdownChannel: make(chan string),
+		Interval:        interval,
+		period:          interval,
+	}
+}
+
+func (w *Worker) indexRun(isReady chan bool) {
+	network.Index("networks.bluge", "network", "networks/")
+	isReady <- true
+
+	for {
+		select {
+		case <-w.ShutdownChannel:
+			w.ShutdownChannel <- "Down"
+			return
+		case <-time.After(w.period):
+			// This breaks out of the select, not the for loop.
+			break
+		}
+
+		started := time.Now()
+
+		network.Index("networks.bluge", "network", "networks/")
+
+		finished := time.Now()
+		duration := finished.Sub(started)
+		w.period = w.Interval - duration
+	}
+}
 
 func main() {
 	logger.InitLogger(true, true, true)
@@ -49,10 +91,10 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		logger.ErrorLogger.Fatal("data file not found in all search paths, expecting datacenters.json in $HOME, . or ./data.")
+		logger.ErrorLogger.Fatal("Data file not found in all search paths, expecting datacenters.json in $HOME, . or ./data.")
 	}
 
-	logger.SystemLogger.Info("data file used",
+	logger.SystemLogger.Info("Data file used",
 		zap.String("name", viper.GetString("name")),
 		zap.String("type", viper.GetString("type")),
 		zap.String("version", viper.GetString("version")),
@@ -62,7 +104,7 @@ func main() {
 	viper.WatchConfig()
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		logger.SystemLogger.Info("config file changed", zap.String("location", e.Name))
+		logger.SystemLogger.Info("Config file changed", zap.String("location", e.Name))
 	})
 
 	// comment this next line to debug during development
@@ -108,8 +150,16 @@ func main() {
 		Handler: router,
 	}
 
-	logger.SystemLogger.Info("starting server", zap.String("start", "true"))
+	// Create a worker to initialize and update the index every 5 minutes.
+	indexIsReady := make(chan bool, 1)
+	indexWorker := newWorker(300 * time.Second)
+	go indexWorker.indexRun(indexIsReady)
+
+	// Wait for the index to be initialzed by the worker before starting the HTTP server.
+	<-indexIsReady
+
+	logger.SystemLogger.Info("Starting server")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.ErrorLogger.Fatal("error starting server", zap.String("error: ", err.Error()))
+		logger.ErrorLogger.Fatal("Error starting server", zap.String("error: ", err.Error()))
 	}
 }

@@ -1,55 +1,48 @@
-import React from 'react';
-import { Stack, Text, Link, FontWeights, IStackTokens, IStackStyles, ITextStyles, ILinkStyles, DefaultPalette, IIconProps, IStackItemStyles, Pivot, PivotItem } from '@fluentui/react';
-import './App.css';
-import { initializeIcons } from '@fluentui/font-icons-mdl2';
-import { Separator } from '@fluentui/react/lib/Separator';
-import { TextField, ITextFieldStyles } from '@fluentui/react/lib/TextField';
-import { PrimaryButton, ActionButton } from '@fluentui/react/lib/Button';
-import axios from "axios";
-import { Label } from '@fluentui/react/lib/Label';
+import * as React from 'react';
 import {
-  ColumnActionsMode,
-  IColumn,
-  SelectionMode,
-  buildColumns,
-} from '@fluentui/react/lib/DetailsList';
-import { CommandBar, ICommandBarItemProps } from '@fluentui/react/lib/CommandBar';
-import { columnsToString } from './lib/utils';
+  Affix,
+  Button,
+  Col,
+  Container,
+  Content,
+  CustomProvider,
+  Divider,
+  Drawer,
+  Footer,
+  Grid,
+  Header,
+  Input,
+  InputGroup,
+  Loader,
+  Message,
+  Nav,
+  Navbar,
+  Row,
+  Sidebar,
+  Table,
+} from 'rsuite';
 
-import { IButtonProps } from '@fluentui/react/lib/Button';
-import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
-import { Panel } from '@fluentui/react/lib/Panel';
+import 'rsuite/dist/rsuite.min.css'
+import IconButton from 'rsuite/IconButton';
+import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsLayoutSidebarReverse, BsDownload } from 'react-icons/bs';
+import { FiFilter } from 'react-icons/fi';
 
-initializeIcons();
+import axios from "axios";
 
-const stackItemStyles: IStackItemStyles = {
-  root: {
-    color: DefaultPalette.white,
-    display: 'flex',
-  },
-};
-
-const innerStackTokens: IStackTokens = {
-  childrenGap: 20,
-};
-
-const TextFieldDisabled: React.FunctionComponent<{ label: string, value: string | undefined, placeholder: string }> = ({ label, value, placeholder }) => {
-  return (
-    <TextField label={label} value={value} disabled placeholder={placeholder} />
-  );
-};
+import './App.css';
 
 interface DataCenter {
   data_center: string;
   city?: string;
   state?: string;
-  country?: string;
+  country: string;
   cidr_blocks?: string[];
   conflict?: boolean;
   cidr_networks?: string[]
 }
 
 interface CidrNetwork {
+  conflict: boolean;
   cidr_notation: string;
   subnet_bits: string;
   subnet_mask: string;
@@ -61,41 +54,75 @@ interface CidrNetwork {
   last_assignable_host: string;
 }
 
-const textFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: 200 } };
-const calculatorIcon: IIconProps = { iconName: 'calculator' };
-
-const linkStyle: Partial<ILinkStyles> = { root: { marginLeft: '.5rem' } };
-
-const boldStyle: Partial<ITextStyles> = { root: { fontWeight: FontWeights.semibold } };
-const stackTokens: IStackTokens = { childrenGap: 15 };
-const stackStyles: Partial<IStackStyles> = {
-  root: {
-    width: '960px',
-    margin: '0 auto',
-    color: '#605e5c',
-  },
-};
-
-let _items = [
-  { data_center: "ams01", city: "Amsterdam", state: "", country: "NLD", cidr_blocks: ["10.2.200.0/23"], conflict: false },
-  { data_center: "ams02", city: "Amsterdam", state: "", country: "NLD", cidr_blocks: ["10.3.220.0/24"], conflict: false }
-];
-
 function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
   const key = columnKey as keyof T;
   return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
 }
 
-const overflowButtonProps: IButtonProps = { ariaLabel: 'More commands' };
+const CompactCell = (props: any) => (
+  <Table.Cell
+    {...props}
+    style={{ padding: 4 }}
+  />
+);
+
+const CidrCell = (props: any) => {
+  const { rowData } = props;
+  const cidrs = rowData['cidr_blocks'];
+  const key = rowData['key'];
+  return (
+    <Table.Cell {...props} >
+      {cidrs.map((cidr: any, index: any) => (
+        <span key={`${key}-${index}`} style={{ display: "block" }}>{cidr}</span>
+      )
+      )}
+    </Table.Cell>
+  );
+};
+
+const StatusCell = (props: any) => {
+  const { rowData, dataKey } = props;
+  return (
+    <Table.Cell {...props}>
+      {rowData[dataKey] ?
+        <Button target="_blank" href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" appearance="link" style={{ textDecoration: "none" }}>
+          Conflict found 😮
+        </Button>
+        :
+        <Button target="_blank" href="https://cloud.ibm.com/docs" appearance="link" style={{ textDecoration: "none" }}>
+          No conflict found 😎
+        </Button>
+      }
+    </Table.Cell>
+  );
+};
+
+let cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
+
+const ErrorMessage = ({ children }: { children: any }) => <span style={{ color: 'red' }}>{children}</span>;
 
 export const App: React.FunctionComponent = () => {
+
+  const [sortColumn, setSortColumn] = React.useState();
+  const [sortType, setSortType] = React.useState();
+  const [loading, setLoading] = React.useState(false);
+  const [isLight, setLight] = React.useState<boolean>(true);
+
   const [cidrValue, setcidrValue] = React.useState('');
+
   const [filterValue, setFilterValue] = React.useState<string | undefined>('');
-  const [items, setItemsValue] = React.useState<(DataCenter)[] | undefined>(_items);
+  const [items, setItemsValue] = React.useState<DataCenter[]>([]);
+  const [_allItems, setAllItemsValue] = React.useState<DataCenter[]>([]);
+
   const [requestedCidrNetwork, setRequestedCidrNetwork] = React.useState<(CidrNetwork | null)>();
   const [panelContent, setPanelContent] = React.useState<(CidrNetwork | null)[]>();
   const [isPanelOpen, setIsPanelOpen] = React.useState(false);
   const [elementDisabled, setElementDisabled] = React.useState(false);
+  const [isSortedDescending] = React.useState(true);
+  const [cidrMessage, setCidrMessage] = React.useState(false);
+  const [active, setActive] = React.useState('cidr1');
+
+  const data = items.filter((v: any, i: any) => i < 250);
 
   const openPanel = React.useCallback((cidrDetails: any) => {
     if (cidrDetails) {
@@ -104,106 +131,15 @@ export const App: React.FunctionComponent = () => {
     }
   }, []);
 
-  const onDismiss = React.useCallback((ev?: React.SyntheticEvent | KeyboardEvent) => {
-    if (ev) {
-      setIsPanelOpen(false);
-    }
-  }, []);
+  const CidrCellPanelButton = (props: any) => {
+    const { rowData, dataKey } = props;
 
-  const [_allItems, setAllItemsValue] = React.useState<DataCenter[]>(_items);
-  const [isSortedDescending] = React.useState(true);
-  const [cidrMessage, setCidrMessage] = React.useState(false);
-
-  function _buildColumns(
-    items: (DataCenter | null)[] | undefined,
-    canResizeColumns?: boolean,
-    onColumnClick?: (ev: React.MouseEvent<HTMLElement>, column: IColumn) => any,
-    sortedColumnKey?: string,
-    isSortedDescending?: boolean,
-    groupedColumnKey?: string,
-  ) {
-    const columns = buildColumns(
-      items || [],
-      canResizeColumns,
-      onColumnClick,
-      sortedColumnKey,
-      isSortedDescending,
-      groupedColumnKey,
+    return (
+      <Table.Cell {...props} align='center' style={{ padding: 'unset' }}>
+        {rowData[dataKey] ? <IconButton appearance="subtle" onClick={() => openPanel(rowData[dataKey])} icon={<BsLayoutSidebarReverse />} /> : null}
+      </Table.Cell>
     );
-
-    columns.forEach(column => {
-      column.ariaLabel = `Operations for ${column.name}`;
-      column.columnActionsMode = ColumnActionsMode.disabled;
-
-      if (column.key === 'data_center') {
-        column.iconName = 'Cloud';
-        column.isIconOnly = true;
-      } else if (column.key === 'cidr_blocks') {
-        column.name = "CIDR block(s)"
-        column.columnActionsMode = ColumnActionsMode.disabled;
-        column.isMultiline = true;
-        column.minWidth = 200;
-        column.onRender = (dc: DataCenter) => (
-          dc.cidr_blocks && dc.cidr_blocks !== null &&
-          dc.cidr_blocks.map((item) =>
-            <p>
-              <ActionButton allowDisabledFocus onClick={() => openPanel(dc.cidr_networks)}>
-                {item}
-              </ActionButton>
-            </p>
-          )
-        );
-      } else if (column.key === 'city') {
-        column.name = "City";
-      } else if (column.key === 'state') {
-        column.name = "State"
-      } else if (column.key === 'country') {
-        column.name = "Country"
-      } else if (column.key === 'conflict') {
-        column.name = "Status"
-        column.onRender = (item: DataCenter) => (
-          item.conflict ?
-            <Link rel="noopener" target="_blank" href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" data-selection-invoke={true}>
-              Conflict found 😮
-            </Link>
-            :
-            <Link rel="noopener" target="_blank" href="https://cloud.ibm.com/docs" data-selection-invoke={true}>
-              No conflict found 😎
-            </Link>
-        );
-      }
-    });
-
-    return columns;
-  }
-
-  const onFilter = React.useCallback(
-    (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
-      newValue ? setItemsValue(_allItems.filter(i => i.data_center.toLowerCase().indexOf(newValue) > -1)) : setItemsValue(_allItems);
-      // TODO: Set a value for the filter
-      setFilterValue(newValue)
-    },
-    [_allItems],
-  );
-
-  const onChangeCidrValue = React.useCallback(
-    (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
-      if (cidrMessage !== false) {
-        setCidrMessage(false);
-      }
-      setcidrValue(newValue || '');
-    },
-    [cidrMessage],
-  );
-
-  const [columns] = React.useState(_buildColumns(
-    items,
-    true,
-    undefined,
-    '',
-    undefined,
-    undefined,
-  ));
+  };
 
   React.useEffect(() => {
     setElementDisabled(true);
@@ -224,11 +160,10 @@ export const App: React.FunctionComponent = () => {
 
   const _calculateClicked = () => {
     if (cidrValue.match(cidrFormat)) {
-      setItemsValue(undefined);
+      setItemsValue([]);
       setCidrMessage(false);
       setElementDisabled(true);
 
-      // TODO: Pass the current filter and use it server side to only process the data centers / regions that are filtered.
       axios.post(`/api/subnetcalc`, {
         cidr: cidrValue,
         filter: filterValue
@@ -240,16 +175,73 @@ export const App: React.FunctionComponent = () => {
         .then((response) => {
           const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
           setItemsValue(sortedItems);
+          setAllItemsValue(sortedItems);
           setRequestedCidrNetwork(response.data.requested_cidr_networks);
           setElementDisabled(false);
         })
     } else {
       setCidrMessage(true);
-      setItemsValue(_allItems);
     }
   }
 
-  const _onDownloadJSON = () => {
+  const getData = () => {
+    if (sortColumn && sortType) {
+      return data.sort((a: any, b: any) => {
+        let x = a[sortColumn];
+        let y = b[sortColumn];
+        if (typeof x === 'string') {
+          x = x.charCodeAt(0);
+        }
+        if (typeof y === 'string') {
+          y = y.charCodeAt(0);
+        }
+        if (sortType === 'asc') {
+          return x - y;
+        } else {
+          return y - x;
+        }
+      });
+    }
+    return data;
+  };
+
+  const onSetTheme = () => {
+    setLight(!isLight)
+  }
+
+  const handleSortColumn = (sortColumn: any, sortType: any) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSortColumn(sortColumn);
+      setSortType(sortType);
+    }, 500);
+  };
+
+  const styles = {
+    width: 300,
+    marginBottom: 10
+  };
+
+  const onChangeCidrValue = React.useCallback(
+    (value: string, event: any) => {
+      if (cidrMessage !== false) {
+        setCidrMessage(false);
+      }
+      setcidrValue(value || '');
+    },
+    [cidrMessage],
+  );
+
+  const onFilterByCountry = React.useCallback(
+    (value: string, event: any) => {
+      value ? setItemsValue(_allItems?.filter(i => i.country.toLowerCase().indexOf(value) > -1)) : setItemsValue(_allItems);
+      setFilterValue(value)
+    },
+    [_allItems],
+  );
+
+  const onDownloadJSON = () => {
     const json = JSON.stringify(items);
     const url = window.URL.createObjectURL(new Blob([json]));
     const link = document.createElement('a');
@@ -259,150 +251,208 @@ export const App: React.FunctionComponent = () => {
     link.click();
   }
 
-  const _barItems: ICommandBarItemProps[] = [
-    {
-      key: 'downloadJSON',
-      text: 'Download .json',
-      split: true,
-      iconProps: { iconName: 'Download' },
-      disabled: elementDisabled,
-      onClick: _onDownloadJSON
-    },
-  ];
-
-  const _farItems: ICommandBarItemProps[] = [
-    {
-      key: 'info',
-      text: 'Info',
-      ariaLabel: 'Info',
-      iconOnly: true,
-      iconProps: { iconName: 'Info' },
-      onClick: () => console.log('Info'),
-    },
-  ];
-
-  let cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
-
   return (
-    <React.Fragment>
-      <Stack horizontalAlign="start" verticalAlign="center" styles={stackStyles} tokens={stackTokens}>
-        <Text variant="xxLarge" styles={boldStyle}>
-          CIDR Calculator for IBM Cloud (Unofficial)
-        </Text>
-        <Text>Use this tool to help to identify potential conflicts with IP addresses ranges in your on-premises environment(s) and IP address ranges used in IBM Cloud.</Text>
-        <Separator></Separator>
+    <CustomProvider theme={isLight ? "light" : "dark"}>
+      <Container>
+        <Affix>
+          <Header>
+            <Navbar appearance="inverse">
+              <Navbar.Brand >
+                CIDR Calculator for IBM Cloud (Unofficial)
+              </Navbar.Brand>
+              <Nav pullRight>
+                <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
+              </Nav>
+            </Navbar>
+          </Header>
+        </Affix>
 
-        <Stack horizontal horizontalAlign="start" styles={stackStyles} tokens={stackTokens}>
-          <Label required>Enter your IPv4 CIDR block:</Label>
-          <TextField
-            ariaLabel="Your IPv4 CIDR block"
-            value={cidrValue}
-            onChange={onChangeCidrValue}
-            styles={textFieldStyles}
-            errorMessage={
-              cidrMessage ?
-                <React.Fragment>
-                  Invalid CIDR block!
-                  <Link target="_blank" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" data-selection-invoke={true} styles={linkStyle}>
-                    Learn more
-                  </Link>
-                </React.Fragment>
-                : ''}
-          />
-          <PrimaryButton iconProps={calculatorIcon} text="Calculate" onClick={_calculateClicked} allowDisabledFocus disabled={elementDisabled} />
-        </Stack>
+        <Container>
+          <Sidebar></Sidebar>
 
-        <Stack horizontal tokens={innerStackTokens}>
-          <Stack.Item grow styles={stackItemStyles}>
-            <TextFieldDisabled label="Subnet Mask" value={requestedCidrNetwork?.subnet_mask} placeholder="0.0.0.0" />
-          </Stack.Item>
-          <Stack.Item grow styles={stackItemStyles}>
-            <TextFieldDisabled label="Network Address" value={requestedCidrNetwork?.network_address} placeholder="0.0.0.0" />
-          </Stack.Item>
-          <Stack.Item grow styles={stackItemStyles}>
-            <TextFieldDisabled label="First Assignable Host" value={requestedCidrNetwork?.first_assignable_host} placeholder="0.0.0.1" />
-          </Stack.Item>
-          <Stack.Item grow styles={stackItemStyles}>
-            <TextFieldDisabled label="Last Assignable Host" value={requestedCidrNetwork?.last_assignable_host} placeholder="255.255.255.254" />
-          </Stack.Item>
-          <Stack.Item grow styles={stackItemStyles}>
-            <TextFieldDisabled label="# Assignable Hosts" value={requestedCidrNetwork?.assignable_hosts} placeholder="4294967294" />
-          </Stack.Item>
-        </Stack>
+          <Content>
+            <Message type="info" style={{ padding: '10px', margin: '30px' }}>
+              <p>Use this tool to help to identify potential conflicts with IP addresses ranges in your on-premises environment(s) and IP address ranges used in IBM Cloud.</p>
+            </Message>
+            <Grid fluid>
+              <Row>
+                <Col xs={24} sm={12} md={8}>
 
-        <Separator></Separator>
-        <Stack horizontal horizontalAlign="start" styles={stackStyles} tokens={stackTokens}>
+                  <InputGroup style={styles}>
+                    <Input
+                      value={cidrValue}
+                      onChange={onChangeCidrValue}
+                      placeholder="10.10.10.0/24"
+                    />
+                    <InputGroup.Button aria-label='calculate' onClick={_calculateClicked}>
+                      {elementDisabled ? <BsCalculator /> : <BsCalculatorFill />}
+                    </InputGroup.Button>
+                  </InputGroup>
+                  {cidrMessage ?
+                    <ErrorMessage>
+                      {'Invalid CIDR!'}
+                      <Button target="_blank" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" appearance="link" style={{ textDecoration: "none" }}>
+                        Learn more
+                      </Button>
+                    </ErrorMessage>
+                    : null
+                  }
+                </Col>
+                <Col xs={24} sm={12} md={8}>
 
-          <Label required>Filter by data center:</Label>
-          <TextField
-            ariaLabel="Filter by data center"
-            onChange={onFilter}
-            styles={textFieldStyles}
-            disabled={elementDisabled}
-          />
-          <CommandBar
-            items={_barItems}
-            overflowButtonProps={overflowButtonProps}
-            // farItems={_farItems}
-            farItemsGroupAriaLabel="More actions"
-          />
-        </Stack>
+                  <InputGroup style={styles}>
+                    <Input
+                      value={filterValue}
+                      onChange={onFilterByCountry}
+                      placeholder="country"
+                    />
+                    <InputGroup.Addon>
+                      <FiFilter />
+                    </InputGroup.Addon>
+                  </InputGroup>
 
-        <ShimmeredDetailsList
-          setKey="items"
-          items={items || []}
-          columns={columns}
-          selectionMode={SelectionMode.none}
-          enableShimmer={!items}
-          ariaLabelForShimmer="Content is being fetched"
-          ariaLabelForGrid="Item details"
-        />
+                </Col>
+              </Row>
+            </Grid>
+            <hr />
 
-        <Panel
-          isOpen={isPanelOpen}
-          onDismiss={onDismiss}
-          headerText="CIDR block(s)"
-        >
-          <Pivot aria-label="OnChange Pivot Example">
-            {panelContent && panelContent.map((cidrNetwork, index) => {
-              return (
-                <PivotItem headerText={cidrNetwork?.cidr_notation}>
-                  <Stack verticalFill={true} tokens={innerStackTokens}>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="CIDR Notation" value={cidrNetwork?.cidr_notation} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Subnet Mask" value={cidrNetwork?.subnet_mask} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Subnet Bits" value={cidrNetwork?.subnet_bits} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Wildcard Mask" value={cidrNetwork?.wildcard_mask} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Broadcast Address" value={cidrNetwork?.broadcast_address} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Network Address" value={cidrNetwork?.network_address} placeholder="0.0.0.0" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="First Assignable Host" value={cidrNetwork?.first_assignable_host} placeholder="0.0.0.1" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="Last Assignable Host" value={cidrNetwork?.last_assignable_host} placeholder="255.255.255.254" />
-                    </Stack.Item>
-                    <Stack.Item grow styles={stackItemStyles}>
-                      <TextFieldDisabled label="# Assignable Hosts" value={cidrNetwork?.assignable_hosts} placeholder="4294967294" />
-                    </Stack.Item>
-                  </Stack>
-                </PivotItem>
-              )
-            }
-            )}
-          </Pivot>
-        </Panel>
-      </Stack>
-    </React.Fragment>
+            <Button color="blue" appearance="primary" onClick={onDownloadJSON}>
+              <BsDownload /> Download
+            </Button>
+
+            <Table
+              virtualized
+              autoHeight
+              // bordered
+              // cellBordered
+              affixHeader={50}
+              height={420}
+              data={getData()}
+              sortColumn={sortColumn}
+              sortType={sortType}
+              onSortColumn={handleSortColumn}
+              loading={loading}
+              rowKey={'key'}
+              renderEmpty={() => <Loader backdrop content="loading..." vertical />}
+              showHeader={items.length !== 0 ? true : false}
+              wordWrap
+            >
+              <Table.Column width={150} fixed sortable>
+                <Table.HeaderCell>Data Center</Table.HeaderCell>
+                <CompactCell dataKey="data_center" style={{ padding: 4 }} />
+              </Table.Column>
+
+              <Table.Column width={150} fixed sortable>
+                <Table.HeaderCell>City</Table.HeaderCell>
+                <CompactCell dataKey="city" />
+              </Table.Column>
+
+              <Table.Column width={150} sortable>
+                <Table.HeaderCell>Country</Table.HeaderCell>
+                <CompactCell dataKey="country" />
+              </Table.Column>
+
+              <Table.Column width={150} resizable>
+                <Table.HeaderCell>CIDR</Table.HeaderCell>
+                <CidrCell dataKey="cidr_networks" />
+              </Table.Column>
+
+              <Table.Column width={50}>
+                <Table.HeaderCell>.</Table.HeaderCell>
+                <CidrCellPanelButton dataKey="cidr_networks" />
+              </Table.Column>
+
+              <Table.Column sortable flexGrow={200}>
+                <Table.HeaderCell>Status</Table.HeaderCell>
+                <StatusCell dataKey="conflict" />
+              </Table.Column>
+            </Table>
+
+            <Drawer size={'sm'} placement={'right'} open={isPanelOpen} onClose={() => setIsPanelOpen(false)} onEnter={() => setActive('cidr1')}>
+              <Drawer.Header>
+                <Drawer.Title>Conflict Dashboard</Drawer.Title>
+              </Drawer.Header>
+              <Drawer.Body>
+                <Nav appearance="subtle" activeKey={active} onSelect={setActive} style={{ width: 100 }}>
+                  <Nav.Item key={'tab-cidr0'} eventKey={'cidr0'}>{'CIDR 0'}</Nav.Item>
+
+                  {panelContent && panelContent.map((cidrNetwork, index) => {
+                    const selected = `cidr${index + 1}`;
+                    const selectedText = `CIDR ${index + 1}`;
+
+                    return (
+                      <Nav.Item key={`tab-${selected}`} eventKey={selected}>{selectedText}</Nav.Item>
+                    )
+                  }
+                  )}
+                </Nav>
+                <Divider style={{ marginTop: '0px', marginBottom: '24px' }} />
+                {'cidr0' === active &&
+                  <div key={'cidr0'}>
+                    <label>CIDR Notation:</label>
+                    <Input disabled value={requestedCidrNetwork?.cidr_notation} />
+                    <label>Subnet Mask:</label>
+                    <Input disabled value={requestedCidrNetwork?.subnet_mask} />
+                    <label>Subnet Bits:</label>
+                    <Input disabled value={requestedCidrNetwork?.subnet_bits} />
+                    <label>Wildcard Mask:</label>
+                    <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
+                    <label>Broadcast Address:</label>
+                    <Input disabled value={requestedCidrNetwork?.broadcast_address} />
+                    <label>Network Address:</label>
+                    <Input disabled value={requestedCidrNetwork?.network_address} />
+                    <label>First Assignable Host:</label>
+                    <Input disabled value={requestedCidrNetwork?.first_assignable_host} />
+                    <label>Last Assignable Host:</label>
+                    <Input disabled value={requestedCidrNetwork?.last_assignable_host} />
+                    <label># Assignable Hosts:</label>
+                    <Input disabled value={requestedCidrNetwork?.assignable_hosts} />
+                  </div>
+                }
+
+                {panelContent && panelContent.map((cidrNetwork, index) => {
+                  const selected = `cidr${index + 1}`;
+
+                  return (
+                    <div key={selected}>
+                      {selected === active &&
+                        <div>
+                          <label>Conflict found with CIDR 0:</label>
+                          <Input disabled value={String(cidrNetwork?.conflict)} />
+                          <label>CIDR Notation:</label>
+                          <Input disabled value={cidrNetwork?.cidr_notation} />
+                          <label>Subnet Mask:</label>
+                          <Input disabled value={cidrNetwork?.subnet_mask} />
+                          <label>Subnet Bits:</label>
+                          <Input disabled value={cidrNetwork?.subnet_bits} />
+                          <label>Wildcard Mask:</label>
+                          <Input disabled value={cidrNetwork?.wildcard_mask} />
+                          <label>Broadcast Address:</label>
+                          <Input disabled value={cidrNetwork?.broadcast_address} />
+                          <label>Network Address:</label>
+                          <Input disabled value={cidrNetwork?.network_address} />
+                          <label>First Assignable Host:</label>
+                          <Input disabled value={cidrNetwork?.first_assignable_host} />
+                          <label>Last Assignable Host:</label>
+                          <Input disabled value={cidrNetwork?.last_assignable_host} />
+                          <label># Assignable Hosts:</label>
+                          <Input disabled value={cidrNetwork?.assignable_hosts} />
+                        </div>
+                      }
+                    </div>
+                  )
+                }
+                )}
+
+              </Drawer.Body>
+
+            </Drawer>
+          </Content>
+          <Sidebar></Sidebar>
+        </Container>
+
+        <Footer></Footer>
+      </Container>
+    </CustomProvider >
   );
 };

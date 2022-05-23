@@ -18,4 +18,5 @@ RUN npm run build
 FROM gcr.io/distroless/base
 COPY --from=buildgo /go/bin/app /
 COPY --from=buildjs /app/build /public
+ADD ./networks /networks
 CMD ["/app"]
