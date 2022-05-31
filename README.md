@@ -53,7 +53,7 @@
 
 ### Run local
 ```sh
-  docker run --rm -v $(pwd)/data:/data -p 3000:3000 dprosper/ic-cidr-calculator
+  docker run --rm -v $(pwd)/data:/data -v $(pwd)/networks:/networks -p 3000:3000 dprosper/ic-cidr-calculator
 ```
 
 ### Build and run on Pull Request

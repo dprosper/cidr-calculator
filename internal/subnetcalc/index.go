@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"strconv"
 	"strings"
@@ -69,29 +70,57 @@ type Config struct {
 	Type                  string             `json:"type"`
 	Version               string             `json:"version"`
 	LastUpdated           string             `json:"last_updated"`
+	ReleaseNotes          string             `json:"release_notes"`
+	Source                string             `json:"source"`
 	RequestedCidr         string             `json:"requested_cidr"`
 	RequestedCidrNetworks CidrNetwork        `json:"requested_cidr_networks"`
 	DataCenters           []DataCenterResult `json:"data_centers"`
 }
 
 type DataCenter struct {
-	Key        string   `mapstructure:"key"`
-	Name       string   `mapstructure:"name"`
-	City       string   `mapstructure:"city"`
-	State      string   `mapstructure:"state"`
-	Country    string   `mapstructure:"country"`
-	CidrBlocks []string `mapstructure:"cidr_blocks"`
+	Key             string `mapstructure:"key"`
+	Name            string `mapstructure:"name"`
+	City            string `mapstructure:"city"`
+	State           string `mapstructure:"state"`
+	Country         string `mapstructure:"country"`
+	PrivateNetworks []struct {
+		Key        string   `mapstructure:"key"`
+		Name       string   `mapstructure:"name"`
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"private_networks"`
+	ServiceNetwork []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"service_network"`
+	SslVpn []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"ssl_vpn"`
+}
+
+type PrivateNetwork struct {
+	Key        string   `json:"key"`
+	Name       string   `json:"name"`
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type ServiceNetwork struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type SslVpn struct {
+	CidrBlocks []string `json:"cidr_blocks"`
 }
 
 type DataCenterResult struct {
-	Key          string        `json:"key"`
-	DataCenter   string        `json:"data_center"`
-	City         string        `json:"city"`
-	State        string        `json:"state"`
-	Country      string        `json:"country"`
-	CidrBlocks   []string      `json:"cidr_blocks"`
-	CidrNetworks []CidrNetwork `json:"cidr_networks"`
-	Conflict     bool          `json:"conflict"`
+	Key             string           `json:"key"`
+	DataCenter      string           `json:"data_center"`
+	City            string           `json:"city"`
+	State           string           `json:"state"`
+	Country         string           `json:"country"`
+	PrivateNetworks []PrivateNetwork `json:"private_networks"`
+	ServiceNetwork  []ServiceNetwork `json:"service_network"`
+	SslVpn          []SslVpn         `json:"ssl_vpn"`
+	CidrNetworks    []CidrNetwork    `json:"cidr_networks"`
+	Conflict        bool             `json:"conflict"`
 }
 
 type CidrNetwork struct {
@@ -168,7 +197,6 @@ func GetSubnetDetails(cidr string) *Address {
 			}
 			logger.SystemLogger.Debug(fmt.Sprintln(subnetCalculatorResponse))
 
-			// var addressResponse Address
 			addressResponse := Address{Type: "network"}
 			err = json.Unmarshal(addressRaw, &addressResponse)
 			if err != nil {
@@ -308,41 +336,108 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 		cidrConflict := false
 		dataCenterConflict := false
 
+		pnsOutput := []PrivateNetwork{}
 		cloudCidrNetworks := []CidrNetwork{}
-		for _, cloudCidr := range dataCenter.CidrBlocks {
+		for _, pn := range dataCenter.PrivateNetworks {
+			pnsJson := PrivateNetwork{Key: pn.Key, Name: pn.Name, CidrBlocks: pn.CidrBlocks}
+			pnsOutput = append(pnsOutput, pnsJson)
 
-			cloudDetails := GetSubnetDetails(cloudCidr)
-			cidrConflict = compareCidrNetworks(requestedCidr, cloudCidr)
+			for _, cloudCidr := range pn.CidrBlocks {
+				cloudDetails := GetSubnetDetails(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
-			cloudCidrNetwork := CidrNetwork{
-				CidrNotation:        cloudDetails.CidrNotation,
-				SubnetBits:          cloudDetails.SubnetBits,
-				SubnetMask:          cloudDetails.SubnetMask,
-				WildcardMask:        cloudDetails.WildcardMask,
-				NetworkAddress:      cloudDetails.NetworkAddress,
-				BroadcastAddress:    cloudDetails.BroadcastAddress,
-				AssignableHosts:     cloudDetails.AssignableHosts,
-				FirstAssignableHost: cloudDetails.FirstAssignableHost,
-				LastAssignableHost:  cloudDetails.LastAssignableHost,
-				Conflict:            cidrConflict,
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
 			}
+		}
 
-			if cidrConflict {
-				dataCenterConflict = true
+		serviceNetworkOutput := []ServiceNetwork{}
+		for _, service := range dataCenter.ServiceNetwork {
+			serviceNetworkJson := ServiceNetwork{CidrBlocks: service.CidrBlocks}
+			serviceNetworkOutput = append(serviceNetworkOutput, serviceNetworkJson)
+
+			for _, cloudCidr := range service.CidrBlocks {
+				cloudDetails := GetSubnetDetails(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
 			}
+		}
 
-			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		sslVpnsOutput := []SslVpn{}
+		for _, sslVpn := range dataCenter.SslVpn {
+			sslVpnsJson := SslVpn{CidrBlocks: sslVpn.CidrBlocks}
+			sslVpnsOutput = append(sslVpnsOutput, sslVpnsJson)
+
+			for _, cloudCidr := range sslVpn.CidrBlocks {
+				cloudDetails := GetSubnetDetails(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
 		}
 
 		dataCenterJson := DataCenterResult{
-			Key:          dataCenter.Key,
-			DataCenter:   dataCenter.Name,
-			City:         dataCenter.City,
-			State:        dataCenter.State,
-			Country:      dataCenter.Country,
-			CidrBlocks:   dataCenter.CidrBlocks,
-			CidrNetworks: cloudCidrNetworks,
-			Conflict:     dataCenterConflict,
+			Key:             dataCenter.Key,
+			DataCenter:      dataCenter.Name,
+			City:            dataCenter.City,
+			State:           dataCenter.State,
+			Country:         dataCenter.Country,
+			PrivateNetworks: pnsOutput,
+			ServiceNetwork:  serviceNetworkOutput,
+			SslVpn:          sslVpnsOutput,
+			CidrNetworks:    cloudCidrNetworks,
+			Conflict:        dataCenterConflict,
 		}
 
 		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
@@ -353,6 +448,8 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 		Type:                  viper.GetString("type"),
 		Version:               viper.GetString("version"),
 		LastUpdated:           viper.GetString("last_updated"),
+		ReleaseNotes:          viper.GetString("release_notes"),
+		Source:                viper.GetString("source"),
 		RequestedCidr:         requestedCidr,
 		RequestedCidrNetworks: requestedCidrNetwork,
 		DataCenters:           dataCentersOutput,
@@ -362,7 +459,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 }
 
 // This function is a good candidate to implement in a data loader, i.e. https://github.com/graph-gophers/dataloader
-func compareCidrNetworks(leftCidr string, rightCidr string) bool {
+func compareCidrNetworksV1(leftCidr string, rightCidr string) bool {
 	conflict := false
 	leftSplit := strings.Split(leftCidr, "/")
 	rightSplit := strings.Split(rightCidr, "/")
@@ -384,8 +481,23 @@ func compareCidrNetworks(leftCidr string, rightCidr string) bool {
 	return conflict
 }
 
+func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
+	leftPrefix, err := netip.ParsePrefix(leftCidr)
+	if err != nil {
+		panic(err)
+	}
+
+	rightPrefix, err := netip.ParsePrefix(rightCidr)
+	if err != nil {
+		panic(err)
+	}
+
+	return leftPrefix.Overlaps(rightPrefix)
+}
+
 func readDataCenters(requestedCidr string) (Config, error) {
-	var dataCenters []map[string]interface{}
+
+	var dataCenters []DataCenter
 	err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
@@ -399,14 +511,34 @@ func readDataCenters(requestedCidr string) (Config, error) {
 		mapstructure.Decode(value, &dataCenter)
 		conflict := false
 
+		pnsOutput := []PrivateNetwork{}
+		for _, pn := range dataCenter.PrivateNetworks {
+			pnsJson := PrivateNetwork{Key: pn.Key, Name: pn.Name, CidrBlocks: pn.CidrBlocks}
+			pnsOutput = append(pnsOutput, pnsJson)
+		}
+
+		serviceNetworkOutput := []ServiceNetwork{}
+		for _, service := range dataCenter.ServiceNetwork {
+			serviceNetworkJson := ServiceNetwork{CidrBlocks: service.CidrBlocks}
+			serviceNetworkOutput = append(serviceNetworkOutput, serviceNetworkJson)
+		}
+
+		sslVpnsOutput := []SslVpn{}
+		for _, sslVpn := range dataCenter.SslVpn {
+			sslVpnsJson := SslVpn{CidrBlocks: sslVpn.CidrBlocks}
+			sslVpnsOutput = append(sslVpnsOutput, sslVpnsJson)
+		}
+
 		dataCenterJson := DataCenterResult{
-			Key:        dataCenter.Key,
-			DataCenter: dataCenter.Name,
-			City:       dataCenter.City,
-			State:      dataCenter.State,
-			Country:    dataCenter.Country,
-			CidrBlocks: dataCenter.CidrBlocks,
-			Conflict:   conflict,
+			Key:             dataCenter.Key,
+			DataCenter:      dataCenter.Name,
+			City:            dataCenter.City,
+			State:           dataCenter.State,
+			Country:         dataCenter.Country,
+			PrivateNetworks: pnsOutput,
+			ServiceNetwork:  serviceNetworkOutput,
+			SslVpn:          sslVpnsOutput,
+			Conflict:        conflict,
 		}
 		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
 	}
@@ -416,6 +548,8 @@ func readDataCenters(requestedCidr string) (Config, error) {
 		Type:          viper.GetString("type"),
 		Version:       viper.GetString("version"),
 		LastUpdated:   viper.GetString("last_updated"),
+		ReleaseNotes:  viper.GetString("release_notes"),
+		Source:        viper.GetString("source"),
 		RequestedCidr: requestedCidr,
 		DataCenters:   dataCentersOutput,
 	}
