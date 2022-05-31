@@ -1,352 +1,1746 @@
 {
-  "name": "IBM Cloud Classic Infrastructure CIDR",
+  "name": "IBM Cloud IP ranges (Work in progress)",
   "type": "classic_data_center_cidr",
-  "version": "1.0.0",
-  "last_updated": "10/31/2021",
+  "version": "2.0.0.alpha",
+  "last_updated": "05/31/2022",
+  "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
+  "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "data_centers": [
-    { 
+    {
       "key": "ams01",
       "name": "ams01",
       "city": "Amsterdam",
       "state": "",
       "country": "NLD",
-      "cidr_blocks": ["10.2.200.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.68.0.0/14",
+            "10.251.10.0/23",
+            "10.251.88.0/23"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.104.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.64.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.200.0/23"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "ams03",
       "name": "ams03",
       "city": "Amsterdam",
       "state": "",
       "country": "NLD",
-      "cidr_blocks": ["10.3.220.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.136.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.175.0.0/16",
+            "10.214.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.128.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.220.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "che01",
       "name": "che01",
       "city": "Chennai",
       "state": "",
       "country": "IND",
-      "cidr_blocks": ["10.200.232.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.162.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.16.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.232.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "dal05",
       "name": "dal05",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.1.24.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.40.0.0/14",
+            "10.251.0.0/23",
+            "10.251.64.0/23"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.60.0.0/15",
+            "10.62.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.80.0.0/14",
+            "10.251.4.0/23",
+            "10.251.68.0/23"
+          ]
+        },
+        {
+          "key": "bcr04",
+          "name": "bcr04",
+          "cidr_blocks": [
+            "10.84.0.0/16",
+            "10.86.0.0/16",
+            "10.251.70.0/23"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.1.128.0/19"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.24.0/23"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "dal06",
       "name": "dal06",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.2.208.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.106.0.0/15",
+            "10.252.0.0/16",
+            "10.253.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.146.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.128.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.208.0/23"
+          ]
+        }
+      ]
     },
-    { 
-      "key": "dal07",
-      "name": "dal07",
-      "city": "Dallas",
-      "state": "Texas",
-      "country": "USA",
-      "cidr_blocks": ["10.1.236.0/24"]
-    },
-    { 
+    {
       "key": "dal09",
       "name": "dal09",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.2.232.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.120.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.142.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.152.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr04",
+          "name": "bcr04",
+          "cidr_blocks": [
+            "10.154.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr05",
+          "name": "bcr05",
+          "cidr_blocks": [
+            "10.172.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr06",
+          "name": "bcr06",
+          "cidr_blocks": [
+            "10.173.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.232.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "dal10",
       "name": "dal10",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.200.228.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.176.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.171.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.93.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr04",
+          "name": "bcr04",
+          "cidr_blocks": [
+            "10.5.0.0/16",
+            "10.23.0.0/16",
+            "10.38.0.0/16",
+            "10.94.0.0/15",
+            "10.221.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.228.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "dal12",
       "name": "dal12",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.200.216.0/22"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.184.0.0/15",
+            "10.241.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.48.0.0/16",
+            "10.74.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.112.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.216.0/22"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "dal13",
       "name": "dal13",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
-      "cidr_blocks": ["10.200.212.0/22"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.186.0.0/15",
+            "10.208.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.36.0.0/16",
+            "10.73.0.0/16",
+            "10.209.0.0/16",
+            "10.220.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.37.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.128.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.212.0/22"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "fra02",
       "name": "fra02",
       "city": "Frankfurt",
       "state": "",
       "country": "DEU",
-      "cidr_blocks": ["10.2.236.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.134.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.85.0.0/16",
+            "10.194.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.20.0.0/16",
+            "10.215.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.80.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.236.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
+      "key": "fra04",
+      "name": "fra04",
+      "city": "Frankfurt",
+      "state": "",
+      "country": "DEU",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.21.0.0/16",
+            "10.75.0.0/16",
+            "10.240.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.112.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
+      "key": "fra05",
+      "name": "fra05",
+      "city": "Frankfurt",
+      "state": "",
+      "country": "DEU",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.13.0.0/16",
+            "10.123.0.0/16"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.201.128.0/20"
+          ]
+        }
+      ]
+    },
+    {
       "key": "hkg02",
       "name": "hkg02",
       "city": "Hong Kong",
       "state": "",
       "country": "CHN",
-      "cidr_blocks": ["10.2.216.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.110.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.174.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.160.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.216.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "lon02",
       "name": "lon02",
       "city": "London",
       "state": "",
       "country": "ENG",
-      "cidr_blocks": ["10.2.220.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.112.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.164.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.1.208.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.220.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "lon04",
       "name": "lon04",
       "city": "London",
       "state": "",
       "country": "ENG",
-      "cidr_blocks": ["10.200.196.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.45.0.0/16",
+            "10.222.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.32.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.196.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "lon05",
       "name": "lon05",
       "city": "London",
       "state": "",
       "country": "ENG",
-      "cidr_blocks": ["10.201.208.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.196.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.48.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.201.208.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "lon06",
       "name": "lon06",
       "city": "London",
       "state": "",
       "country": "ENG",
-      "cidr_blocks": ["10.3.200.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.72.0.0/16",
+            "10.242.0.0/16",
+            "10.248.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.64.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.200.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "mex01",
       "name": "mex01",
       "city": "Mexico city",
       "state": "",
       "country": "MEX",
-      "cidr_blocks": ["10.3.232.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.130.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.176.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.232.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "mil01",
       "name": "mil01",
       "city": "Milan",
       "state": "",
       "country": "ITA",
-      "cidr_blocks": ["10.3.216.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.144.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.144.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.216.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "mon01",
       "name": "mon01",
       "city": "Montreal",
       "state": "",
       "country": "CAN",
-      "cidr_blocks": ["10.3.224.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.140.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.182.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.112.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.224.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "osa21",
       "name": "osa21",
       "city": "Osaka",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.202.128.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.8.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.112.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.202.128.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "osa22",
       "name": "osa22",
       "city": "Osaka",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.202.132.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.9.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.144.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.202.132.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "osa23",
       "name": "osa23",
       "city": "Osaka",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.202.136.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.10.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.160.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.202.136.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
+      "key": "osl01",
+      "name": "osl01",
+      "city": "Oslo",
+      "state": "",
+      "country": "NOR",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.180.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": []
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
       "key": "par01",
       "name": "par01",
       "city": "Paris",
       "state": "",
       "country": "FRA",
-      "cidr_blocks": ["10.3.236.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.126.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.144.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.236.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
+      "key": "par04",
+      "name": "par04",
+      "city": "Paris",
+      "state": "",
+      "country": "FRA",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.217.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": []
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
+      "key": "par05",
+      "name": "par05",
+      "city": "Paris",
+      "state": "",
+      "country": "FRA",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.218.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": []
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
+      "key": "par06",
+      "name": "par06",
+      "city": "Paris",
+      "state": "",
+      "country": "FRA",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.219.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": []
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
       "key": "sao01",
       "name": "sao01",
       "city": "São Paulo",
       "state": "",
       "country": "BRA",
-      "cidr_blocks": ["10.200.236.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.150.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.0.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.236.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
+      "key": "sao04",
+      "name": "sao04",
+      "city": "São Paulo",
+      "state": "",
+      "country": "BRA",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.14.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.208.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
+      "key": "sao05",
+      "name": "sao05",
+      "city": "São Paulo",
+      "state": "",
+      "country": "BRA",
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.15.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.240.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": []
+        }
+      ]
+    },
+    {
       "key": "seo01",
       "name": "seo01",
       "city": "Seoul",
       "state": "",
       "country": "KOR",
-      "cidr_blocks": ["10.200.224.0/22"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.178.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.64.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.224.0/22"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "sjc01",
       "name": "sjc01",
       "city": "San Jose",
       "state": "California",
       "country": "USA",
-      "cidr_blocks": ["10.1.224.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.52.0.0/14",
+            "10.251.6.0/23",
+            "10.251.72.0/23"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.88.0.0/14",
+            "10.251.74.0/23"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.122.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.1.192.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.224.0/23"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "sjc03",
       "name": "sjc03",
       "city": "San Jose",
       "state": "California",
       "country": "USA",
-      "cidr_blocks": ["10.3.204.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.160.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.168.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.176.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.204.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "sjc04",
       "name": "sjc04",
       "city": "San Jose",
       "state": "California",
       "country": "USA",
-      "cidr_blocks": ["10.200.192.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.87.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.80.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.192.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "sng01",
       "name": "sng01",
       "city": "Jurong East",
       "state": "",
       "country": "SGP",
-      "cidr_blocks": ["10.2.192.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.64.0.0/16",
+            "10.66.0.0/15",
+            "10.251.12.0/23",
+            "10.251.86.0/23"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.116.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.32.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.192.0/23"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "syd01",
       "name": "syd01",
       "city": "Sydney",
       "state": "",
       "country": "AUS",
-      "cidr_blocks": ["10.3.228.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.138.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.210.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.96.0/20",
+            "10.202.32.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.228.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "syd04",
       "name": "syd04",
       "city": "Sydney",
       "state": "",
       "country": "AUS",
-      "cidr_blocks": ["10.200.200.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.63.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.16.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.200.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "syd05",
       "name": "syd05",
       "city": "Sydney",
       "state": "",
       "country": "AUS",
-      "cidr_blocks": ["10.201.212.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.195.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.16.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.201.212.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tok02",
       "name": "tok02",
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.2.224.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.129.0.0/16",
+            "10.132.0.0/15",
+            "10.201.171.0/24"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.212.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.160.0/20",
+            "10.3.64.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.2.224.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tok04",
       "name": "tok04",
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.201.228.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.192.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.176.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.201.228.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tok05",
       "name": "tok05",
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
-      "cidr_blocks": ["10.201.224.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.193.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.201.192.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.201.224.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tor01",
       "name": "tor01",
       "city": "Toronto",
       "state": "",
       "country": "CAN",
-      "cidr_blocks": ["10.1.232.0/24", "10.1.233.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.114.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.166.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.2.48.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.232.0/24",
+            "10.1.233.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tor04",
       "name": "tor04",
       "city": "Toronto",
       "state": "",
       "country": "CAN",
-      "cidr_blocks": ["10.1.0.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.11.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.176.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.0.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "tor05",
       "name": "tor05",
       "city": "Toronto",
       "state": "",
       "country": "CAN",
-      "cidr_blocks": ["10.1.4.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.243.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.202.192.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.4.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "wdc01",
       "name": "wdc01",
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
-      "cidr_blocks": ["10.1.16.0/23"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.251.80.0/23",
+            "10.128.0.0/16",
+            "10.24.0.0/14",
+            "10.251.82.0/23",
+            "10.32.0.0/14"
+          ]
+        },
+        {
+          "key": "bcr05",
+          "name": "bcr05",
+          "cidr_blocks": [
+            "10.108.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr06",
+          "name": "bcr06",
+          "cidr_blocks": [
+            "10.124.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.1.96.0/19"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.1.16.0/23"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "wdc04",
       "name": "wdc04",
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
-      "cidr_blocks": ["10.3.212.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.148.0.0/15"
+          ]
+        },
+        {
+          "key": "bcr02",
+          "name": "bcr02",
+          "cidr_blocks": [
+            "10.170.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr03",
+          "name": "bcr03",
+          "cidr_blocks": [
+            "10.183.0.0/16",
+            "10.216.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr04",
+          "name": "bcr04",
+          "cidr_blocks": [
+            "10.65.0.0/16",
+            "10.211.0.0/16"
+          ]
+        },
+        {
+          "key": "bcr05",
+          "name": "bcr05",
+          "cidr_blocks": [
+            "10.213.0.0/16"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.3.160.0/20",
+            "10.201.0.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.3.212.0/24"
+          ]
+        }
+      ]
     },
-    { 
-      "key": "wdc03",
-      "name": "wdc03",
-      "city": "Washington D.C.",
-      "state": "",
-      "country": "USA",
-      "cidr_blocks": ["100.101.132.0/24"]
-    },
-    { 
+    {
       "key": "wdc06",
       "name": "wdc06",
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
-      "cidr_blocks": ["10.200.208.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.188.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.160.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.208.0/24"
+          ]
+        }
+      ]
     },
-    { 
+    {
       "key": "wdc07",
       "name": "wdc07",
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
-      "cidr_blocks": ["10.200.204.0/24"]
+      "private_networks": [
+        {
+          "key": "bcr01",
+          "name": "bcr01",
+          "cidr_blocks": [
+            "10.39.0.0/16",
+            "10.190.0.0/15"
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.200.176.0/20"
+          ]
+        }
+      ],
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.204.0/24"
+          ]
+        }
+      ]
     }
   ]
 }

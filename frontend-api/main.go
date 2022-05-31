@@ -73,6 +73,8 @@ func (w *Worker) indexRun(isReady chan bool) {
 
 		finished := time.Now()
 		duration := finished.Sub(started)
+		logger.SystemLogger.Info("Index worker stats", zap.String("started:", started.String()), zap.String("finished:", finished.String()), zap.String("duration:", duration.String()))
+
 		w.period = w.Interval - duration
 	}
 }
