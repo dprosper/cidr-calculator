@@ -27,9 +27,6 @@ import {
   Tooltip
 } from 'rsuite';
 import ResponsiveNav from '@rsuite/responsive-nav';
-
-import 'rsuite/dist/rsuite.min.css';
-
 import IconButton from 'rsuite/IconButton';
 import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsDownload, BsFillStopCircleFill } from 'react-icons/bs';
 import { FiFilter } from 'react-icons/fi';
@@ -38,6 +35,7 @@ import { AiOutlineCloudServer } from 'react-icons/ai';
 
 import axios from "axios";
 
+import './custom-theme.less'
 import './App.css';
 import { getObjects } from './utils'
 
@@ -259,11 +257,11 @@ export const App: React.FunctionComponent = () => {
       <Table.Cell {...props}>
         {rowData[dataKey] ?
           <React.Fragment>
-            <Tag size='lg' color={'red'}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
+            <Tag color={'red'}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
           </React.Fragment>
           :
           <React.Fragment>
-            <Tag size='lg' color={undefined}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
+            <Tag color={undefined}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
           </React.Fragment>
         }
       </Table.Cell>
@@ -420,7 +418,7 @@ export const App: React.FunctionComponent = () => {
         <Header>
           <Navbar appearance="inverse">
             <Navbar.Brand >
-              CIDR Calculator for IBM Cloud (Unofficial)
+              CIDR Conflict Calculator for IBM Cloud - Classic Infrastructure (Unofficial)
             </Navbar.Brand>
             <Nav pullRight>
               <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
@@ -432,9 +430,8 @@ export const App: React.FunctionComponent = () => {
       <Container style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "20px" }}>
         <Content >
           <Grid fluid>
-            <Col xs={24} sm={12} md={3}>
+            <Col sm={7} md={5} lg={3}>
               <Affix top={70}>
-
                 <Panel bordered style={{ padding: "5px" }}>
                   <Row>
                     <Col xs={24} sm={24} md={24}>
@@ -497,13 +494,13 @@ export const App: React.FunctionComponent = () => {
                   </Row>
                 </Panel>
                 <hr />
-                <span style={{ fontSize: "12px" }}>
+                <span>
                   <p>Use this tool to help to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud.</p>
                 </span>
               </Affix>
             </Col>
 
-            <Col xs={24} sm={12} md={17}>
+            <Col sm={17} md={19} lg={18}>
               <Panel bordered style={{ padding: "5px" }}>
                 <Table
                   virtualized
@@ -521,22 +518,22 @@ export const App: React.FunctionComponent = () => {
                   wordWrap
                   rowHeight={200}
                 >
-                  <Table.Column width={125} sortable>
+                  <Table.Column width={125} sortable flexGrow={1}>
                     <Table.HeaderCell>Data Center</Table.HeaderCell>
                     <DataCenterCell dataKey="conflict" style={{ padding: 4 }} />
                   </Table.Column>
 
-                  <Table.Column width={125} sortable>
+                  <Table.Column width={125} sortable flexGrow={1}>
                     <Table.HeaderCell>City</Table.HeaderCell>
                     <CompactCell dataKey="city" />
                   </Table.Column>
 
-                  <Table.Column width={125} sortable>
+                  <Table.Column width={125} sortable flexGrow={1}>
                     <Table.HeaderCell>Country Code</Table.HeaderCell>
                     <CompactCell dataKey="country" />
                   </Table.Column>
 
-                  <Table.Column width={750} >
+                  <Table.Column width={750} flexGrow={4}>
                     <Table.HeaderCell>CIDR</Table.HeaderCell>
                     <CidrCell dataKey="data_center" />
                   </Table.Column>
@@ -545,15 +542,21 @@ export const App: React.FunctionComponent = () => {
               </Panel>
             </Col>
 
-            <Col xs={24} sm={12} md={4}>
+            <Col sm={24} md={24} lg={3}>
               <Affix top={70}>
-                <span style={{ fontSize: "12px" }}>
-                  <strong>{sourceName}</strong><br />
-                  Version {sourceVersion} <IconButton color="blue" size="xs" appearance="ghost" onClick={onDownloadJSON} icon={<BsDownload />} /> <br/>
-                  Last updated on {sourceLastUpdated} 
-                  <br />
-                  <a target="_blank" rel="noreferrer" href={sourceReleaseNotes}>Change History</a><br />
-                  <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a><br />
+                <span>
+                  <p><strong>{sourceName}</strong></p>
+                  <p>
+                    Version {sourceVersion}
+                    <br />
+                    Last updated on {sourceLastUpdated}
+                    <br />
+                    <a target="_blank" rel="noreferrer" href={sourceReleaseNotes}>Change History</a>
+                    <br />
+                    <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a>
+                    <br />
+                    <IconButton placement='right' color="blue" size="xs" appearance="ghost" onClick={onDownloadJSON} icon={<BsDownload />}> Download</IconButton>
+                  </p>
                   <hr />
 
                   {activeKey === 'PN' &&
@@ -594,11 +597,15 @@ export const App: React.FunctionComponent = () => {
                   <hr />
                   <div style={{ marginTop: "20px" }}>
                     <p style={{ marginBottom: "10px" }}><strong>Documentation topics and tutorials</strong></p>
-
-                    <a href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                      <p><strong>Bring Your Own IP Address</strong></p>
-                    </a>
-                    <p>This tutorial presents a brief overview of BYOIP implementation patterns that can be used with IBM Cloud and a decision tree for identifying the appropriate pattern</p>
+                    <p>
+                      <a href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                        <strong>Bring Your Own IP Address</strong>
+                      </a>
+                    </p>
+                    <p>
+                      This tutorial presents a brief overview of BYOIP implementation patterns that can be used with IBM Cloud
+                      and a decision tree for identifying the appropriate pattern
+                    </p>
                     <hr />
                   </div>
                 </span>
@@ -606,9 +613,7 @@ export const App: React.FunctionComponent = () => {
               </Affix>
             </Col>
           </Grid>
-
         </Content>
-
       </Container>
 
       <Footer></Footer>
@@ -629,7 +634,7 @@ export const App: React.FunctionComponent = () => {
           }
           {activeDoc === 'service_network' &&
             <span>
-              Be sure to configure rules and verify routes for DAL10, WDC04, and the location of your server.
+              Be sure to configure <mark>rules and verify</mark> routes for DAL10, WDC04, and the location of your server.
               If your server is in an EU location, you must add rules allowing traffic from DAL10, WDC04, and AMS01 to your server.
               The traffic must be able to travel between the service networks and your server.
               By default, all servers and gateway/firewall devices are configured with a static route for the 10.0.0.0/8 network to the Back-end Customer Router (BCR).
