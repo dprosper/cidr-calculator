@@ -2,10 +2,10 @@
   "name": "IBM Cloud IP ranges (Work in progress)",
   "type": "classic_data_center_cidr",
   "version": "2.0.0.alpha",
-  "last_updated": "05/31/2022",
+  "last_updated": "06/02/2022",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
-  "issues": "https://github.com/dprosper/cidr-calculator/issues/new",
+  "issues": "https://github.com/dprosper/cidr-calculator/issues/new/choose",
   "data_centers": [
     {
       "key": "ams01",
