@@ -1,0 +1,34 @@
+name: Improve the CIDR Calculator app
+description: Report a problem you have encountered with the app.
+labels:
+  - app
+body:
+  - type: textarea
+    attributes:
+      label: What is the problem you are reporting?
+      description: Include a short description and screenshot(s).
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: What part of the app is affected?
+      description: Include steps on how to reproduce the problem you are seeing, screenshots, what browser you're using, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: What changes are you suggesting?
+      description: |
+        - Give as much detail as you can to help us understand how best to address the problem identified by you. 
+        - What is the expected outcome?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Any additional information, configuration, or data that might be necessary to reproduce the issue.
+    validations:
+      required: false
