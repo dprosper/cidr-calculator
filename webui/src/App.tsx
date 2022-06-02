@@ -32,6 +32,9 @@ import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsDownload, Bs
 import { FiFilter } from 'react-icons/fi';
 import { BiReset } from 'react-icons/bi';
 import { AiOutlineCloudServer } from 'react-icons/ai';
+import {
+  GiLongAntennaeBug as GiLongAntennaeBugIcon
+} from 'react-icons/gi';
 
 import axios from "axios";
 
@@ -104,6 +107,7 @@ export const App: React.FunctionComponent = () => {
   const [sourceLastUpdated, setSourceLastUpdated] = React.useState('');
   const [sourceReleaseNotes, setSourceReleaseNotes] = React.useState('');
   const [sourceUrl, setSourceUrl] = React.useState('');
+  const [issuesUrl, setIssuesUrl] = React.useState('');
 
   const data = items.filter((v: any, i: any) => i < 250);
 
@@ -285,6 +289,7 @@ export const App: React.FunctionComponent = () => {
         setSourceLastUpdated(response.data.last_updated);
         setSourceReleaseNotes(response.data.release_notes);
         setSourceUrl(response.data.source);
+        setIssuesUrl(response.data.issues);
         setItemsValue(sortedItems);
         setAllItemsValue(sortedItems);
         setElementDisabled(false);
@@ -333,6 +338,7 @@ export const App: React.FunctionComponent = () => {
         setSourceLastUpdated(response.data.last_updated);
         setSourceReleaseNotes(response.data.release_notes);
         setSourceUrl(response.data.source);
+        setIssuesUrl(response.data.issues);
         setItemsValue(sortedItems);
         setAllItemsValue(sortedItems);
         setCidrDisabled(false);
@@ -412,6 +418,7 @@ export const App: React.FunctionComponent = () => {
     link.click();
   }
 
+
   return (
     <CustomProvider theme={isLight ? "light" : "dark"}>
       <Affix>
@@ -422,13 +429,19 @@ export const App: React.FunctionComponent = () => {
             </Navbar.Brand>
             <Nav pullRight>
               <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
+              <Nav.Item
+                href={issuesUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                icon={<IconButton aria-label='report a bug' icon={<GiLongAntennaeBugIcon />} />}
+              />
             </Nav>
           </Navbar>
         </Header>
       </Affix>
 
       <Container style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "20px" }}>
-        <Content >
+        <Content>
           <Grid fluid>
             <Col sm={7} md={5} lg={3}>
               <Affix top={70}>
@@ -544,7 +557,7 @@ export const App: React.FunctionComponent = () => {
 
             <Col sm={24} md={24} lg={3}>
               <Affix top={70}>
-                <span>
+                <span style={{ fontSize: '12px'}}>
                   <p><strong>{sourceName}</strong></p>
                   <p>
                     Version {sourceVersion}
@@ -564,7 +577,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>Private Network</strong></p>
                       <p>
                         Private Network includes the IP ranges used by compute resources deployed in the selected data center.
-                        <Button appearance='subtle' onClick={() => openDocPanel('private_network')}>
+                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('private_network')}>
                           more...
                         </Button>
                       </p>
@@ -576,7 +589,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>Service Network</strong></p>
                       <p>
                         Service Network includes the IP ranges used by services running or accessible from the selected data center.
-                        <Button appearance='subtle' onClick={() => openDocPanel('service_network')}>
+                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('service_network')}>
                           more...
                         </Button>
                       </p>
@@ -588,7 +601,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>SSL VPN</strong></p>
                       <p>
                         SSL VPN includes the IP ranges used when connecting via a VPN client to the selected data center.
-                        <Button appearance='subtle' onClick={() => openDocPanel('ssl_vpn')}>
+                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('ssl_vpn')}>
                           more...
                         </Button>
                       </p>

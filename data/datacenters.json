@@ -5,6 +5,7 @@
   "last_updated": "05/31/2022",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
+  "issues": "https://github.com/dprosper/cidr-calculator/issues/new",
   "data_centers": [
     {
       "key": "ams01",
