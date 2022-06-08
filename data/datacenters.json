@@ -1,5 +1,5 @@
 {
-  "name": "IBM Cloud IP ranges (Work in progress)",
+  "name": "IBM Cloud IP ranges (WIP)",
   "type": "classic_data_center_cidr",
   "version": "2.0.0.alpha",
   "last_updated": "06/02/2022",
