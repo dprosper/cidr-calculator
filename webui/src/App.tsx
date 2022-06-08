@@ -10,81 +10,40 @@ import {
   Drawer,
   Footer,
   Grid,
-  Header,
   Input,
-  InputGroup,
   Loader,
-  Nav,
-  Navbar,
   Row,
   Table,
   Panel,
   Tag,
   TagGroup,
   Notification,
-  toaster,
-  Whisper,
-  Tooltip
+  toaster
 } from 'rsuite';
+
 import ResponsiveNav from '@rsuite/responsive-nav';
 import IconButton from 'rsuite/IconButton';
-import { BsSunrise, BsSunsetFill, BsCalculator, BsCalculatorFill, BsDownload, BsFillStopCircleFill } from 'react-icons/bs';
-import { FiFilter } from 'react-icons/fi';
-import { BiReset } from 'react-icons/bi';
+import { BsDownload, BsFillStopCircleFill } from 'react-icons/bs';
 import { AiOutlineCloudServer } from 'react-icons/ai';
-import {
-  GiLongAntennaeBug as GiLongAntennaeBugIcon
-} from 'react-icons/gi';
 
 import axios from "axios";
 
+import { InputSection } from './components/InputSection';
+import { HeaderNav } from './components/Header';
+
 import './custom-theme.less'
 import './App.css';
-import { getObjects } from './utils'
+import { getObjects } from './utils';
 
-interface DataCenter {
-  data_center: string;
-  city?: string;
-  state?: string;
-  country: string;
-  cidr_blocks?: string[];
-  conflict?: boolean;
-  cidr_networks?: string[]
-}
-
-interface CidrNetwork {
-  conflict: boolean;
-  cidr_notation: string;
-  subnet_bits: string;
-  subnet_mask: string;
-  wildcard_mask: string;
-  network_address: string;
-  broadcast_address: string;
-  assignable_hosts: string;
-  first_assignable_host: string;
-  last_assignable_host: string;
-}
-
-function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
-  const key = columnKey as keyof T;
-  return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
-}
-
-let cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
-
-const ErrorMessage = ({ children }: { children: any }) => <span style={{ color: 'red' }}>{children}</span>;
+import { DataCenter, CidrNetwork, _copyAndSort } from './components/common';
 
 type PlacementType = 'topStart' | 'topCenter' | 'topEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd';
 
-export const App: React.FunctionComponent = () => {
-
+export const App = () => {
   const [sortColumn, setSortColumn] = React.useState();
   const [sortType, setSortType] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [isLight, setLight] = React.useState<boolean>(true);
-
-  const [cidrValue, setcidrValue] = React.useState('');
-  const [cidrDisabled, setCidrDisabled] = React.useState(false);
 
   const [filterValue, setFilterValue] = React.useState<string | undefined>('');
   const [items, setItemsValue] = React.useState<DataCenter[]>([]);
@@ -96,7 +55,6 @@ export const App: React.FunctionComponent = () => {
   const [isDocOpen, setIsDocOpen] = React.useState(false);
   const [elementDisabled, setElementDisabled] = React.useState(false);
   const [isSortedDescending] = React.useState(true);
-  const [cidrMessage, setCidrMessage] = React.useState(false);
   const [active, setActive] = React.useState<(string | number | undefined)>('cidr1');
   const [activeDoc, setDocActive] = React.useState<(string | number | undefined)>(undefined);
   const [activeKey, setActiveKey] = React.useState<(string | number | undefined)>('PN');
@@ -255,7 +213,7 @@ export const App: React.FunctionComponent = () => {
     );
   };
 
-  const DataCenterCell = (props: any) => {
+  const DataCenterCell = React.useCallback((props: any) => {
     const { rowData, dataKey } = props;
     return (
       <Table.Cell {...props}>
@@ -270,7 +228,7 @@ export const App: React.FunctionComponent = () => {
         }
       </Table.Cell>
     );
-  };
+  }, []);
 
   React.useEffect(() => {
     setElementDisabled(true);
@@ -295,55 +253,6 @@ export const App: React.FunctionComponent = () => {
         setElementDisabled(false);
       });
   }, [isSortedDescending]);
-
-  const _calculateClicked = () => {
-    if (cidrValue.match(cidrFormat)) {
-      setItemsValue([]);
-      setCidrMessage(false);
-      setElementDisabled(true);
-      setCidrDisabled(true);
-      axios.post(`/api/subnetcalc`, {
-        cidr: cidrValue,
-        filter: filterValue
-      }, {
-        headers: {
-          'content-type': 'application/json',
-        }
-      })
-        .then((response) => {
-          const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
-          setItemsValue(sortedItems);
-          setAllItemsValue(sortedItems);
-          setRequestedCidrNetwork(response.data.requested_cidr_networks);
-          setElementDisabled(false);
-        })
-    } else {
-      setCidrMessage(true);
-    }
-  }
-
-  const _reset = () => {
-    setcidrValue('');
-    axios.post(`/api/subnetcalc`, {
-      cidr: '0.0.0.0/0'
-    }, {
-      headers: {
-        'content-type': 'application/json',
-      }
-    })
-      .then((response) => {
-        const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
-        setSourceName(response.data.name);
-        setSourceVersion(response.data.version);
-        setSourceLastUpdated(response.data.last_updated);
-        setSourceReleaseNotes(response.data.release_notes);
-        setSourceUrl(response.data.source);
-        setIssuesUrl(response.data.issues);
-        setItemsValue(sortedItems);
-        setAllItemsValue(sortedItems);
-        setCidrDisabled(false);
-      });
-  }
 
   React.useEffect(() => {
     if (filterValue) {
@@ -372,10 +281,6 @@ export const App: React.FunctionComponent = () => {
     return data;
   };
 
-  const onSetTheme = () => {
-    setLight(!isLight)
-  }
-
   const handleSortColumn = (sortColumn: any, sortType: any) => {
     setLoading(true);
     setTimeout(() => {
@@ -384,29 +289,6 @@ export const App: React.FunctionComponent = () => {
       setSortType(sortType);
     }, 500);
   };
-
-  const styles = {
-    width: 175,
-    marginBottom: 10
-  };
-
-  const onChangeCidrValue = React.useCallback(
-    (value: string, event: any) => {
-      if (cidrMessage !== false) {
-        setCidrMessage(false);
-      }
-      setcidrValue(value || '');
-    },
-    [cidrMessage],
-  );
-
-  const onFilterByCountry = React.useCallback(
-    (value: string, event: any) => {
-      value ? setItemsValue(_allItems?.filter(i => i.country.toLowerCase().indexOf(value) > -1)) : setItemsValue(_allItems);
-      setFilterValue(value)
-    },
-    [_allItems],
-  );
 
   const onDownloadJSON = () => {
     const json = JSON.stringify(items);
@@ -418,26 +300,12 @@ export const App: React.FunctionComponent = () => {
     link.click();
   }
 
-
   return (
-    <CustomProvider theme={isLight ? "light" : "dark"}>
+    <CustomProvider 
+    theme={isLight ? "light" : "dark"}
+    >
       <Affix>
-        <Header>
-          <Navbar appearance="inverse">
-            <Navbar.Brand >
-              CIDR Conflict Calculator for IBM Cloud - Classic Infrastructure (Unofficial)
-            </Navbar.Brand>
-            <Nav pullRight>
-              <Nav.Item icon={<IconButton aria-label='change theme' icon={isLight ? <BsSunsetFill /> : <BsSunrise />} onClick={onSetTheme} />} />
-              <Nav.Item
-                href={issuesUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                icon={<IconButton aria-label='report a bug' icon={<GiLongAntennaeBugIcon />} />}
-              />
-            </Nav>
-          </Navbar>
-        </Header>
+        <HeaderNav setLight={setLight} isLight={isLight} issuesUrl={issuesUrl} elementDisabled={elementDisabled} />
       </Affix>
 
       <Container style={{ paddingLeft: "15px", paddingRight: "15px", paddingTop: "20px" }}>
@@ -445,71 +313,17 @@ export const App: React.FunctionComponent = () => {
           <Grid fluid>
             <Col sm={7} md={5} lg={3}>
               <Affix top={70}>
-                <Panel bordered style={{ padding: "5px" }}>
-                  <Row>
-                    <Col xs={24} sm={24} md={24}>
-                      <InputGroup style={styles}>
-                        <Input
-                          value={cidrValue}
-                          onChange={onChangeCidrValue}
-                          placeholder="10.10.10.0/24"
-                          disabled={cidrDisabled}
-                        />
-                        {!cidrDisabled &&
-                          <Whisper placement="top" controlId="control-id-hover" trigger="hover"
-                            speaker={
-                              <Tooltip>
-                                Run calculator.
-                              </Tooltip>
-                            }>
-                            <InputGroup.Button aria-label='run calculator' onClick={_calculateClicked}>
-                              {elementDisabled ? <BsCalculator /> : <BsCalculatorFill />}
-                            </InputGroup.Button>
-                          </Whisper>
-
-                        }
-                        {cidrDisabled &&
-                          <Whisper placement="top" controlId="control-id-hover" trigger="hover"
-                            speaker={
-                              <Tooltip>
-                                Reset.
-                              </Tooltip>
-                            }>
-                            <InputGroup.Button aria-label='reset' onClick={_reset}>
-                              {elementDisabled ? <BiReset /> : <BiReset />}
-                            </InputGroup.Button>
-                          </Whisper>
-                        }
-                      </InputGroup>
-                      {cidrMessage ?
-                        <ErrorMessage>
-                          {'Invalid CIDR!'}
-                          <Button target="_blank" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" appearance="link" style={{ textDecoration: "none" }}>
-                            Learn more
-                          </Button>
-                        </ErrorMessage>
-                        : null
-                      }
-                    </Col>
-
-                    <Col xs={24} sm={24} md={24}>
-                      <InputGroup style={styles}>
-                        <Input
-                          value={filterValue}
-                          onChange={onFilterByCountry}
-                          placeholder="country code"
-                        />
-                        <InputGroup.Addon>
-                          <FiFilter />
-                        </InputGroup.Addon>
-                      </InputGroup>
-                    </Col>
-                  </Row>
-                </Panel>
-                <hr />
-                <span>
-                  <p>Use this tool to help to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud.</p>
-                </span>
+                <InputSection
+                  isSortedDescending={isSortedDescending}
+                  setRequestedCidrNetwork={setRequestedCidrNetwork}
+                  setAllItemsValue={setAllItemsValue}
+                  filterValue={filterValue}
+                  setFilterValue={setFilterValue}
+                  elementDisabled={elementDisabled}
+                  _allItems={_allItems}
+                  setItemsValue={setItemsValue}
+                  setElementDisabled={setElementDisabled}
+                />
               </Affix>
             </Col>
 
@@ -557,7 +371,7 @@ export const App: React.FunctionComponent = () => {
 
             <Col sm={24} md={24} lg={3}>
               <Affix top={70}>
-                <span style={{ fontSize: '12px'}}>
+                <span style={{ fontSize: '12px' }}>
                   <p><strong>{sourceName}</strong></p>
                   <p>
                     Version {sourceVersion}
@@ -577,7 +391,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>Private Network</strong></p>
                       <p>
                         Private Network includes the IP ranges used by compute resources deployed in the selected data center.
-                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('private_network')}>
+                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('private_network')}>
                           more...
                         </Button>
                       </p>
@@ -589,7 +403,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>Service Network</strong></p>
                       <p>
                         Service Network includes the IP ranges used by services running or accessible from the selected data center.
-                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('service_network')}>
+                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('service_network')}>
                           more...
                         </Button>
                       </p>
@@ -601,7 +415,7 @@ export const App: React.FunctionComponent = () => {
                       <p style={{ marginTop: '20px' }}><strong>SSL VPN</strong></p>
                       <p>
                         SSL VPN includes the IP ranges used when connecting via a VPN client to the selected data center.
-                        <Button style={{ fontSize: '12px'}} appearance='subtle' onClick={() => openDocPanel('ssl_vpn')}>
+                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('ssl_vpn')}>
                           more...
                         </Button>
                       </p>
@@ -629,7 +443,11 @@ export const App: React.FunctionComponent = () => {
         </Content>
       </Container>
 
-      <Footer></Footer>
+      <Footer style={{ textAlign: "center" }}>
+        <p style={{ margin: "25px" }}>
+          A project by <a href="http://blog.maisonprosper.com/">Dimitri Prosper</a>
+        </p>
+      </Footer>
 
       <Drawer size={'sm'} placement={'right'} open={isDocOpen} onClose={() => setIsDocOpen(false)} >
         <Drawer.Header>
