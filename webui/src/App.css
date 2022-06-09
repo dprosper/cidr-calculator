@@ -9,9 +9,12 @@
 
 .rs-radio-group-picker {
   border: unset;
-  border-top: 1px solid var(--rs-border-primary);
-  border-bottom: 1px solid var(--rs-border-primary)
-
+  /* border-top: 1px solid var(--rs-border-primary); */
+  /* border-bottom: 1px solid var(--rs-border-primary) */
+}
+body {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 @font-face {
