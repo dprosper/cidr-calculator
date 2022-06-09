@@ -314,8 +314,7 @@ export const App = () => {
       }
     })
       .then((response) => {
-        console.log(response.data)
-        setRequestedCidrNetwork(response.data)
+        setRequestedCidrNetwork(response.data);
       })
 
   }
