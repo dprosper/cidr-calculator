@@ -5,7 +5,7 @@ import {
   IconButton,
   Nav,
   Navbar,
-  Whisper, Popover, RadioGroup, Radio
+  Whisper, Popover, RadioGroup, Radio, Divider
 } from 'rsuite';
 
 
@@ -49,12 +49,13 @@ export const HeaderNav = ({
             placement="bottomEnd"
             trigger="click"
             speaker={({ onClose, left, top, className }, ref) => (
-              <Popover ref={ref} className={className} style={{ left, top, width: '190px' }} full>
+              <Popover ref={ref} className={className} style={{ left, top, width: '250px' }} full>
+                <Divider style={{ margin: "5px 0"}}/>
                 <RadioGroup
                   style={{
                     borderRadius: "0px",
                     marginLeft: "0px",
-                    marginTop: "20px"
+                    marginTop: "0px"
                   }}
                   name="radioList"
                   inline
@@ -69,6 +70,7 @@ export const HeaderNav = ({
                   <Radio value="light" style={{ paddingLeft: "20px" }}><BsSunrise aria-label='change theme to light' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Light</Radio>
                   <Radio value="dark" style={{ paddingLeft: "20px" }}><BsSunsetFill aria-label='change theme to dark' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Dark</Radio>
                 </RadioGroup>
+                <Divider style={{ margin: "5px 0"}}/>
                 <Nav.Item
                   href={issuesUrl}
                   target="_blank"
