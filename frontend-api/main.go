@@ -126,6 +126,7 @@ func main() {
 	router.Use(logger.GinLogger("gin-logger"))
 
 	router.POST("/api/subnetcalc", subnetcalc.ReadMiddleware())
+	router.POST("/api/getdetails", subnetcalc.GetDetails())
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
