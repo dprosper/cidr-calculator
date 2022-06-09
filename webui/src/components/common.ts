@@ -12,12 +12,12 @@ export interface DataCenter {
 export interface CidrNetwork {
   conflict: boolean;
   cidr_notation: string;
-  subnet_bits: string;
+  subnet_bits: number;
   subnet_mask: string;
   wildcard_mask: string;
   network_address: string;
   broadcast_address: string;
-  assignable_hosts: string;
+  assignable_hosts: number;
   first_assignable_host: string;
   last_assignable_host: string;
 }

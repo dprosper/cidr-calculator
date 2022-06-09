@@ -143,8 +143,8 @@ export const InputSection  = ({
                       {elementDisabled ? <BsCalculator /> : <BsCalculatorFill />}
                     </InputGroup.Button>
                   </Whisper>
-
                 }
+                
                 {cidrDisabled &&
                   <Whisper placement="top" controlId="control-id-hover" trigger="hover"
                     speaker={

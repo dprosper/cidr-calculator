@@ -137,8 +137,8 @@ type CidrNetwork struct {
 	Conflict            bool   `json:"conflict"`
 }
 
-// GetSubnetDetails function
-func GetSubnetDetails(cidr string) *Address {
+// getSubnetDetails function
+func getSubnetDetailsV1(cidr string) *Address {
 	cidrAddress := strings.Split(cidr, "/")[0]
 	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
 	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
@@ -226,10 +226,91 @@ func GetSubnetDetails(cidr string) *Address {
 	return nil
 }
 
+// getSubnetDetailsV2 function
+func getSubnetDetailsV2(cidr string) *Address {
+	cidrAddress := strings.Split(cidr, "/")[0]
+	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
+	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
+
+	if len(indexResponse) > 0 {
+		logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
+
+		var indexResponseAddress Address
+
+		err := json.Unmarshal(indexResponse, &indexResponseAddress)
+		if err != nil {
+			logger.ErrorLogger.Fatal("error unmarshalling index response", zap.String("error: ", err.Error()))
+		}
+		logger.SystemLogger.Info(fmt.Sprintln(indexResponseAddress))
+
+		return &indexResponseAddress
+	} else {
+		addressResponse := Address{
+			Type:                "network",
+			CidrNotation:        cidr,
+			SubnetBits:          0,
+			SubnetMask:          "0.0.0.0",
+			WildcardMask:        "0.0.0.0",
+			NetworkAddress:      "0.0.0.0",
+			BroadcastAddress:    "0.0.0.0",
+			AssignableHosts:     0,
+			FirstAssignableHost: "0.0.0.0",
+			LastAssignableHost:  "0.0.0.0",
+		}
+		return &addressResponse
+
+	}
+}
+
 type IError struct {
 	Field string
 	Tag   string
 	Value interface{}
+}
+
+// GetDetails function
+func GetDetails() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var Validator = validator.New()
+		var errors []*IError
+
+		json := new(SubmittedCidr)
+		cidr := "0.0.0.0/0"
+		if err := c.ShouldBindJSON(&json); err == nil {
+			errValidate := Validator.Struct(json)
+			if errValidate != nil {
+				for _, err := range errValidate.(validator.ValidationErrors) {
+					var el IError
+					el.Field = err.Field()
+					el.Tag = err.Tag()
+					el.Value = err.Value()
+					errors = append(errors, &el)
+				}
+
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post.", "errors": errors})
+				return
+			}
+			cidr = json.Cidr
+		} else {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post."})
+			return
+		}
+
+		requestedDetails := getSubnetDetailsV1(cidr)
+		requestedCidrNetwork := CidrNetwork{
+			CidrNotation:        requestedDetails.CidrNotation,
+			SubnetBits:          requestedDetails.SubnetBits,
+			SubnetMask:          requestedDetails.SubnetMask,
+			WildcardMask:        requestedDetails.WildcardMask,
+			NetworkAddress:      requestedDetails.NetworkAddress,
+			BroadcastAddress:    requestedDetails.BroadcastAddress,
+			AssignableHosts:     requestedDetails.AssignableHosts,
+			FirstAssignableHost: requestedDetails.FirstAssignableHost,
+			LastAssignableHost:  requestedDetails.LastAssignableHost,
+		}
+
+		c.JSON(http.StatusOK, requestedCidrNetwork)
+	}
 }
 
 // ReadMiddleware function
@@ -313,7 +394,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 
 	dataCentersOutput := []DataCenterResult{}
 
-	requestedDetails := GetSubnetDetails(requestedCidr)
+	requestedDetails := getSubnetDetailsV2(requestedCidr)
 	requestedCidrNetwork := CidrNetwork{
 		CidrNotation:        requestedDetails.CidrNotation,
 		SubnetBits:          requestedDetails.SubnetBits,
@@ -344,7 +425,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			pnsOutput = append(pnsOutput, pnsJson)
 
 			for _, cloudCidr := range pn.CidrBlocks {
-				cloudDetails := GetSubnetDetails(cloudCidr)
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
@@ -374,7 +455,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			serviceNetworkOutput = append(serviceNetworkOutput, serviceNetworkJson)
 
 			for _, cloudCidr := range service.CidrBlocks {
-				cloudDetails := GetSubnetDetails(cloudCidr)
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
@@ -404,7 +485,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			sslVpnsOutput = append(sslVpnsOutput, sslVpnsJson)
 
 			for _, cloudCidr := range sslVpn.CidrBlocks {
-				cloudDetails := GetSubnetDetails(cloudCidr)
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
@@ -473,8 +554,8 @@ func compareCidrNetworksV1(leftCidr string, rightCidr string) bool {
 		useMask = leftSplit[1]
 	}
 
-	leftDetails := GetSubnetDetails(fmt.Sprintf("%s/%s", leftSplit[0], useMask))
-	rightDetails := GetSubnetDetails(fmt.Sprintf("%s/%s", rightSplit[0], useMask))
+	leftDetails := getSubnetDetailsV1(fmt.Sprintf("%s/%s", leftSplit[0], useMask))
+	rightDetails := getSubnetDetailsV1(fmt.Sprintf("%s/%s", rightSplit[0], useMask))
 
 	if leftDetails.NetworkAddress == rightDetails.NetworkAddress {
 		conflict = true

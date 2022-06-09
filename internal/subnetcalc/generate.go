@@ -36,7 +36,7 @@ func CreateNewNetworks() {
 	startTime := time.Now()
 
 	for _, cidr := range cidrs {
-		GetSubnetDetails(cidr)
+		getSubnetDetailsV1(cidr)
 	}
 
 	logger.SystemLogger.Info(fmt.Sprintln(startTime))

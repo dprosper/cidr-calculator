@@ -18,13 +18,17 @@ import {
   Tag,
   TagGroup,
   Notification,
-  toaster
+  toaster,
+  InputGroup,
+  Whisper,
+  Tooltip
 } from 'rsuite';
 
 import ResponsiveNav from '@rsuite/responsive-nav';
 import IconButton from 'rsuite/IconButton';
 import { BsDownload, BsFillStopCircleFill } from 'react-icons/bs';
 import { AiOutlineCloudServer } from 'react-icons/ai';
+import { MdFindReplace } from 'react-icons/md';
 
 import axios from "axios";
 
@@ -300,9 +304,25 @@ export const App = () => {
     link.click();
   }
 
+  const onGetDetails = (cidrValue: string) => {
+    axios.post(`/api/getdetails`, {
+      cidr: cidrValue,
+      filter: filterValue
+    }, {
+      headers: {
+        'content-type': 'application/json',
+      }
+    })
+      .then((response) => {
+        console.log(response.data)
+        setRequestedCidrNetwork(response.data)
+      })
+
+  }
+
   return (
-    <CustomProvider 
-    theme={isLight ? "light" : "dark"}
+    <CustomProvider
+      theme={isLight ? "light" : "dark"}
     >
       <Affix>
         <HeaderNav setLight={setLight} isLight={isLight} issuesUrl={issuesUrl} elementDisabled={elementDisabled} />
@@ -493,7 +513,22 @@ export const App = () => {
               <Row>
                 <Col xs={24} sm={12} md={8}>
                   <label>CIDR Notation:</label>
-                  <Input disabled value={requestedCidrNetwork?.cidr_notation} />
+                  <InputGroup>
+                    <Input disabled value={requestedCidrNetwork?.cidr_notation} />
+                    {requestedCidrNetwork?.assignable_hosts === 0 &&
+                      <Whisper placement="top" controlId="control-id-hover" trigger="hover"
+                        speaker={
+                          <Tooltip>
+                            Get CIDR details.
+                          </Tooltip>
+                        }>
+                        <InputGroup.Button aria-label='get cidr details' onClick={() => onGetDetails(requestedCidrNetwork?.cidr_notation)}>
+                          <MdFindReplace />
+                        </InputGroup.Button>
+                      </Whisper>
+                    }
+                  </InputGroup>
+
                   <label>Wildcard Mask:</label>
                   <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
                   <label>First Assignable Host:</label>
