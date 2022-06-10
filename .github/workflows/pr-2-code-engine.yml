@@ -71,7 +71,7 @@ jobs:
           # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
 
       - name: Deploy to IBM Cloud Code Engine
-        uses: dprosper/icce-cud-cli@v0.4.3
+        uses: ./.github/actions/icce-cud-cli # dprosper/icce-cud-cli@v0.4.3
         with:
           IMAGE: ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
           REGISTRY_USER: ${{ secrets.DOCKERHUB_USER }}

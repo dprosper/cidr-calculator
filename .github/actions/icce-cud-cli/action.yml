@@ -1,0 +1,222 @@
+# Copyright © 2022 Dimitri Prosper <dimitri_prosper@us.ibm.com>
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Create, Update and Delete to IBM Cloud Code Engine
+
+branding:
+  icon: 'server'  
+  color: 'blue'
+description: 'Create, Update and Delete a project and deploy an app in IBM Cloud Code Engine.'
+
+inputs:
+  APP_SECRET:
+    description: A secret of some sort, if needed by the application
+    required: false
+  CE_ACTION:
+    description: What to do in CE, create, create_project, create_app, create_secrets, create_bindings or delete
+    required: true
+  IMAGE:
+    description: Container image 
+    required: false
+  ISSUE_NUMBER:
+    description: Issue Number
+    required: false
+  REGISTRY:
+    description: Container registry
+    required: false
+    default: https://index.docker.io/v1/
+  REGISTRY_USER:
+    description: Container registry user name
+    required: false
+  REGISTRY_PASSWORD:
+    description: Container registry user password
+    required: false
+  CE_REGISTRY_SECRET:
+    description: Name of secret for the registry in Code Engine
+    required: false
+    default: registry-secret
+  CE_PROJECT_NAME:
+    description: Code Engine Project name 
+    required: false
+    default: demo-project
+  CE_APP_NAME:
+    description: Code Engine Application name 
+    required: false
+    default: demo-app
+  APP_PORT:
+    description: Port number used by application 
+    required: false
+    default: 3000
+    
+outputs:
+  url:
+    description: 'url of newly deployed app'
+    value: ${{ steps.ceapp.outputs.url }}
+
+runs:
+  using: "composite"
+  steps:
+
+# Create Steps
+
+    - name: Run create shell script
+      if: ${{ inputs.CE_ACTION == 'create' }}
+      id: ceapp
+      run: ${{ github.action_path }}/icce-create.sh
+      shell: bash
+      env:
+        APP_SECRET: ${{ inputs.APP_SECRET }}
+        CE_PROJECT_NAME: ${{ inputs.CE_PROJECT_NAME }}
+        CE_APP_NAME: ${{ inputs.CE_APP_NAME }}
+        IMAGE: ${{ inputs.IMAGE }}
+        REGISTRY: ${{ inputs.REGISTRY }}
+        REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
+        REGISTRY_PASSWORD: ${{ inputs.REGISTRY_PASSWORD }}
+        CE_REGISTRY_SECRET: ${{ inputs.CE_REGISTRY_SECRET }}
+        APP_PORT: ${{ inputs.APP_PORT }}
+
+    - name: Message success
+      if: ${{ success() && inputs.CE_ACTION == 'create' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `<!--- ${{ inputs.CE_PROJECT_NAME }} --->
+            :sparkles: [Open Application in Code Engine][1]
+
+            [1]: ${{ steps.ceapp.outputs.url }}`
+          });
+
+    - name: Message failure
+      if: ${{ failure() && inputs.CE_ACTION == 'create' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `:bug:  Project or app creation failed! Please review the actions log for the events and logs from your project.`,
+          });
+
+# Delete Steps
+
+    - name: Find Comment
+      if: ${{ inputs.CE_ACTION == 'delete' }}
+      uses: peter-evans/find-comment@v1
+      id: fc
+      with:
+        issue-number: ${{ inputs.ISSUE_NUMBER }}
+        body-includes: Open Application in Code Engine
+        comment-author: 'github-actions[bot]'
+        direction: last
+
+    - uses: actions/github-script@v6
+      if: ${{ inputs.CE_ACTION == 'delete' }}
+      id: set-result
+      with:
+        script: |
+          let body = `${{ steps.fc.outputs.comment-body }}`
+          let project = body.substring(
+              body.indexOf("<!--- ") + 6, 
+              body.lastIndexOf(" --->")
+          );
+          return project
+        result-encoding: string
+
+    - name: Run delete shell script
+      if: ${{ steps.set-result.outputs.result != '' && inputs.CE_ACTION == 'delete' }}
+      id: cedelete
+      run: ${{ github.action_path }}/icce-delete.sh
+      shell: bash
+      env:
+        CE_PROJECT_NAME: ${{ steps.set-result.outputs.result }}
+
+    - name: Message success
+      if: ${{ success() && steps.set-result.outputs.result != '' && inputs.CE_ACTION == 'delete' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.updateComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: ${{ steps.fc.outputs.comment-id }},
+            body: `The project was successfuly deleted from Code Engine.`
+          })
+
+    - name: Message failure
+      if: ${{ failure() && steps.set-result.outputs.result != '' && inputs.CE_ACTION == 'delete' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `:exclamation:  The deletion of the project in Code Engine failed!`,
+          });
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `ACTION REQUIRED: Project deletion failure`,
+            body: `:exclamation:  The deletion of the project ${{ inputs.CE_PROJECT_NAME }} in Code Engine failed!`,
+            labels: ['bug', 'automation'],
+          });
+
+# Update Steps
+
+    - name: Run update shell script
+      if: ${{ inputs.CE_ACTION == 'update' }}
+      id: ceupdate
+      run: ${{ github.action_path }}/icce-update.sh
+      shell: bash
+      env:
+        CE_PROJECT_NAME: ${{ inputs.CE_PROJECT_NAME }}
+        CE_APP_NAME: ${{ inputs.CE_APP_NAME }}
+        IMAGE: ${{ inputs.IMAGE }}
+        CE_REGISTRY_SECRET: ${{ inputs.CE_REGISTRY_SECRET }}
+
+    - name: Message success
+      if: ${{ success() && inputs.CE_ACTION == 'update' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `The production release was successfuly updated.`
+          });
+
+    - name: Message failure
+      if: ${{ failure() && inputs.CE_ACTION == 'update' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `:exclamation:  The production release update failed!`,
+          });
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `ACTION REQUIRED: Project update failure`,
+            body: `:exclamation:  The production release update failed!`,
+            labels: ['bug', 'automation'],
+          });

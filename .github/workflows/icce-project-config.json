@@ -5,5 +5,13 @@
          "file": "./data/datacenters.json",
          "path": "/data"
       }
-   ]
+   ],
+   "runtime": 
+      {
+         "cpu": 1,
+         "memory": 4,
+         "storage": 10,
+         "min_scale": 1,
+         "max_scale": 5
+      }
 }
