@@ -1,6 +1,6 @@
 # calculator
 
-![](./docs/assets/calculatorApp.png)
+![](./docs/assets/calculatorAppUI.png)
 
 ### Run on Code Engine
 
