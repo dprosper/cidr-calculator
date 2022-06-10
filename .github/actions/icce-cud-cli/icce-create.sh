@@ -87,7 +87,7 @@ if [ -f .github/workflows/icce-project-config.json ]; then
     done
 
     runtime=$(jq -c '.runtime?' .github/workflows/icce-project-config.json)
-    if [ ! -z "$runtime" ];
+    if [ ! -z "$runtime" ]; then
       app_min_scale=$(echo ${runtime} | jq -r '.min_scale | select (.!=null)')
       app_max_scale=$(echo ${runtime} | jq -r '.max_scale | select (.!=null)')
       app_cpu=$(echo ${runtime} | jq -r '.cpu | select (.!=null)')
