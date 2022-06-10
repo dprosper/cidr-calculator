@@ -10,7 +10,7 @@
       {
          "cpu": 1,
          "memory": 4,
-         "storage": 10,
+         "storage": "1G",
          "min_scale": 1,
          "max_scale": 5
       }
