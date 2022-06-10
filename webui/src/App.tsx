@@ -331,7 +331,7 @@ export const App = () => {
         <Content>
           <Grid fluid>
             <Col sm={7} md={5} lg={3}>
-              <Affix top={70}>
+              <Affix top={76}>
                 <InputSection
                   isSortedDescending={isSortedDescending}
                   setRequestedCidrNetwork={setRequestedCidrNetwork}
@@ -389,7 +389,7 @@ export const App = () => {
             </Col>
 
             <Col sm={24} md={24} lg={3}>
-              <Affix top={70}>
+              <Affix top={76}>
                 <span style={{ fontSize: '12px' }}>
                   <p><strong>{sourceName}</strong></p>
                   <p>
