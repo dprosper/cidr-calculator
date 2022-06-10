@@ -9,7 +9,7 @@
    "runtime": 
       {
          "cpu": 1,
-         "memory": 4,
+         "memory": "4G",
          "storage": "1G",
          "min_scale": 1,
          "max_scale": 5
