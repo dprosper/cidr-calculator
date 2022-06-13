@@ -141,87 +141,72 @@ type CidrNetwork struct {
 func getSubnetDetailsV1(cidr string) *Address {
 	cidrAddress := strings.Split(cidr, "/")[0]
 	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
-	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
 
-	if len(indexResponse) > 0 {
-		logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
+	requestURL := fmt.Sprintf("https://networkcalc.com/api/ip/%s", cidr)
+	logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s at url %s.", cidrAddress, requestURL))
 
-		var indexResponseAddress Address
+	url1, err := url.ParseRequestURI(requestURL)
+	if err != nil || url1.Scheme == "" {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
+		return nil
+	}
 
-		err := json.Unmarshal(indexResponse, &indexResponseAddress)
+	// http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	httpRequest, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
+	}
+	httpRequest.Header.Set("Accept", "application/json")
+
+	httpClient := &http.Client{
+		Timeout: time.Duration(30 * time.Second),
+	}
+
+	httpResponse, err := httpClient.Do(httpRequest)
+	if err != nil {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
+	}
+	defer httpResponse.Body.Close()
+
+	logger.SystemLogger.Debug(fmt.Sprintf("response: %s", httpResponse.Status))
+
+	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
+		body, _ := ioutil.ReadAll(httpResponse.Body)
+
+		address := gjson.GetBytes(body, "address")
+
+		addressRaw := json.RawMessage(address.Raw)
+
+		var subnetCalculatorResponse SubnetCalculatorResponse
+		err := json.Unmarshal(body, &subnetCalculatorResponse)
 		if err != nil {
-			logger.ErrorLogger.Fatal("error unmarshalling index response", zap.String("error: ", err.Error()))
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling body: %v", err))
 		}
-		logger.SystemLogger.Info(fmt.Sprintln(indexResponseAddress))
+		logger.SystemLogger.Debug(fmt.Sprintln(subnetCalculatorResponse))
 
-		return &indexResponseAddress
-	} else {
-		requestURL := fmt.Sprintf("https://networkcalc.com/api/ip/%s", cidr)
-		logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s at url %s.", cidrAddress, requestURL))
-
-		url1, err := url.ParseRequestURI(requestURL)
-		if err != nil || url1.Scheme == "" {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
-			return nil
-		}
-
-		// http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		httpRequest, err := http.NewRequest("GET", requestURL, nil)
+		addressResponse := Address{Type: "network"}
+		err = json.Unmarshal(addressRaw, &addressResponse)
 		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling raw data: %v", err))
 		}
-		httpRequest.Header.Set("Accept", "application/json")
+		logger.SystemLogger.Debug(fmt.Sprintln(addressResponse))
 
-		httpClient := &http.Client{
-			Timeout: time.Duration(30 * time.Second),
-		}
-
-		httpResponse, err := httpClient.Do(httpRequest)
+		content, err := json.Marshal(&addressResponse)
 		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
-		}
-		defer httpResponse.Body.Close()
-
-		logger.SystemLogger.Debug(fmt.Sprintf("response: %s", httpResponse.Status))
-
-		if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
-			body, _ := ioutil.ReadAll(httpResponse.Body)
-
-			address := gjson.GetBytes(body, "address")
-
-			addressRaw := json.RawMessage(address.Raw)
-
-			var subnetCalculatorResponse SubnetCalculatorResponse
-			err := json.Unmarshal(body, &subnetCalculatorResponse)
-			if err != nil {
-				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling body: %v", err))
-			}
-			logger.SystemLogger.Debug(fmt.Sprintln(subnetCalculatorResponse))
-
-			addressResponse := Address{Type: "network"}
-			err = json.Unmarshal(addressRaw, &addressResponse)
-			if err != nil {
-				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling raw data: %v", err))
-			}
-			logger.SystemLogger.Debug(fmt.Sprintln(addressResponse))
-
-			content, err := json.Marshal(&addressResponse)
-			if err != nil {
-				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error marshaling struct: %v", err))
-			}
-
-			err = ioutil.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
-			if err != nil {
-				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error writing file: %v", err))
-			}
-
-			return &addressResponse
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error marshaling struct: %v", err))
 		}
 
-		if httpResponse.StatusCode >= 300 {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
-			return nil
+		err = ioutil.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
+		if err != nil {
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error writing file: %v", err))
 		}
+
+		return &addressResponse
+	}
+
+	if httpResponse.StatusCode >= 300 {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
+		return nil
 	}
 	return nil
 }
@@ -268,8 +253,8 @@ type IError struct {
 	Value interface{}
 }
 
-// GetDetails function
-func GetDetails() gin.HandlerFunc {
+// GetDetailsV1 function
+func GetDetailsV1() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var Validator = validator.New()
 		var errors []*IError
@@ -307,6 +292,55 @@ func GetDetails() gin.HandlerFunc {
 			AssignableHosts:     requestedDetails.AssignableHosts,
 			FirstAssignableHost: requestedDetails.FirstAssignableHost,
 			LastAssignableHost:  requestedDetails.LastAssignableHost,
+		}
+
+		c.JSON(http.StatusOK, requestedCidrNetwork)
+	}
+}
+
+// GetDetailsV2 function
+func GetDetailsV2() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var Validator = validator.New()
+		var errors []*IError
+
+		json := new(SubmittedCidr)
+		cidr := "0.0.0.0/0"
+		if err := c.ShouldBindJSON(&json); err == nil {
+			errValidate := Validator.Struct(json)
+			if errValidate != nil {
+				for _, err := range errValidate.(validator.ValidationErrors) {
+					var el IError
+					el.Field = err.Field()
+					el.Tag = err.Tag()
+					el.Value = err.Value()
+					errors = append(errors, &el)
+				}
+
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post.", "errors": errors})
+				return
+			}
+			cidr = json.Cidr
+		} else {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post."})
+			return
+		}
+
+		cidrAddress := strings.Split(cidr, "/")[0]
+		cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
+
+		sub := SubnetCalculator(cidrAddress, cidrBits)
+
+		requestedCidrNetwork := CidrNetwork{
+			CidrNotation:        cidr,
+			SubnetBits:          sub.GetSubnetBits(),
+			SubnetMask:          sub.GetSubnetMask(),
+			WildcardMask:        sub.GetWildCardMask(),
+			NetworkAddress:      sub.GetNetworkPortion(),
+			BroadcastAddress:    sub.GetBroadcastAddress(),
+			AssignableHosts:     sub.GetAssignableHosts(),
+			FirstAssignableHost: sub.GetFirstIPAddress(),
+			LastAssignableHost:  sub.GetLastIPAddress(),
 		}
 
 		c.JSON(http.StatusOK, requestedCidrNetwork)
