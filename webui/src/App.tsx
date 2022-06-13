@@ -221,13 +221,13 @@ export const App = () => {
     const { rowData, dataKey } = props;
     return (
       <Table.Cell {...props}>
-        {rowData[dataKey] ?
+        {rowData['conflict'] ?
           <React.Fragment>
-            <Tag color={'red'}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
+            <Tag color={'red'}><AiOutlineCloudServer />  {rowData[dataKey]}</Tag>
           </React.Fragment>
           :
           <React.Fragment>
-            <Tag color={undefined}><AiOutlineCloudServer />  {rowData['data_center']}</Tag>
+            <Tag color={undefined}><AiOutlineCloudServer />  {rowData[dataKey]}</Tag>
           </React.Fragment>
         }
       </Table.Cell>
@@ -366,7 +366,7 @@ export const App = () => {
                 >
                   <Table.Column width={125} sortable flexGrow={1}>
                     <Table.HeaderCell>Data Center</Table.HeaderCell>
-                    <DataCenterCell dataKey="conflict" style={{ padding: 4 }} />
+                    <DataCenterCell dataKey="data_center" style={{ padding: 4 }} />
                   </Table.Column>
 
                   <Table.Column width={125} sortable flexGrow={1}>
