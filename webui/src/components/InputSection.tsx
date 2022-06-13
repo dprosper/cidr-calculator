@@ -52,6 +52,7 @@ export const InputSection  = ({
     const [cidrValue, setcidrValue] = React.useState('');
     const [cidrDisabled, setCidrDisabled] = React.useState(false);
     const [cidrMessage, setCidrMessage] = React.useState(false);
+    const [filterDisabled, setFilterDisabled] = React.useState(false);
 
     const onChangeCidrValue = React.useCallback(
       (value: string, event: any) => {
@@ -77,6 +78,8 @@ export const InputSection  = ({
         setCidrMessage(false);
         setElementDisabled(true);
         setCidrDisabled(true);
+        setFilterDisabled(!!filterValue);
+
         axios.post(`/api/subnetcalc`, {
           cidr: cidrValue,
           filter: filterValue
@@ -108,15 +111,10 @@ export const InputSection  = ({
       })
         .then((response) => {
           const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
-          // setSourceName(response.data.name);
-          // setSourceVersion(response.data.version);
-          // setSourceLastUpdated(response.data.last_updated);
-          // setSourceReleaseNotes(response.data.release_notes);
-          // setSourceUrl(response.data.source);
-          // setIssuesUrl(response.data.issues);
           setItemsValue(sortedItems);
           setAllItemsValue(sortedItems);
           setCidrDisabled(false);
+          setFilterDisabled(false)
         });
     }
 
@@ -175,6 +173,7 @@ export const InputSection  = ({
                   value={filterValue}
                   onChange={onFilterByCountry}
                   placeholder="country code"
+                  disabled={filterDisabled}
                 />
                 <InputGroup.Addon>
                   <FiFilter />
