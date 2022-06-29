@@ -49,6 +49,8 @@
 #### Build image
 ```sh
   docker build -t dprosper/ic-cidr-calculator -f ./frontend-api/Dockerfile .
+  docker buildx build --platform=linux/amd64 --load -t dprosper/ic-cidr-calculator -f ./frontend-api/Dockerfile .
+  docker buildx build --platform=linux/amd64 -t local-build --load .
 ```
 
 ### Run local

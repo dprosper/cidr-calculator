@@ -20,3 +20,4 @@ COPY --from=buildgo /go/bin/app /
 COPY --from=buildjs /app/build /public
 ADD ./networks /networks
 CMD ["/app"]
+EXPOSE 3000
