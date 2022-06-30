@@ -161,6 +161,10 @@ func main() {
 	// Wait for the index to be initialzed by the worker before starting the HTTP server.
 	<-indexIsReady
 
+	// Disabled for now, use when new CIDRs are added to the datacenters.json file
+	// time.Sleep(60 * time.Second)
+	// subnetcalc.CreateNewNetworksV2()
+
 	logger.SystemLogger.Info("Starting server")
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.ErrorLogger.Fatal("Error starting server", zap.String("error: ", err.Error()))
