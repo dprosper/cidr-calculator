@@ -50,7 +50,7 @@ export const HeaderNav = ({
             trigger="click"
             speaker={({ onClose, left, top, className }, ref) => (
               <Popover ref={ref} className={className} style={{ left, top, width: '250px' }} full>
-                <Divider style={{ margin: "5px 0"}}/>
+                <Divider style={{ margin: "5px 0" }} />
                 <RadioGroup
                   style={{
                     borderRadius: "0px",
@@ -67,10 +67,14 @@ export const HeaderNav = ({
                     onClose();
                   }}>
                   <span style={styles.radioGroupLabel}>Theme</span>
-                  <Radio value="light" style={{ paddingLeft: "20px" }}><BsSunrise aria-label='change theme to light' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Light</Radio>
-                  <Radio value="dark" style={{ paddingLeft: "20px" }}><BsSunsetFill aria-label='change theme to dark' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Dark</Radio>
+                  <Radio value="light" style={{ paddingLeft: "20px" }}>
+                    <BsSunrise aria-label='change theme to light' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Light
+                  </Radio>
+                  <Radio value="dark" style={{ paddingLeft: "20px" }}>
+                    <BsSunsetFill aria-label='change theme to dark' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Dark
+                  </Radio>
                 </RadioGroup>
-                <Divider style={{ margin: "5px 0"}}/>
+                <Divider style={{ margin: "5px 0" }} />
                 <Nav.Item
                   href={issuesUrl}
                   target="_blank"

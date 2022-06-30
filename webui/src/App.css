@@ -7,11 +7,20 @@
   background-color: unset;
 }
 
+.rs-navbar-brand {
+  font-size: 14px;
+}
+
 .rs-radio-group-picker {
   border: unset;
   /* border-top: 1px solid var(--rs-border-primary); */
   /* border-bottom: 1px solid var(--rs-border-primary) */
 }
+
+.rs-radio-group-picker .rs-radio-checker > label {
+  font-size: 12px;
+}
+
 body {
   margin-left: 10px;
   margin-right: 10px;
