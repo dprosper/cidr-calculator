@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Affix,
-  Button,
   Col,
   Container,
   Content,
@@ -33,6 +32,7 @@ import { MdFindReplace } from 'react-icons/md';
 import axios from "axios";
 
 import { InputSection } from './components/InputSection';
+import { DocPanel } from './components/DocPanel';
 import { HeaderNav } from './components/Header';
 
 import './custom-theme.less'
@@ -57,11 +57,9 @@ export const App = () => {
   const [panelContent, setPanelContent] = React.useState<(CidrNetwork | null)[]>();
   const [panelDataCenter, setPanelDataCenter] = React.useState<(string | null)>();
   const [isPanelOpen, setIsPanelOpen] = React.useState(false);
-  const [isDocOpen, setIsDocOpen] = React.useState(false);
   const [elementDisabled, setElementDisabled] = React.useState(false);
   const [isSortedDescending] = React.useState(true);
   const [active, setActive] = React.useState<(string | number | undefined)>('cidr1');
-  const [activeDoc, setDocActive] = React.useState<(string | number | undefined)>(undefined);
   const [activeKey, setActiveKey] = React.useState<(string | number | undefined)>('PN');
   const [placement, setPlacement] = React.useState<PlacementType | undefined>('topCenter');
 
@@ -99,11 +97,6 @@ export const App = () => {
       toaster.push(message, { placement })
     }
   }, [placement]);
-
-  const openDocPanel = React.useCallback((doc: string) => {
-    setIsDocOpen(true);
-    setDocActive(doc);
-  }, []);
 
   const CompactCell = (props: any) => (
     <Table.Cell
@@ -533,41 +526,8 @@ export const App = () => {
                   </p>
                   <hr />
 
-                  {activeKey === 'PN' &&
-                    <React.Fragment>
-                      <p style={{ marginTop: '20px' }}><strong>Private Network</strong></p>
-                      <p>
-                        Private Network includes the IP ranges used by compute resources deployed in the selected data center.
-                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('private_network')}>
-                          more...
-                        </Button>
-                      </p>
-                    </React.Fragment>
-                  }
+                  <DocPanel activeKey={activeKey} />
 
-                  {activeKey === 'SN' &&
-                    <React.Fragment>
-                      <p style={{ marginTop: '20px' }}><strong>Service Network</strong></p>
-                      <p>
-                        Service Network includes the IP ranges used by services running or accessible from the selected data center.
-                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('service_network')}>
-                          more...
-                        </Button>
-                      </p>
-                    </React.Fragment>
-                  }
-
-                  {activeKey === 'SV' &&
-                    <React.Fragment>
-                      <p style={{ marginTop: '20px' }}><strong>SSL VPN</strong></p>
-                      <p>
-                        SSL VPN includes the IP ranges used when connecting via a VPN client to the selected data center.
-                        <Button size="xs" style={{ fontSize: '12px' }} appearance='subtle' onClick={() => openDocPanel('ssl_vpn')}>
-                          more...
-                        </Button>
-                      </p>
-                    </React.Fragment>
-                  }
                   <hr />
                   <div style={{ marginTop: "20px" }}>
                     <p style={{ marginBottom: "10px" }}><strong>Documentation topics and tutorials</strong></p>
@@ -592,43 +552,9 @@ export const App = () => {
 
       <Footer style={{ textAlign: "center" }}>
         <p style={{ margin: "25px" }}>
-          A project by <a href="http://blog.maisonprosper.com/">Dimitri Prosper</a>
+          A project by <a target="_blank" rel="noreferrer" href="http://blog.maisonprosper.com/">Dimitri Prosper</a>
         </p>
       </Footer>
-
-      <Drawer size={'sm'} placement={'right'} open={isDocOpen} onClose={() => setIsDocOpen(false)} >
-        <Drawer.Header>
-          <Drawer.Title>
-            {activeDoc === 'private_network' && <span>Private Network</span>}
-            {activeDoc === 'service_network' && <span>Service Network</span>}
-            {activeDoc === 'ssl_vpn' && <span>SSL VPN</span>}
-          </Drawer.Title>
-        </Drawer.Header>
-        <Drawer.Body>
-          {activeDoc === 'private_network' &&
-            <span>
-              Private Network details....
-            </span>
-          }
-          {activeDoc === 'service_network' &&
-            <span>
-              Be sure to configure <mark>rules and verify</mark> routes for DAL10, WDC04, and the location of your server.
-              If your server is in an EU location, you must add rules allowing traffic from DAL10, WDC04, and AMS01 to your server.
-              The traffic must be able to travel between the service networks and your server.
-              By default, all servers and gateway/firewall devices are configured with a static route for the 10.0.0.0/8 network to the Back-end Customer Router (BCR).
-              If you change that configuration such that the entire 10.0.0.0/8 network is pointed elsewhere,
-              you must also configure static routes for the service networks to ensure they are pointed to the BCR.
-              Failing to do so will result in the static routes being pointed to whichever IP address you replaced the original with. If you do not change the default static route for 10.0.0.0/8,
-              then the service networks are already routed correctly.
-            </span>
-          }
-          {activeDoc === 'ssl_vpn' &&
-            <span>
-              SSL VPN details...
-            </span>
-          }
-        </Drawer.Body>
-      </Drawer>
 
       <Drawer size={'md'} placement={'right'} open={isPanelOpen} onClose={() => setIsPanelOpen(false)} onEnter={() => setActive('cidr1')}>
         <Drawer.Header>
@@ -680,7 +606,6 @@ export const App = () => {
               </Row>
             </Grid>
           </div>
-
           
           <h2>{panelDataCenter}</h2>
           <ResponsiveNav
