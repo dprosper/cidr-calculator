@@ -146,7 +146,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-${pnKey}-${index}-a`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{pnKey}: {cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{pnKey}: {cidr}</Tag>
                             </React.Fragment>
                           )
                         })
@@ -175,7 +175,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-service-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -204,7 +204,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-ssl-vpn-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -233,7 +233,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-evault-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -262,7 +262,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-file-block-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -291,7 +291,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-advmon-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -320,7 +320,7 @@ export const App = () => {
 
                           return (
                             <React.Fragment key={`${cellKey}-icos-${index}-c`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"],rowData["cidr_networks"])}>{cidr}</Tag>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
                             </React.Fragment >
                           )
                         })
@@ -582,31 +582,39 @@ export const App = () => {
                     }
                   </InputGroup>
 
-                  <label>Wildcard Mask:</label>
-                  <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
-                  <label>First Assignable Host:</label>
-                  <Input disabled value={requestedCidrNetwork?.first_assignable_host} />
+                  {requestedCidrNetwork?.assignable_hosts !== 0 &&
+                    <React.Fragment>
+                      <label>Wildcard Mask:</label>
+                      <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
+                      <label>First Assignable Host:</label>
+                      <Input disabled value={requestedCidrNetwork?.first_assignable_host} />
+                    </React.Fragment>
+                  }
                 </Col>
-                <Col xs={24} sm={12} md={8}>
-                  <label>Subnet Mask:</label>
-                  <Input disabled value={requestedCidrNetwork?.subnet_mask} />
-                  <label>Broadcast Address:</label>
-                  <Input disabled value={requestedCidrNetwork?.broadcast_address} />
-                  <label>Last Assignable Host:</label>
-                  <Input disabled value={requestedCidrNetwork?.last_assignable_host} />
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                  <label>Subnet Bits:</label>
-                  <Input disabled value={requestedCidrNetwork?.subnet_bits} />
-                  <label>Network Address:</label>
-                  <Input disabled value={requestedCidrNetwork?.network_address} />
-                  <label># Assignable Hosts:</label>
-                  <Input disabled value={requestedCidrNetwork?.assignable_hosts} />
-                </Col>
+                {requestedCidrNetwork?.assignable_hosts !== 0 &&
+                  <React.Fragment>
+                    <Col xs={24} sm={12} md={8}>
+                      <label>Subnet Mask:</label>
+                      <Input disabled value={requestedCidrNetwork?.subnet_mask} />
+                      <label>Broadcast Address:</label>
+                      <Input disabled value={requestedCidrNetwork?.broadcast_address} />
+                      <label>Last Assignable Host:</label>
+                      <Input disabled value={requestedCidrNetwork?.last_assignable_host} />
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                      <label>Subnet Bits:</label>
+                      <Input disabled value={requestedCidrNetwork?.subnet_bits} />
+                      <label>Network Address:</label>
+                      <Input disabled value={requestedCidrNetwork?.network_address} />
+                      <label># Assignable Hosts:</label>
+                      <Input disabled value={requestedCidrNetwork?.assignable_hosts} />
+                    </Col>
+                  </React.Fragment>
+                }
               </Row>
             </Grid>
           </div>
-          
+
           <h2>{panelDataCenter}</h2>
           <ResponsiveNav
             appearance="subtle"
