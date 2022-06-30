@@ -19,19 +19,15 @@ package subnetcalc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/netip"
-	"net/url"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
-	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 
 	"dprosper/calculator/internal/logger"
@@ -95,6 +91,18 @@ type DataCenter struct {
 	SslVpn []struct {
 		CidrBlocks []string `mapstructure:"cidr_blocks"`
 	} `mapstructure:"ssl_vpn"`
+	Evault []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"evault"`
+	FileBlock []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"file_block"`
+	Icos []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"icos"`
+	AdvMon []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"advmon"`
 }
 
 type PrivateNetwork struct {
@@ -111,6 +119,22 @@ type SslVpn struct {
 	CidrBlocks []string `json:"cidr_blocks"`
 }
 
+type Evault struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type FileBlock struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type Icos struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type AdvMon struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
 type DataCenterResult struct {
 	Key             string           `json:"key"`
 	DataCenter      string           `json:"data_center"`
@@ -120,6 +144,10 @@ type DataCenterResult struct {
 	PrivateNetworks []PrivateNetwork `json:"private_networks"`
 	ServiceNetwork  []ServiceNetwork `json:"service_network"`
 	SslVpn          []SslVpn         `json:"ssl_vpn"`
+	Evault          []Evault         `json:"evault"`
+	FileBlock       []FileBlock      `json:"file_block"`
+	Icos            []Icos           `json:"icos"`
+	AdvMon          []AdvMon         `json:"advmon"`
 	CidrNetworks    []CidrNetwork    `json:"cidr_networks"`
 	Conflict        bool             `json:"conflict"`
 }
@@ -135,80 +163,6 @@ type CidrNetwork struct {
 	FirstAssignableHost string `json:"first_assignable_host"`
 	LastAssignableHost  string `json:"last_assignable_host"`
 	Conflict            bool   `json:"conflict"`
-}
-
-// getSubnetDetails function
-func getSubnetDetailsV1(cidr string) *Address {
-	cidrAddress := strings.Split(cidr, "/")[0]
-	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
-
-	requestURL := fmt.Sprintf("https://networkcalc.com/api/ip/%s", cidr)
-	logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s at url %s.", cidrAddress, requestURL))
-
-	url1, err := url.ParseRequestURI(requestURL)
-	if err != nil || url1.Scheme == "" {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
-		return nil
-	}
-
-	// http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	httpRequest, err := http.NewRequest("GET", requestURL, nil)
-	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
-	}
-	httpRequest.Header.Set("Accept", "application/json")
-
-	httpClient := &http.Client{
-		Timeout: time.Duration(30 * time.Second),
-	}
-
-	httpResponse, err := httpClient.Do(httpRequest)
-	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error: %v", err))
-	}
-	defer httpResponse.Body.Close()
-
-	logger.SystemLogger.Debug(fmt.Sprintf("response: %s", httpResponse.Status))
-
-	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
-		body, _ := ioutil.ReadAll(httpResponse.Body)
-
-		address := gjson.GetBytes(body, "address")
-
-		addressRaw := json.RawMessage(address.Raw)
-
-		var subnetCalculatorResponse SubnetCalculatorResponse
-		err := json.Unmarshal(body, &subnetCalculatorResponse)
-		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling body: %v", err))
-		}
-		logger.SystemLogger.Debug(fmt.Sprintln(subnetCalculatorResponse))
-
-		addressResponse := Address{Type: "network"}
-		err = json.Unmarshal(addressRaw, &addressResponse)
-		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error unmarshaling raw data: %v", err))
-		}
-		logger.SystemLogger.Debug(fmt.Sprintln(addressResponse))
-
-		content, err := json.Marshal(&addressResponse)
-		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error marshaling struct: %v", err))
-		}
-
-		err = ioutil.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
-		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error writing file: %v", err))
-		}
-
-		return &addressResponse
-	}
-
-	if httpResponse.StatusCode >= 300 {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
-		return nil
-	}
-	return nil
 }
 
 // getSubnetDetailsV2 function
@@ -251,51 +205,6 @@ type IError struct {
 	Field string
 	Tag   string
 	Value interface{}
-}
-
-// GetDetailsV1 function
-func GetDetailsV1() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var Validator = validator.New()
-		var errors []*IError
-
-		json := new(SubmittedCidr)
-		cidr := "0.0.0.0/0"
-		if err := c.ShouldBindJSON(&json); err == nil {
-			errValidate := Validator.Struct(json)
-			if errValidate != nil {
-				for _, err := range errValidate.(validator.ValidationErrors) {
-					var el IError
-					el.Field = err.Field()
-					el.Tag = err.Tag()
-					el.Value = err.Value()
-					errors = append(errors, &el)
-				}
-
-				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post.", "errors": errors})
-				return
-			}
-			cidr = json.Cidr
-		} else {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post."})
-			return
-		}
-
-		requestedDetails := getSubnetDetailsV1(cidr)
-		requestedCidrNetwork := CidrNetwork{
-			CidrNotation:        requestedDetails.CidrNotation,
-			SubnetBits:          requestedDetails.SubnetBits,
-			SubnetMask:          requestedDetails.SubnetMask,
-			WildcardMask:        requestedDetails.WildcardMask,
-			NetworkAddress:      requestedDetails.NetworkAddress,
-			BroadcastAddress:    requestedDetails.BroadcastAddress,
-			AssignableHosts:     requestedDetails.AssignableHosts,
-			FirstAssignableHost: requestedDetails.FirstAssignableHost,
-			LastAssignableHost:  requestedDetails.LastAssignableHost,
-		}
-
-		c.JSON(http.StatusOK, requestedCidrNetwork)
-	}
 }
 
 // GetDetailsV2 function
@@ -543,6 +452,126 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			}
 		}
 
+		evaultOutput := []Evault{}
+		for _, evault := range dataCenter.Evault {
+			evaultJson := Evault{CidrBlocks: evault.CidrBlocks}
+			evaultOutput = append(evaultOutput, evaultJson)
+
+			for _, cloudCidr := range evault.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
+		icosOutput := []Icos{}
+		for _, icos := range dataCenter.Icos {
+			icosJson := Icos{CidrBlocks: icos.CidrBlocks}
+			icosOutput = append(icosOutput, icosJson)
+
+			for _, cloudCidr := range icos.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
+		fileblockOutput := []FileBlock{}
+		for _, fileblock := range dataCenter.FileBlock {
+			fileblockJson := FileBlock{CidrBlocks: fileblock.CidrBlocks}
+			fileblockOutput = append(fileblockOutput, fileblockJson)
+
+			for _, cloudCidr := range fileblock.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
+		advmonOutput := []AdvMon{}
+		for _, advmon := range dataCenter.AdvMon {
+			advmonJson := AdvMon{CidrBlocks: advmon.CidrBlocks}
+			advmonOutput = append(advmonOutput, advmonJson)
+
+			for _, cloudCidr := range advmon.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
 			DataCenter:      dataCenter.Name,
@@ -552,6 +581,10 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			PrivateNetworks: pnsOutput,
 			ServiceNetwork:  serviceNetworkOutput,
 			SslVpn:          sslVpnsOutput,
+			Evault:          evaultOutput,
+			Icos:            icosOutput,
+			FileBlock:       fileblockOutput,
+			AdvMon:          advmonOutput,
 			CidrNetworks:    cloudCidrNetworks,
 			Conflict:        dataCenterConflict,
 		}
@@ -573,29 +606,6 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 	}
 
 	return config, nil
-}
-
-// This function is a good candidate to implement in a data loader, i.e. https://github.com/graph-gophers/dataloader
-func compareCidrNetworksV1(leftCidr string, rightCidr string) bool {
-	conflict := false
-	leftSplit := strings.Split(leftCidr, "/")
-	rightSplit := strings.Split(rightCidr, "/")
-	useMask := ""
-
-	if leftSplit[1] >= rightSplit[1] {
-		useMask = rightSplit[1]
-	} else {
-		useMask = leftSplit[1]
-	}
-
-	leftDetails := getSubnetDetailsV1(fmt.Sprintf("%s/%s", leftSplit[0], useMask))
-	rightDetails := getSubnetDetailsV1(fmt.Sprintf("%s/%s", rightSplit[0], useMask))
-
-	if leftDetails.NetworkAddress == rightDetails.NetworkAddress {
-		conflict = true
-	}
-
-	return conflict
 }
 
 func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
@@ -646,6 +656,30 @@ func readDataCenters(requestedCidr string) (Config, error) {
 			sslVpnsOutput = append(sslVpnsOutput, sslVpnsJson)
 		}
 
+		eVaultOutput := []Evault{}
+		for _, eVault := range dataCenter.Evault {
+			eVaultJson := Evault{CidrBlocks: eVault.CidrBlocks}
+			eVaultOutput = append(eVaultOutput, eVaultJson)
+		}
+
+		fileBlockOutput := []FileBlock{}
+		for _, fileBlock := range dataCenter.FileBlock {
+			fileBlockJson := FileBlock{CidrBlocks: fileBlock.CidrBlocks}
+			fileBlockOutput = append(fileBlockOutput, fileBlockJson)
+		}
+
+		icosOutput := []Icos{}
+		for _, icos := range dataCenter.Icos {
+			icosJson := Icos{CidrBlocks: icos.CidrBlocks}
+			icosOutput = append(icosOutput, icosJson)
+		}
+
+		advmonOutput := []AdvMon{}
+		for _, advMon := range dataCenter.AdvMon {
+			advmonJson := AdvMon{CidrBlocks: advMon.CidrBlocks}
+			advmonOutput = append(advmonOutput, advmonJson)
+		}
+
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
 			DataCenter:      dataCenter.Name,
@@ -655,6 +689,10 @@ func readDataCenters(requestedCidr string) (Config, error) {
 			PrivateNetworks: pnsOutput,
 			ServiceNetwork:  serviceNetworkOutput,
 			SslVpn:          sslVpnsOutput,
+			Evault:          eVaultOutput,
+			FileBlock:       fileBlockOutput,
+			Icos:            icosOutput,
+			AdvMon:          advmonOutput,
 			Conflict:        conflict,
 		}
 		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
