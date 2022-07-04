@@ -5,9 +5,12 @@ import {
   IconButton,
   Nav,
   Navbar,
-  Whisper, Popover, RadioGroup, Radio, Divider
+  Whisper, Popover, Divider,
+  ButtonGroup
 } from 'rsuite';
 
+import { MdTableRows, MdTableView } from 'react-icons/md';
+import { FaRegFolder } from 'react-icons/fa';
 
 import MenuIcon from '@rsuite/icons/Menu';
 
@@ -29,13 +32,15 @@ interface IProps {
   issuesUrl: string,
   elementDisabled: boolean,
   setLight: (value: any) => void
+  onToolbar: (value: any) => void
 }
 
 export const HeaderNav = ({
   isLight,
   issuesUrl,
   elementDisabled,
-  setLight
+  setLight,
+  onToolbar
 }: IProps) => {
 
   return (
@@ -51,30 +56,27 @@ export const HeaderNav = ({
             speaker={({ onClose, left, top, className }, ref) => (
               <Popover ref={ref} className={className} style={{ left, top, width: '250px' }} full>
                 <Divider style={{ margin: "5px 0" }} />
-                <RadioGroup
-                  style={{
-                    borderRadius: "0px",
-                    marginLeft: "0px",
-                    marginTop: "0px"
-                  }}
-                  name="radioList"
-                  inline
-                  appearance='picker'
-                  value={isLight ? "light" : "dark"}
-                  defaultValue="light"
-                  onChange={() => {
+                <span style={styles.radioGroupLabel}>Theme</span>
+                <ButtonGroup style={{ paddingLeft: "20px" }}>
+                  <IconButton icon={<BsSunrise />} onClick={() => {
                     setLight(!isLight)
                     onClose();
-                  }}>
-                  <span style={styles.radioGroupLabel}>Theme</span>
-                  <Radio value="light" style={{ paddingLeft: "20px" }}>
-                    <BsSunrise aria-label='change theme to light' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Light
-                  </Radio>
-                  <Radio value="dark" style={{ paddingLeft: "20px" }}>
-                    <BsSunsetFill aria-label='change theme to dark' style={{ marginLeft: "auto", marginRight: "auto", display: "block" }} /> Dark
-                  </Radio>
-                </RadioGroup>
+                  }} circle title='light' />
+                  <IconButton icon={<BsSunsetFill />} onClick={() => {
+                    setLight(!isLight)
+                    onClose();
+                  }} circle title='dark' />
+                </ButtonGroup>
+
                 <Divider style={{ margin: "5px 0" }} />
+                <span style={styles.radioGroupLabel}>View</span>
+                <ButtonGroup style={{ paddingLeft: "30px" }}>
+                  <IconButton icon={<MdTableRows />} onClick={() => onToolbar('list')} circle title='list' />
+                  <IconButton icon={<FaRegFolder />} onClick={() => onToolbar('tab')} circle title='tab' />
+                  <IconButton icon={<MdTableView />} onClick={() => onToolbar('spreadsheet')} circle title='table' />
+                </ButtonGroup>
+                <Divider style={{ margin: "5px 0" }} />
+
                 <Nav.Item
                   href={issuesUrl}
                   target="_blank"
