@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {
-  Button,
   Col,
   Input,
   InputGroup,
   Row,
   Panel,
   Whisper,
-  Tooltip
+  Tooltip,
+  Grid,
 } from 'rsuite';
 import { BsCalculator, BsCalculatorFill } from 'react-icons/bs';
 import { FiFilter } from 'react-icons/fi';
@@ -25,6 +25,7 @@ interface IProps {
   filterValue: string | undefined,
   elementDisabled: boolean,
   _allItems: DataCenter[],
+  requestedCidrNetwork: CidrNetwork | null | undefined,
   setRequestedCidrNetwork: (value: CidrNetwork) => void,
   setAllItemsValue: (value: DataCenter[]) => void,
   setFilterValue: (value: string) => void,
@@ -32,11 +33,12 @@ interface IProps {
   setItemsValue: (value: DataCenter[]) => void
 }
 
-export const InputSection  = ({
+export const InputSection = ({
   isSortedDescending,
   filterValue,
   elementDisabled,
   _allItems,
+  requestedCidrNetwork,
   setRequestedCidrNetwork,
   setAllItemsValue,
   setFilterValue,
@@ -44,66 +46,45 @@ export const InputSection  = ({
   setElementDisabled
 }: IProps) => {
 
-    const styles = {
-      width: 175,
-      marginBottom: 10
-    };
+  const styles = {
+    width: 175,
+    marginBottom: 5,
+  };
 
-    const [cidrValue, setcidrValue] = React.useState('');
-    const [cidrDisabled, setCidrDisabled] = React.useState(false);
-    const [cidrMessage, setCidrMessage] = React.useState(false);
-    const [filterDisabled, setFilterDisabled] = React.useState(false);
+  const [cidrValue, setcidrValue] = React.useState('');
+  const [cidrDisabled, setCidrDisabled] = React.useState(false);
+  const [cidrMessage, setCidrMessage] = React.useState(false);
+  const [filterDisabled, setFilterDisabled] = React.useState(false);
 
-    const onChangeCidrValue = React.useCallback(
-      (value: string, event: any) => {
-        if (cidrMessage !== false) {
-          setCidrMessage(false);
-        }
-        setcidrValue(value || '');
-      },
-      [cidrMessage],
-    );
-
-    const onFilterByCountry = React.useCallback(
-      (value: string, event: any) => {
-        value ? setItemsValue(_allItems?.filter((i: DataCenter) => i.country.toLowerCase().indexOf(value) > -1)) : setItemsValue(_allItems);
-        setFilterValue(value)
-      },
-      [_allItems, setItemsValue, setFilterValue],
-    );
-
-    const _calculateClicked = () => {
-      if (cidrValue.match(cidrFormat)) {
-        setItemsValue([]);
+  const onChangeCidrValue = React.useCallback(
+    (value: string, event: any) => {
+      if (cidrMessage !== false) {
         setCidrMessage(false);
-        setElementDisabled(true);
-        setCidrDisabled(true);
-        setFilterDisabled(!!filterValue);
-
-        axios.post(`/api/subnetcalc`, {
-          cidr: cidrValue,
-          filter: filterValue
-        }, {
-          headers: {
-            'content-type': 'application/json',
-          }
-        })
-          .then((response) => {
-            const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
-            setItemsValue(sortedItems);
-            setAllItemsValue(sortedItems);
-            setRequestedCidrNetwork(response.data.requested_cidr_networks);
-            setElementDisabled(false);
-          })
-      } else {
-        setCidrMessage(true);
       }
-    }
+      setcidrValue(value || '');
+    },
+    [cidrMessage],
+  );
 
-    const _reset = () => {
-      setcidrValue('');
+  const onFilterByCountry = React.useCallback(
+    (value: string, event: any) => {
+      value ? setItemsValue(_allItems?.filter((i: DataCenter) => i.country.toLowerCase().indexOf(value) > -1)) : setItemsValue(_allItems);
+      setFilterValue(value)
+    },
+    [_allItems, setItemsValue, setFilterValue],
+  );
+
+  const _calculateClicked = () => {
+    if (cidrValue.match(cidrFormat)) {
+      setItemsValue([]);
+      setCidrMessage(false);
+      setElementDisabled(true);
+      setCidrDisabled(true);
+      setFilterDisabled(!!filterValue);
+
       axios.post(`/api/subnetcalc`, {
-        cidr: '0.0.0.0/0'
+        cidr: cidrValue,
+        filter: filterValue
       }, {
         headers: {
           'content-type': 'application/json',
@@ -113,14 +94,48 @@ export const InputSection  = ({
           const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
           setItemsValue(sortedItems);
           setAllItemsValue(sortedItems);
-          setCidrDisabled(false);
-          setFilterDisabled(false)
-        });
+          setRequestedCidrNetwork(response.data.requested_cidr_network);
+          setElementDisabled(false);
+        })
+    } else {
+      setCidrMessage(true);
     }
+  }
 
-    return (
-      <React.Fragment>
-        <Panel bordered style={{ padding: "5px" }}>
+  const _reset = () => {
+    setcidrValue('');
+    axios.post(`/api/subnetcalc`, {
+      cidr: '0.0.0.0/0'
+    }, {
+      headers: {
+        'content-type': 'application/json',
+      }
+    })
+      .then((response) => {
+        const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
+        setItemsValue(sortedItems);
+        setAllItemsValue(sortedItems);
+        setCidrDisabled(false);
+        setFilterDisabled(false)
+        setRequestedCidrNetwork({
+          conflict: false,
+          cidr_notation: '',
+          subnet_bits: 0,
+          subnet_mask: '',
+          wildcard_mask: '',
+          network_address: '',
+          broadcast_address: '',
+          assignable_hosts: 0,
+          first_assignable_host: '',
+          last_assignable_host: '',
+        });
+      });
+  }
+
+  return (
+    <React.Fragment>
+      <Panel bordered style={{ padding: "5px" }}>
+        <Grid fluid>
           <Row>
             <Col xs={24} sm={24} md={24}>
               <InputGroup style={styles}>
@@ -142,7 +157,6 @@ export const InputSection  = ({
                     </InputGroup.Button>
                   </Whisper>
                 }
-                
                 {cidrDisabled &&
                   <Whisper placement="top" controlId="control-id-hover" trigger="hover"
                     speaker={
@@ -158,16 +172,14 @@ export const InputSection  = ({
               </InputGroup>
               {cidrMessage ?
                 <ErrorMessage>
-                  {'Invalid CIDR!'}
-                  <Button target="_blank" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" appearance="link" style={{ textDecoration: "none" }}>
-                    Learn more
-                  </Button>
+                  <div style={styles} >
+                    {'Invalid CIDR. '}
+                    <a target="_blank" href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing" rel="noreferrer">Learn more</a>
+                  </div>
                 </ErrorMessage>
-                : null
+                : <div style={{ marginBottom: 5, minHeight: 20 }}></div>
               }
-            </Col>
 
-            <Col xs={24} sm={24} md={24}>
               <InputGroup style={styles}>
                 <Input
                   value={filterValue}
@@ -179,13 +191,28 @@ export const InputSection  = ({
                   <FiFilter />
                 </InputGroup.Addon>
               </InputGroup>
+              <div style={{ marginBottom: 5, minHeight: 20 }}></div>
+              <hr style={{ marginTop: 0 }} />
+              <label>CIDR Notation:</label>
+              <Input disabled value={requestedCidrNetwork?.cidr_notation} />
+              <label>Subnet Mask:</label>
+              <Input disabled value={requestedCidrNetwork?.subnet_mask} />
+              <label>Wildcard Mask:</label>
+              <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
+              <label>Broadcast Address:</label>
+              <Input disabled value={requestedCidrNetwork?.broadcast_address} />
+              <label>Network Address:</label>
+              <Input disabled value={requestedCidrNetwork?.network_address} />
+              <label>First Assignable Host:</label>
+              <Input disabled value={requestedCidrNetwork?.first_assignable_host} />
+              <label>Last Assignable Host:</label>
+              <Input disabled value={requestedCidrNetwork?.last_assignable_host} />
+              <label># Assignable Hosts:</label>
+              <Input disabled value={requestedCidrNetwork?.assignable_hosts} />
             </Col>
           </Row>
-        </Panel>
-        <hr />
-        <span>
-          <p>Use this tool to help to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud.</p>
-        </span>
-      </React.Fragment>
-    )
-  }
+        </Grid>
+      </Panel>
+    </React.Fragment>
+  )
+}

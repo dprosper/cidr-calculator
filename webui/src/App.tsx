@@ -18,16 +18,12 @@ import {
   TagGroup,
   Notification,
   toaster,
-  InputGroup,
-  Whisper,
-  Tooltip,
 } from 'rsuite';
 
 import ResponsiveNav from '@rsuite/responsive-nav';
 import IconButton from 'rsuite/IconButton';
 import { BsDownload, BsFillStopCircleFill } from 'react-icons/bs';
 import { AiOutlineCloudServer } from 'react-icons/ai';
-import { MdFindReplace } from 'react-icons/md';
 
 import axios from "axios";
 
@@ -85,7 +81,7 @@ export const App = () => {
   const openPanel = React.useCallback((dataCenter: string, cidrDetails: any) => {
     const message = (
       <Notification type={'info'} header={'Run calculator'} closable>
-        Please run the calculator with a valid CIDR value before you can see results.
+        Please run the calculator with a valid CIDR value before you can see any conflict results.
       </Notification>
     )
 
@@ -802,18 +798,17 @@ export const App = () => {
     const { rowData, dataKey } = props;
     return (
       <Table.Cell {...props}>
-        {rowData['conflict'] ?
-          <React.Fragment>
-            <Tag color={'red'}><AiOutlineCloudServer />  {rowData[dataKey]}</Tag>
-          </React.Fragment>
-          :
-          <React.Fragment>
-            <Tag color={undefined}><AiOutlineCloudServer />  {rowData[dataKey]}</Tag>
-          </React.Fragment>
-        }
+        <React.Fragment>
+          <Tag
+            color={!requestedCidrNetwork || requestedCidrNetwork?.cidr_notation === '' ? undefined : rowData['conflict'] === false ? 'green' : 'red'}
+            style={{ cursor: "pointer" }}
+            onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>
+            <AiOutlineCloudServer />  {rowData[dataKey]}
+          </Tag>
+        </React.Fragment>
       </Table.Cell>
     );
-  }, []);
+  }, [openPanel, requestedCidrNetwork]);
 
   React.useEffect(() => {
     setElementDisabled(true);
@@ -864,21 +859,6 @@ export const App = () => {
     link.click();
   }
 
-  const onGetDetails = (cidrValue: string) => {
-    axios.post(`/api/getdetails`, {
-      cidr: cidrValue,
-      filter: filterValue
-    }, {
-      headers: {
-        'content-type': 'application/json',
-      }
-    })
-      .then((response) => {
-        setRequestedCidrNetwork(response.data);
-      })
-
-  }
-
   return (
     <CustomProvider
       theme={isLight ? "light" : "dark"}
@@ -895,6 +875,7 @@ export const App = () => {
                 <InputSection
                   isSortedDescending={isSortedDescending}
                   setRequestedCidrNetwork={setRequestedCidrNetwork}
+                  requestedCidrNetwork={requestedCidrNetwork}
                   setAllItemsValue={setAllItemsValue}
                   filterValue={filterValue}
                   setFilterValue={setFilterValue}
@@ -983,7 +964,7 @@ export const App = () => {
 
                   <hr />
                   <div style={{ marginTop: "20px" }}>
-                    <p style={{ marginBottom: "10px" }}><strong>Documentation topics and tutorials</strong></p>
+                    <p style={{ marginBottom: "10px" }}><strong>IBM Cloud topics and tutorials</strong></p>
                     <p>
                       <a href="https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-byoip" target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                         <strong>Bring Your Own IP Address</strong>
@@ -1014,60 +995,6 @@ export const App = () => {
           <Drawer.Title>Conflict Dashboard</Drawer.Title>
         </Drawer.Header>
         <Drawer.Body>
-          <div key={'cidr0'}>
-            <Grid fluid style={{ marginBottom: "10px" }}>
-              <Row>
-                <Col xs={24} sm={12} md={8}>
-                  <label>CIDR Notation:</label>
-                  <InputGroup>
-                    <Input disabled value={requestedCidrNetwork?.cidr_notation} />
-                    {requestedCidrNetwork?.assignable_hosts === 0 &&
-                      <Whisper placement="top" controlId="control-id-hover" trigger="hover"
-                        speaker={
-                          <Tooltip>
-                            Get CIDR details.
-                          </Tooltip>
-                        }>
-                        <InputGroup.Button aria-label='get cidr details' onClick={() => onGetDetails(requestedCidrNetwork?.cidr_notation)}>
-                          <MdFindReplace />
-                        </InputGroup.Button>
-                      </Whisper>
-                    }
-                  </InputGroup>
-
-                  {requestedCidrNetwork?.assignable_hosts !== 0 &&
-                    <React.Fragment>
-                      <label>Wildcard Mask:</label>
-                      <Input disabled value={requestedCidrNetwork?.wildcard_mask} />
-                      <label>First Assignable Host:</label>
-                      <Input disabled value={requestedCidrNetwork?.first_assignable_host} />
-                    </React.Fragment>
-                  }
-                </Col>
-                {requestedCidrNetwork?.assignable_hosts !== 0 &&
-                  <React.Fragment>
-                    <Col xs={24} sm={12} md={8}>
-                      <label>Subnet Mask:</label>
-                      <Input disabled value={requestedCidrNetwork?.subnet_mask} />
-                      <label>Broadcast Address:</label>
-                      <Input disabled value={requestedCidrNetwork?.broadcast_address} />
-                      <label>Last Assignable Host:</label>
-                      <Input disabled value={requestedCidrNetwork?.last_assignable_host} />
-                    </Col>
-                    <Col xs={24} sm={12} md={8}>
-                      <label>Subnet Bits:</label>
-                      <Input disabled value={requestedCidrNetwork?.subnet_bits} />
-                      <label>Network Address:</label>
-                      <Input disabled value={requestedCidrNetwork?.network_address} />
-                      <label># Assignable Hosts:</label>
-                      <Input disabled value={requestedCidrNetwork?.assignable_hosts} />
-                    </Col>
-                  </React.Fragment>
-                }
-              </Row>
-            </Grid>
-          </div>
-
           <h2>{panelDataCenter}</h2>
           <ResponsiveNav
             appearance="subtle"
@@ -1098,26 +1025,34 @@ export const App = () => {
               <div key={selected}>
                 {selected === active &&
                   <React.Fragment>
-                    <label>Conflict:</label>
-                    <Input disabled value={String(cidrNetwork?.conflict)} />
-                    <label>CIDR Notation:</label>
-                    <Input disabled value={cidrNetwork?.cidr_notation} />
-                    <label>Subnet Mask:</label>
-                    <Input disabled value={cidrNetwork?.subnet_mask} />
-                    <label>Subnet Bits:</label>
-                    <Input disabled value={cidrNetwork?.subnet_bits} />
-                    <label>Wildcard Mask:</label>
-                    <Input disabled value={cidrNetwork?.wildcard_mask} />
-                    <label>Broadcast Address:</label>
-                    <Input disabled value={cidrNetwork?.broadcast_address} />
-                    <label>Network Address:</label>
-                    <Input disabled value={cidrNetwork?.network_address} />
-                    <label>First Assignable Host:</label>
-                    <Input disabled value={cidrNetwork?.first_assignable_host} />
-                    <label>Last Assignable Host:</label>
-                    <Input disabled value={cidrNetwork?.last_assignable_host} />
-                    <label># Assignable Hosts:</label>
-                    <Input disabled value={cidrNetwork?.assignable_hosts} />
+                    <Grid fluid style={{ marginBottom: "10px" }}>
+                      <Row>
+                        <label>Conflict:</label>
+                        <Input disabled value={String(cidrNetwork?.conflict)} />
+                        <Col xs={24} sm={12} md={8}>
+                          <label>CIDR Notation:</label>
+                          <Input disabled value={cidrNetwork?.cidr_notation} />
+                          <label>Wildcard Mask:</label>
+                          <Input disabled value={cidrNetwork?.wildcard_mask} />
+                          <label>First Assignable Host:</label>
+                          <Input disabled value={cidrNetwork?.first_assignable_host} />
+                        </Col>
+                        <Col xs={24} sm={12} md={8}>
+                          <label>Subnet Mask:</label>
+                          <Input disabled value={cidrNetwork?.subnet_mask} />
+                          <label>Broadcast Address:</label>
+                          <Input disabled value={cidrNetwork?.broadcast_address} />
+                          <label>Last Assignable Host:</label>
+                          <Input disabled value={cidrNetwork?.last_assignable_host} />
+                        </Col>
+                        <Col xs={24} sm={12} md={8}>
+                          <label>Network Address:</label>
+                          <Input disabled value={cidrNetwork?.network_address} />
+                          <label># Assignable Hosts:</label>
+                          <Input disabled value={cidrNetwork?.assignable_hosts} />
+                        </Col>
+                      </Row>
+                    </Grid>
                   </React.Fragment>
                 }
               </div>
