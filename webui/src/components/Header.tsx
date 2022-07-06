@@ -58,22 +58,18 @@ export const HeaderNav = ({
                 <Divider style={{ margin: "5px 0" }} />
                 <span style={styles.radioGroupLabel}>Theme</span>
                 <ButtonGroup style={{ paddingLeft: "20px" }}>
-                  <IconButton icon={<BsSunrise />} onClick={() => {
+                  <IconButton icon={!isLight ? <BsSunrise /> : <BsSunsetFill />} onClick={() => {
                     setLight(!isLight)
                     onClose();
-                  }} circle title='light' />
-                  <IconButton icon={<BsSunsetFill />} onClick={() => {
-                    setLight(!isLight)
-                    onClose();
-                  }} circle title='dark' />
+                  }} title={!isLight ? 'light' : 'dark'} />
                 </ButtonGroup>
 
                 <Divider style={{ margin: "5px 0" }} />
                 <span style={styles.radioGroupLabel}>View</span>
                 <ButtonGroup style={{ paddingLeft: "30px" }}>
-                  <IconButton icon={<MdTableRows />} onClick={() => onToolbar('list')} circle title='list' />
-                  <IconButton icon={<FaRegFolder />} onClick={() => onToolbar('tab')} circle title='tab' />
-                  <IconButton icon={<MdTableView />} onClick={() => onToolbar('spreadsheet')} circle title='table' />
+                  <IconButton icon={<MdTableRows />} onClick={() => onToolbar('list')} title='list' />
+                  <IconButton icon={<FaRegFolder />} onClick={() => onToolbar('tab')} title='tab' />
+                  <IconButton icon={<MdTableView />} onClick={() => onToolbar('spreadsheet')} title='table' />
                 </ButtonGroup>
                 <Divider style={{ margin: "5px 0" }} />
 

@@ -62,16 +62,16 @@ type Address struct {
 }
 
 type Config struct {
-	Name                  string             `json:"name"`
-	Type                  string             `json:"type"`
-	Version               string             `json:"version"`
-	LastUpdated           string             `json:"last_updated"`
-	ReleaseNotes          string             `json:"release_notes"`
-	Source                string             `json:"source"`
-	Issues                string             `json:"issues"`
-	RequestedCidr         string             `json:"requested_cidr"`
-	RequestedCidrNetworks CidrNetwork        `json:"requested_cidr_networks"`
-	DataCenters           []DataCenterResult `json:"data_centers"`
+	Name                 string             `json:"name"`
+	Type                 string             `json:"type"`
+	Version              string             `json:"version"`
+	LastUpdated          string             `json:"last_updated"`
+	ReleaseNotes         string             `json:"release_notes"`
+	Source               string             `json:"source"`
+	Issues               string             `json:"issues"`
+	RequestedCidr        string             `json:"requested_cidr"`
+	RequestedCidrNetwork CidrNetwork        `json:"requested_cidr_network"`
+	DataCenters          []DataCenterResult `json:"data_centers"`
 }
 
 type DataCenter struct {
@@ -184,20 +184,21 @@ func getSubnetDetailsV2(cidr string) *Address {
 
 		return &indexResponseAddress
 	} else {
+		sub := SubnetCalculator(cidrAddress, cidrBits)
+
 		addressResponse := Address{
 			Type:                "network",
 			CidrNotation:        cidr,
-			SubnetBits:          0,
-			SubnetMask:          "0.0.0.0",
-			WildcardMask:        "0.0.0.0",
-			NetworkAddress:      "0.0.0.0",
-			BroadcastAddress:    "0.0.0.0",
-			AssignableHosts:     0,
-			FirstAssignableHost: "0.0.0.0",
-			LastAssignableHost:  "0.0.0.0",
+			SubnetBits:          sub.GetSubnetBits(),
+			SubnetMask:          sub.GetSubnetMask(),
+			WildcardMask:        sub.GetWildCardMask(),
+			NetworkAddress:      sub.GetNetworkPortion(),
+			BroadcastAddress:    sub.GetBroadcastAddress(),
+			AssignableHosts:     sub.GetAssignableHosts(),
+			FirstAssignableHost: sub.GetFirstIPAddress(),
+			LastAssignableHost:  sub.GetLastIPAddress(),
 		}
 		return &addressResponse
-
 	}
 }
 
@@ -593,16 +594,16 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 	}
 
 	config := Config{
-		Name:                  viper.GetString("name"),
-		Type:                  viper.GetString("type"),
-		Version:               viper.GetString("version"),
-		LastUpdated:           viper.GetString("last_updated"),
-		ReleaseNotes:          viper.GetString("release_notes"),
-		Source:                viper.GetString("source"),
-		Issues:                viper.GetString("issues"),
-		RequestedCidr:         requestedCidr,
-		RequestedCidrNetworks: requestedCidrNetwork,
-		DataCenters:           dataCentersOutput,
+		Name:                 viper.GetString("name"),
+		Type:                 viper.GetString("type"),
+		Version:              viper.GetString("version"),
+		LastUpdated:          viper.GetString("last_updated"),
+		ReleaseNotes:         viper.GetString("release_notes"),
+		Source:               viper.GetString("source"),
+		Issues:               viper.GetString("issues"),
+		RequestedCidr:        requestedCidr,
+		RequestedCidrNetwork: requestedCidrNetwork,
+		DataCenters:          dataCentersOutput,
 	}
 
 	return config, nil
