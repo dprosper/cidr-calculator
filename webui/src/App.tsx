@@ -960,7 +960,7 @@ export const App = () => {
                   </p>
                   <hr />
 
-                  <DocPanel activeKey={activeKey} />
+                  <DocPanel />
 
                   <hr />
                   <div style={{ marginTop: "20px" }}>
