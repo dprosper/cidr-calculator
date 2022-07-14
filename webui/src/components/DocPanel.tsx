@@ -21,14 +21,19 @@ const Menu = ({
 }: IDemoProps) => {
 
   return (
-    <Nav appearance="subtle" reversed vertical activeKey={active} onSelect={setActive} style={{ fontSize: '14px' }}>
-      <Nav.Item eventKey="start" icon={<AiOutlineRocket />}>
-        Getting started
-      </Nav.Item>
-      <Nav.Item eventKey="help" icon={<MdOutlineHelpCenter />} >
-        FAQs
-      </Nav.Item>
-    </Nav>
+    <React.Fragment>
+      <Docs doc='doc-header.md' />
+      <hr/>
+      <Nav appearance="subtle" reversed vertical activeKey={active} onSelect={setActive} style={{ fontSize: '14px' }}>
+        <Nav.Item eventKey="start" icon={<AiOutlineRocket />}>
+          Getting started
+        </Nav.Item>
+        <Nav.Item eventKey="help" icon={<MdOutlineHelpCenter />} >
+          FAQs
+        </Nav.Item>
+      </Nav>
+    </React.Fragment>
+
   );
 };
 
@@ -55,7 +60,7 @@ export const DocPanel = () => {
       <Drawer size={'full'} placement={'right'} open={isDocOpen} onClose={() => setIsDocOpen(false)} >
         <Drawer.Header>
           <Drawer.Title>
-            <span>CIDR Conflict Calculator Documentation</span>
+            <span>Documentation</span>
           </Drawer.Title>
         </Drawer.Header>
         <Drawer.Body style={{ padding: '30px 30px' }}>

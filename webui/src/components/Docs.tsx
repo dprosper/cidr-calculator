@@ -22,7 +22,10 @@ export const Docs = ({
 
   return (
     <React.Fragment>
-      <ReactMarkdown>{contents}</ReactMarkdown>
+      <ReactMarkdown components={{
+        img: ({ node, ...props }) => <img alt="" style={{ display: 'block', margin: 'auto', maxWidth: '75%' }}  {...props} />
+      }}
+      >{contents}</ReactMarkdown>
     </React.Fragment>
   )
 }

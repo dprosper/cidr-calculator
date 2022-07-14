@@ -1,0 +1,1 @@
+![Calculator for IBM Cloud](../images/calculator-ibm.svg)
