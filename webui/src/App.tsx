@@ -76,6 +76,8 @@ export const App = () => {
     { eventKey: 'FB', label: 'File & Block' },
     { eventKey: 'AM', label: 'AdvMon (Nimsoft)' },
     { eventKey: 'IC', label: 'ICOS' },
+    { eventKey: 'RH', label: 'RHELS' },
+    { eventKey: 'IM', label: 'IMS' },
   ];
 
   const openPanel = React.useCallback((dataCenter: string, cidrDetails: any) => {
@@ -115,6 +117,8 @@ export const App = () => {
     const sslVpn = rowData['ssl_vpn'];
     const evs = rowData['evault'];
     const advmons = rowData['advmon'];
+    const rhels = rowData['rhe_ls'];
+    const ims = rowData['ims'];
     const icos = rowData['icos'];
     const fileBlock = rowData['file_block'];
 
@@ -336,6 +340,64 @@ export const App = () => {
             </TagGroup>
           }
 
+          {
+            activeKey === 'RH' &&
+            <TagGroup style={{ marginBottom: "10px" }}>
+              {
+                rhels.map((rh: any, index: any) => {
+                  return (
+                    <React.Fragment key={`${cellKey}-rhels-${index}`}>
+                      {
+                        rh.cidr_blocks.map((cidr: any, index: any) => {
+                          let conflict = false;
+                          let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                          let obj = js && getObjects(js, 'cidr_notation', cidr);
+                          conflict = obj && obj[0].conflict;
+
+                          return (
+                            <React.Fragment key={`${cellKey}-rhels-${index}-c`}>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            </React.Fragment >
+                          )
+                        })
+                      }
+                      {rh.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
+                    </React.Fragment>
+                  )
+                })
+              }
+            </TagGroup>
+          }
+
+          {
+            activeKey === 'IM' &&
+            <TagGroup style={{ marginBottom: "10px" }}>
+              {
+                ims.map((im: any, index: any) => {
+                  return (
+                    <React.Fragment key={`${cellKey}-ims-${index}`}>
+                      {
+                        im.cidr_blocks.map((cidr: any, index: any) => {
+                          let conflict = false;
+                          let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                          let obj = js && getObjects(js, 'cidr_notation', cidr);
+                          conflict = obj && obj[0].conflict;
+
+                          return (
+                            <React.Fragment key={`${cellKey}-ims-${index}-c`}>
+                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            </React.Fragment >
+                          )
+                        })
+                      }
+                      {im.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
+                    </React.Fragment>
+                  )
+                })
+              }
+            </TagGroup>
+          }
+
         </Panel>
       </Table.Cell>
     );
@@ -348,6 +410,8 @@ export const App = () => {
     const sslVpn = rowData['ssl_vpn'];
     const evs = rowData['evault'];
     const advmons = rowData['advmon'];
+    const rhels = rowData['rhe_ls'];
+    const ims = rowData['ims'];
     const icos = rowData['icos'];
     const fileBlock = rowData['file_block'];
 
@@ -546,6 +610,59 @@ export const App = () => {
             }
           </TagGroup>
 
+          <strong>RHELS</strong>
+          <TagGroup style={{ marginBottom: "10px" }}>
+            {
+              rhels.map((rh: any, index: any) => {
+                return (
+                  <React.Fragment key={`${cellKey}-rhels-${index}`}>
+                    {
+                      rh.cidr_blocks.map((cidr: any, index: any) => {
+                        let conflict = false;
+                        let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                        let obj = js && getObjects(js, 'cidr_notation', cidr);
+                        conflict = obj && obj[0].conflict;
+
+                        return (
+                          <React.Fragment key={`${cellKey}-rhels-${index}-c`}>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
+                          </React.Fragment >
+                        )
+                      })
+                    }
+                    {rh.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
+                  </React.Fragment>
+                )
+              })
+            }
+          </TagGroup>
+
+          <strong>IMS</strong>
+          <TagGroup style={{ marginBottom: "10px" }}>
+            {
+              ims.map((im: any, index: any) => {
+                return (
+                  <React.Fragment key={`${cellKey}-ims-${index}`}>
+                    {
+                      im.cidr_blocks.map((cidr: any, index: any) => {
+                        let conflict = false;
+                        let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                        let obj = js && getObjects(js, 'cidr_notation', cidr);
+                        conflict = obj && obj[0].conflict;
+
+                        return (
+                          <React.Fragment key={`${cellKey}-ims-${index}-c`}>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag>
+                          </React.Fragment >
+                        )
+                      })
+                    }
+                    {im.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
+                  </React.Fragment>
+                )
+              })
+            }
+          </TagGroup>
         </Panel>
       </Table.Cell>
     );
@@ -558,11 +675,13 @@ export const App = () => {
     const sslVpn = rowData['ssl_vpn'];
     const evs = rowData['evault'];
     const advmons = rowData['advmon'];
+    const rhels = rowData['rhe_ls'];
+    const ims = rowData['ims'];
     const icos = rowData['icos'];
     const fileBlock = rowData['file_block'];
 
     const cellKey = rowData[dataKey];
-
+    
     return (
       <Table.Cell key={`${cellKey}`} {...props} style={{ padding: 4 }}>
         <Panel style={{ padding: "5px" }}>
@@ -772,6 +891,66 @@ export const App = () => {
                             <React.Fragment key={`${cellKey}-icos-${index}-c`}>
                               <tr>
                                 <td>ICOS</td>
+                                {conflict ?
+                                  <td><Tag color={'red'} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag></td>
+                                  :
+                                  <td>{cidr}</td>
+                                }
+                              </tr>
+                            </React.Fragment >
+                          )
+                        })
+                      }
+                    </React.Fragment>
+                  )
+                })
+              }
+
+              {
+                rhels.map((rh: any, index: any) => {
+                  return (
+                    <React.Fragment key={`${cellKey}-rhels-${index}`}>
+                      {
+                        rh.cidr_blocks.map((cidr: any, index: any) => {
+                          let conflict = false;
+                          let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                          let obj = js && getObjects(js, 'cidr_notation', cidr);
+                          conflict = obj && obj[0].conflict;
+
+                          return (
+                            <React.Fragment key={`${cellKey}-rhels-${index}-c`}>
+                              <tr>
+                                <td>RHELS</td>
+                                {conflict ?
+                                  <td><Tag color={'red'} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag></td>
+                                  :
+                                  <td>{cidr}</td>
+                                }
+                              </tr>
+                            </React.Fragment >
+                          )
+                        })
+                      }
+                    </React.Fragment>
+                  )
+                })
+              }
+
+              {
+                ims.map((im: any, index: any) => {
+                  return (
+                    <React.Fragment key={`${cellKey}-rhels-${index}`}>
+                      {
+                        im.cidr_blocks.map((cidr: any, index: any) => {
+                          let conflict = false;
+                          let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                          let obj = js && getObjects(js, 'cidr_notation', cidr);
+                          conflict = obj && obj[0].conflict;
+
+                          return (
+                            <React.Fragment key={`${cellKey}-rhels-${index}-c`}>
+                              <tr>
+                                <td>IMS</td>
                                 {conflict ?
                                   <td><Tag color={'red'} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["data_center"], rowData["cidr_networks"])}>{cidr}</Tag></td>
                                   :

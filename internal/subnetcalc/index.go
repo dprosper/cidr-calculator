@@ -103,6 +103,12 @@ type DataCenter struct {
 	AdvMon []struct {
 		CidrBlocks []string `mapstructure:"cidr_blocks"`
 	} `mapstructure:"advmon"`
+	RHELS []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"rhe_ls"`
+	IMS []struct {
+		CidrBlocks []string `mapstructure:"cidr_blocks"`
+	} `mapstructure:"ims"`
 }
 
 type PrivateNetwork struct {
@@ -135,6 +141,14 @@ type AdvMon struct {
 	CidrBlocks []string `json:"cidr_blocks"`
 }
 
+type RHELS struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type IMS struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
 type DataCenterResult struct {
 	Key             string           `json:"key"`
 	DataCenter      string           `json:"data_center"`
@@ -148,6 +162,8 @@ type DataCenterResult struct {
 	FileBlock       []FileBlock      `json:"file_block"`
 	Icos            []Icos           `json:"icos"`
 	AdvMon          []AdvMon         `json:"advmon"`
+	RHELS           []RHELS          `json:"rhe_ls"`
+	IMS             []IMS            `json:"ims"`
 	CidrNetworks    []CidrNetwork    `json:"cidr_networks"`
 	Conflict        bool             `json:"conflict"`
 }
@@ -184,6 +200,8 @@ func getSubnetDetailsV2(cidr string) *Address {
 
 		return &indexResponseAddress
 	} else {
+		fmt.Println(cidrAddress)
+		fmt.Println(cidrBits)
 		sub := SubnetCalculator(cidrAddress, cidrBits)
 
 		addressResponse := Address{
@@ -573,6 +591,66 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			}
 		}
 
+		rhelsOutput := []RHELS{}
+		for _, rhels := range dataCenter.RHELS {
+			rhelsJson := RHELS{CidrBlocks: rhels.CidrBlocks}
+			rhelsOutput = append(rhelsOutput, rhelsJson)
+
+			for _, cloudCidr := range rhels.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
+		imsOutput := []IMS{}
+		for _, ims := range dataCenter.IMS {
+			imsJson := IMS{CidrBlocks: ims.CidrBlocks}
+			imsOutput = append(imsOutput, imsJson)
+
+			for _, cloudCidr := range ims.CidrBlocks {
+				cloudDetails := getSubnetDetailsV2(cloudCidr)
+				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+
+				cloudCidrNetwork := CidrNetwork{
+					CidrNotation:        cloudDetails.CidrNotation,
+					SubnetBits:          cloudDetails.SubnetBits,
+					SubnetMask:          cloudDetails.SubnetMask,
+					WildcardMask:        cloudDetails.WildcardMask,
+					NetworkAddress:      cloudDetails.NetworkAddress,
+					BroadcastAddress:    cloudDetails.BroadcastAddress,
+					AssignableHosts:     cloudDetails.AssignableHosts,
+					FirstAssignableHost: cloudDetails.FirstAssignableHost,
+					LastAssignableHost:  cloudDetails.LastAssignableHost,
+					Conflict:            cidrConflict,
+				}
+
+				if cidrConflict {
+					dataCenterConflict = true
+				}
+
+				cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+			}
+		}
+
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
 			DataCenter:      dataCenter.Name,
@@ -586,6 +664,8 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 			Icos:            icosOutput,
 			FileBlock:       fileblockOutput,
 			AdvMon:          advmonOutput,
+			RHELS:           rhelsOutput,
+			IMS:             imsOutput,
 			CidrNetworks:    cloudCidrNetworks,
 			Conflict:        dataCenterConflict,
 		}
@@ -681,6 +761,18 @@ func readDataCenters(requestedCidr string) (Config, error) {
 			advmonOutput = append(advmonOutput, advmonJson)
 		}
 
+		rhelsOutput := []RHELS{}
+		for _, rhels := range dataCenter.RHELS {
+			rhelsJson := RHELS{CidrBlocks: rhels.CidrBlocks}
+			rhelsOutput = append(rhelsOutput, rhelsJson)
+		}
+
+		imsOutput := []IMS{}
+		for _, ims := range dataCenter.IMS {
+			imsJson := IMS{CidrBlocks: ims.CidrBlocks}
+			imsOutput = append(imsOutput, imsJson)
+		}
+
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
 			DataCenter:      dataCenter.Name,
@@ -694,6 +786,8 @@ func readDataCenters(requestedCidr string) (Config, error) {
 			FileBlock:       fileBlockOutput,
 			Icos:            icosOutput,
 			AdvMon:          advmonOutput,
+			RHELS:           rhelsOutput,
+			IMS:             imsOutput,
 			Conflict:        conflict,
 		}
 		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
