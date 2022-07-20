@@ -1,16 +1,17 @@
 
 export interface DataCenter {
-  data_center: string;
+  name: string;
   city?: string;
   state?: string;
   country: string;
   cidr_blocks?: string[];
   conflict?: boolean;
-  cidr_networks?: string[]
+  cidr_networks?: CidrNetwork[]
 }
 
 export interface CidrNetwork {
   conflict: boolean;
+  service: string;
   cidr_notation: string;
   subnet_bits: number;
   subnet_mask: string;

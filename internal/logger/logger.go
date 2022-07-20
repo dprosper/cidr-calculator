@@ -41,11 +41,14 @@ var AccessLogger *zap.Logger
 // SystemLogger variable
 var SystemLogger *zap.Logger
 
+// HistoryLogger variable
+var HistoryLogger *zap.Logger
+
 // ErrorLogger variable
 var ErrorLogger *zap.Logger
 
 // InitLogger function
-func InitLogger(accessLog bool, systemLog bool, errorLog bool) {
+func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) {
 	if accessLog {
 		accessLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("access.log"))
 		accessCore := zapcore.NewCore(getFileEncoder(), accessLogWriter, zapcore.DebugLevel)
@@ -60,6 +63,13 @@ func InitLogger(accessLog bool, systemLog bool, errorLog bool) {
 		systemCore := zapcore.NewCore(getFileEncoder(), systemLogWriter, zapcore.DebugLevel)
 		SystemLogger = zap.New(systemCore, zap.AddCaller())
 		defer SystemLogger.Sync()
+	}
+
+	if historyLog {
+		historyLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("history.log"))
+		historyCore := zapcore.NewCore(getFileEncoder(), historyLogWriter, zapcore.DebugLevel)
+		HistoryLogger = zap.New(historyCore, zap.AddCaller())
+		defer HistoryLogger.Sync()
 	}
 
 	if errorLog {

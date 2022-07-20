@@ -35,8 +35,9 @@ import (
 )
 
 type SubmittedCidr struct {
-	Cidr   string `json:"cidr" validate:"required,cidrv4"`
-	Filter string `json:"filter"`
+	Cidr                string   `json:"cidr" validate:"required,cidrv4"`
+	SelectedDataCenters []string `json:"selected_data_centers"`
+	// Filter             string   `json:"filter"`
 }
 
 type SubnetCalculatorResponse struct {
@@ -80,6 +81,7 @@ type DataCenter struct {
 	City            string `mapstructure:"city"`
 	State           string `mapstructure:"state"`
 	Country         string `mapstructure:"country"`
+	GeoRegion       string `mapstructure:"geo_region"`
 	PrivateNetworks []struct {
 		Key        string   `mapstructure:"key"`
 		Name       string   `mapstructure:"name"`
@@ -151,10 +153,11 @@ type IMS struct {
 
 type DataCenterResult struct {
 	Key             string           `json:"key"`
-	DataCenter      string           `json:"data_center"`
+	Name            string           `json:"name"`
 	City            string           `json:"city"`
 	State           string           `json:"state"`
 	Country         string           `json:"country"`
+	GeoRegion       string           `json:"geo_region"`
 	PrivateNetworks []PrivateNetwork `json:"private_networks"`
 	ServiceNetwork  []ServiceNetwork `json:"service_network"`
 	SslVpn          []SslVpn         `json:"ssl_vpn"`
@@ -169,6 +172,7 @@ type DataCenterResult struct {
 }
 
 type CidrNetwork struct {
+	Service             string `json:"service"`
 	CidrNotation        string `json:"cidr_notation"`
 	SubnetBits          int    `json:"subnet_bits"`
 	SubnetMask          string `json:"subnet_mask"`
@@ -281,10 +285,11 @@ func ReadMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var Validator = validator.New()
 		var errors []*IError
+		var selectedDataCenters []string
 
 		json := new(SubmittedCidr)
 		cidr := "0.0.0.0/0"
-		filter := ""
+		// filter := ""
 		if err := c.ShouldBindJSON(&json); err == nil {
 
 			errValidate := Validator.Struct(json)
@@ -303,7 +308,8 @@ func ReadMiddleware() gin.HandlerFunc {
 
 			if json.Cidr == "0.0.0.0/0" {
 				success := true
-				data, err := readDataCenters(cidr)
+				selectedDataCenters = json.SelectedDataCenters
+				data, err := readDataCenters(cidr, selectedDataCenters)
 				if err != nil {
 					success = false
 					c.JSON(http.StatusOK, success)
@@ -315,7 +321,7 @@ func ReadMiddleware() gin.HandlerFunc {
 				}
 			} else {
 				cidr = json.Cidr
-				filter = json.Filter
+				selectedDataCenters = json.SelectedDataCenters
 			}
 		} else {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post."})
@@ -323,7 +329,7 @@ func ReadMiddleware() gin.HandlerFunc {
 		}
 
 		success := true
-		data, err := runSubnetCalculator(cidr, filter)
+		data, err := runSubnetCalculator(cidr, selectedDataCenters)
 		if err != nil {
 			success = false
 			c.JSON(http.StatusOK, success)
@@ -346,7 +352,20 @@ func applyFilter(dataCenters []DataCenter, f filterFunc) []DataCenter {
 
 type filterFunc func(dataCenter DataCenter) bool
 
-func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
+func contains(s []string, str string) bool {
+	if len(s) > 0 {
+		for _, v := range s {
+			if v == str {
+				return true
+			}
+		}
+		return false
+	}
+
+	return true
+}
+
+func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Config, error) {
 	var dataCenters []DataCenter
 	err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
@@ -369,8 +388,14 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 		LastAssignableHost:  requestedDetails.LastAssignableHost,
 	}
 
+	// Depreacted: filtering by Country
+	// dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
+	// 	return strings.Contains(strings.ToLower(dataCenter.Country), strings.ToLower(filter))
+	// })
+
+	// selectedDataCenters := []string{"ams01", "ams03"}
 	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
-		return strings.Contains(strings.ToLower(dataCenter.Country), strings.ToLower(filter))
+		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
 	})
 
 	for _, value := range dataCentersFiltered {
@@ -391,6 +416,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "Private Network",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -421,6 +447,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "Service Network",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -451,6 +478,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "SSL VPN",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -481,6 +509,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "eVault",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -511,6 +540,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "ICOS",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -541,6 +571,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "File & Block",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -571,6 +602,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "AdvMon (Nimsoft)",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -601,6 +633,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "RHEL",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -631,6 +664,7 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
+					Service:             "IMS",
 					CidrNotation:        cloudDetails.CidrNotation,
 					SubnetBits:          cloudDetails.SubnetBits,
 					SubnetMask:          cloudDetails.SubnetMask,
@@ -653,10 +687,11 @@ func runSubnetCalculator(requestedCidr string, filter string) (Config, error) {
 
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
-			DataCenter:      dataCenter.Name,
+			Name:            dataCenter.Name,
 			City:            dataCenter.City,
 			State:           dataCenter.State,
 			Country:         dataCenter.Country,
+			GeoRegion:       dataCenter.GeoRegion,
 			PrivateNetworks: pnsOutput,
 			ServiceNetwork:  serviceNetworkOutput,
 			SslVpn:          sslVpnsOutput,
@@ -703,7 +738,7 @@ func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 	return leftPrefix.Overlaps(rightPrefix)
 }
 
-func readDataCenters(requestedCidr string) (Config, error) {
+func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config, error) {
 
 	var dataCenters []DataCenter
 	err := viper.UnmarshalKey("data_centers", &dataCenters)
@@ -712,9 +747,14 @@ func readDataCenters(requestedCidr string) (Config, error) {
 		return Config{}, err
 	}
 
+	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
+		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
+	})
+
 	dataCentersOutput := []DataCenterResult{}
 
-	for _, value := range dataCenters {
+	for _, value := range dataCentersFiltered {
+		// for _, value := range dataCenters {
 		dataCenter := DataCenter{}
 		mapstructure.Decode(value, &dataCenter)
 		conflict := false
@@ -775,10 +815,11 @@ func readDataCenters(requestedCidr string) (Config, error) {
 
 		dataCenterJson := DataCenterResult{
 			Key:             dataCenter.Key,
-			DataCenter:      dataCenter.Name,
+			Name:            dataCenter.Name,
 			City:            dataCenter.City,
 			State:           dataCenter.State,
 			Country:         dataCenter.Country,
+			GeoRegion:       dataCenter.GeoRegion,
 			PrivateNetworks: pnsOutput,
 			ServiceNetwork:  serviceNetworkOutput,
 			SslVpn:          sslVpnsOutput,

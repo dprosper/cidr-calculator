@@ -80,7 +80,7 @@ func (w *Worker) indexRun(isReady chan bool) {
 }
 
 func main() {
-	logger.InitLogger(true, true, true)
+	logger.InitLogger(true, true, false, true)
 
 	viper.SetConfigType("json")
 	viper.AddConfigPath("$HOME")
