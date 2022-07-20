@@ -19,31 +19,32 @@ import { DataCenter, CidrNetwork, _copyAndSort } from './common';
 const cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
 
 const ErrorMessage = ({ children }: { children: any }) => <span style={{ color: 'red' }}>{children}</span>;
+type PlacementType = 'topStart' | 'topCenter' | 'topEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd';
 
 interface IProps {
   isSortedDescending: boolean,
   filterValue: string | undefined,
-  elementDisabled: boolean,
   _allItems: DataCenter[],
   requestedCidrNetwork: CidrNetwork | null | undefined,
   setRequestedCidrNetwork: (value: CidrNetwork) => void,
   setAllItemsValue: (value: DataCenter[]) => void,
   setFilterValue: (value: string) => void,
   setElementDisabled: (value: boolean) => void,
-  setItemsValue: (value: DataCenter[]) => void
+  setItemsValue: (value: DataCenter[]) => void,
+  selectedDataCenters: string[]
 }
 
 export const InputSection = ({
   isSortedDescending,
   filterValue,
-  elementDisabled,
   _allItems,
   requestedCidrNetwork,
   setRequestedCidrNetwork,
   setAllItemsValue,
   setFilterValue,
   setItemsValue,
-  setElementDisabled
+  setElementDisabled,
+  selectedDataCenters
 }: IProps) => {
 
   const styles = {
@@ -84,18 +85,18 @@ export const InputSection = ({
 
       axios.post(`/api/subnetcalc`, {
         cidr: cidrValue,
-        filter: filterValue
+        selected_data_centers: selectedDataCenters
       }, {
         headers: {
           'content-type': 'application/json',
         }
       })
         .then((response) => {
-          const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
+          const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
           setItemsValue(sortedItems);
-          setAllItemsValue(sortedItems);
+          // setAllItemsValue(sortedItems);
           setRequestedCidrNetwork(response.data.requested_cidr_network);
-          setElementDisabled(false);
+          // setElementDisabled(false);
         })
     } else {
       setCidrMessage(true);
@@ -105,20 +106,21 @@ export const InputSection = ({
   const _reset = () => {
     setcidrValue('');
     axios.post(`/api/subnetcalc`, {
-      cidr: '0.0.0.0/0'
+      cidr: '0.0.0.0/0',
+      selected_data_centers: selectedDataCenters
     }, {
       headers: {
         'content-type': 'application/json',
       }
     })
       .then((response) => {
-        const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "data_center", !isSortedDescending);
+        const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
         setItemsValue(sortedItems);
-        setAllItemsValue(sortedItems);
         setCidrDisabled(false);
         setFilterDisabled(false)
         setRequestedCidrNetwork({
           conflict: false,
+          service: '',
           cidr_notation: '',
           subnet_bits: 0,
           subnet_mask: '',
@@ -129,6 +131,7 @@ export const InputSection = ({
           first_assignable_host: '',
           last_assignable_host: '',
         });
+        setElementDisabled(false);
       });
   }
 
@@ -153,7 +156,7 @@ export const InputSection = ({
                       </Tooltip>
                     }>
                     <InputGroup.Button aria-label='run calculator' onClick={_calculateClicked}>
-                      {elementDisabled ? <BsCalculator /> : <BsCalculatorFill />}
+                      {cidrDisabled ? <BsCalculator /> : <BsCalculatorFill />}
                     </InputGroup.Button>
                   </Whisper>
                 }
@@ -165,7 +168,7 @@ export const InputSection = ({
                       </Tooltip>
                     }>
                     <InputGroup.Button aria-label='reset' onClick={_reset}>
-                      {elementDisabled ? <BiReset /> : <BiReset />}
+                      {cidrDisabled ? <BiReset /> : <BiReset />}
                     </InputGroup.Button>
                   </Whisper>
                 }
@@ -180,6 +183,8 @@ export const InputSection = ({
                 : <div style={{ marginBottom: 5, minHeight: 20 }}></div>
               }
 
+              {/* 
+              -- Disabled in UI only Filter by Country --
               <InputGroup style={styles}>
                 <Input
                   value={filterValue}
@@ -191,7 +196,9 @@ export const InputSection = ({
                   <FiFilter />
                 </InputGroup.Addon>
               </InputGroup>
-              <div style={{ marginBottom: 5, minHeight: 20 }}></div>
+              <div style={{ marginBottom: 5, minHeight: 20 }}></div> 
+              */}
+
               <hr style={{ marginTop: 0 }} />
               <label>CIDR Notation:</label>
               <Input disabled value={requestedCidrNetwork?.cidr_notation} />

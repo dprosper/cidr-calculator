@@ -13,6 +13,7 @@
       "city": "Amsterdam",
       "state": "",
       "country": "NLD",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -107,6 +108,7 @@
       "city": "Amsterdam",
       "state": "",
       "country": "NLD",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -196,6 +198,7 @@
       "city": "Chennai",
       "state": "",
       "country": "IND",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -275,6 +278,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -358,7 +362,8 @@
       "advmon": [
         {
           "cidr_blocks": [
-            "10.1.143.0/24"
+            "10.1.143.0/24",
+            "10.1.139.0/24"
           ]
         }
       ],
@@ -385,6 +390,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -472,6 +478,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": null,
       "service_network": [
         {
@@ -518,6 +525,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": null,
       "service_network": [
         {
@@ -582,6 +590,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "brc01",
@@ -699,6 +708,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -806,6 +816,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -894,6 +905,7 @@
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -991,6 +1003,7 @@
       "city": "Frankfurt",
       "state": "",
       "country": "DEU",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1040,28 +1053,32 @@
       "evault": [
         {
           "cidr_blocks": [
-            "10.3.86.0/24"
+            "10.3.86.0/24",
+            "10.201.150.0/24"
           ]
         }
       ],
       "file_block": [
         {
           "cidr_blocks": [
-            "10.3.94.0/24"
+            "10.3.94.0/24",
+            "10.201.158.0/24"
           ]
         }
       ],
       "icos": [
         {
           "cidr_blocks": [
-            "10.3.82.0/24"
+            "10.3.82.0/24",
+            "10.201.146.0/24"
           ]
         }
       ],
       "advmon": [
         {
           "cidr_blocks": [
-            "10.3.83.0/24"
+            "10.3.83.0/24",
+            "10.201.147.0/24"
           ]
         }
       ],
@@ -1084,66 +1101,12 @@
       ]
     },
     {
-      "key": "fra02az",
-      "name": "fra02az",
-      "city": "",
-      "state": "",
-      "country": "",
-      "private_networks": null,
-      "service_network": null,
-      "ssl_vpn": null,
-      "evault": [
-        {
-          "cidr_blocks": [
-            "10.201.150.0/24"
-          ]
-        }
-      ],
-      "file_block": [
-        {
-          "cidr_blocks": [
-            "10.201.158.0/24"
-          ]
-        }
-      ],
-      "icos": [
-        {
-          "cidr_blocks": [
-            "10.201.146.0/24"
-          ]
-        }
-      ],
-      "advmon": [
-        {
-          "cidr_blocks": [
-            "10.201.147.0/24"
-          ]
-        }
-      ],
-      "rhe_ls": [
-        {
-          "cidr_blocks": [
-            "10.2.112.0/20",
-            "10.3.192.0/24"
-          ]
-        }
-      ],
-      "ims": [
-        {
-          "cidr_blocks": [
-            "10.200.80.0/20",
-            "10.3.160.0/20",
-            "10.201.0.0/20"
-          ]
-        }
-      ]
-    },
-    {
       "key": "fra04",
       "name": "fra04",
       "city": "Frankfurt",
       "state": "",
       "country": "DEU",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1220,6 +1183,7 @@
       "city": "Frankfurt",
       "state": "",
       "country": "DEU",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1302,6 +1266,7 @@
       "city": "Hong Kong",
       "state": "",
       "country": "HKG",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1381,6 +1346,7 @@
       "city": "London",
       "state": "",
       "country": "ENG",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1424,28 +1390,32 @@
       "evault": [
         {
           "cidr_blocks": [
-            "10.1.214.0/24"
+            "10.1.214.0/24",
+            "10.201.102.0/24"
           ]
         }
       ],
       "file_block": [
         {
           "cidr_blocks": [
-            "10.1.222.0/24"
+            "10.1.222.0/24",
+            "10.201.110.0/24"
           ]
         }
       ],
       "icos": [
         {
           "cidr_blocks": [
-            "10.1.210.0/24"
+            "10.1.210.0/24",
+            "10.201.98.0/24"
           ]
         }
       ],
       "advmon": [
         {
           "cidr_blocks": [
-            "10.1.211.0/24"
+            "10.1.211.0/24",
+            "10.201.99.0/24"
           ]
         }
       ],
@@ -1468,66 +1438,12 @@
       ]
     },
     {
-      "key": "lon02az",
-      "name": "lon02az",
-      "city": "",
-      "state": "",
-      "country": "",
-      "private_networks": null,
-      "service_network": null,
-      "ssl_vpn": null,
-      "evault": [
-        {
-          "cidr_blocks": [
-            "10.201.102.0/24"
-          ]
-        }
-      ],
-      "file_block": [
-        {
-          "cidr_blocks": [
-            "10.201.110.0/24"
-          ]
-        }
-      ],
-      "icos": [
-        {
-          "cidr_blocks": [
-            "10.201.98.0/24"
-          ]
-        }
-      ],
-      "advmon": [
-        {
-          "cidr_blocks": [
-            "10.201.99.0/24"
-          ]
-        }
-      ],
-      "rhe_ls": [
-        {
-          "cidr_blocks": [
-            "10.2.112.0/20",
-            "10.3.192.0/24"
-          ]
-        }
-      ],
-      "ims": [
-        {
-          "cidr_blocks": [
-            "10.200.80.0/20",
-            "10.3.160.0/20",
-            "10.201.0.0/20"
-          ]
-        }
-      ]
-    },
-    {
       "key": "lon04",
       "name": "lon04",
       "city": "London",
       "state": "",
       "country": "ENG",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1609,6 +1525,7 @@
       "city": "London",
       "state": "",
       "country": "ENG",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1689,6 +1606,7 @@
       "city": "London",
       "state": "",
       "country": "ENG",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1770,6 +1688,7 @@
       "city": "Mexico city",
       "state": "",
       "country": "MEX",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1854,6 +1773,7 @@
       "city": "Milan",
       "state": "",
       "country": "ITA",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -1939,6 +1859,7 @@
       "city": "Montreal",
       "state": "",
       "country": "CAN",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2029,6 +1950,7 @@
       "city": "Osaka",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2103,6 +2025,7 @@
       "city": "Osaka",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2177,6 +2100,7 @@
       "city": "Osaka",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2251,6 +2175,7 @@
       "city": "Oslo",
       "state": "",
       "country": "NOR",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2293,6 +2218,7 @@
       "city": "Paris",
       "state": "",
       "country": "FRA",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2378,6 +2304,7 @@
       "city": "Paris",
       "state": "",
       "country": "FRA",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2419,6 +2346,7 @@
       "city": "Paris",
       "state": "",
       "country": "FRA",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2460,6 +2388,7 @@
       "city": "Paris",
       "state": "",
       "country": "FRA",
+      "geo_region": "Europe",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2501,6 +2430,7 @@
       "city": "São Paulo",
       "state": "",
       "country": "BRA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2585,6 +2515,7 @@
       "city": "São Paulo",
       "state": "",
       "country": "BRA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2635,6 +2566,7 @@
       "city": "São Paulo",
       "state": "",
       "country": "BRA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2685,6 +2617,7 @@
       "city": "Seoul",
       "state": "",
       "country": "KOR",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2764,6 +2697,7 @@
       "city": "San Jose",
       "state": "California",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2863,6 +2797,7 @@
       "city": "San Jose",
       "state": "California",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -2949,6 +2884,7 @@
       "city": "San Jose",
       "state": "California",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3028,6 +2964,7 @@
       "city": "Jurong East",
       "state": "",
       "country": "SGP",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3120,6 +3057,7 @@
       "city": "Sydney",
       "state": "",
       "country": "AUS",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3209,6 +3147,7 @@
       "city": "Sydney",
       "state": "",
       "country": "AUS",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3240,11 +3179,18 @@
       "evault": [
         {
           "cidr_blocks": [
-            "10.201.22.0/24"
+            "10.201.22.0/24",
+            "10.201.166.0/24"
           ]
         }
       ],
-      "file_block": null,
+      "file_block": [
+        {
+          "cidr_blocks": [
+            "10.201.30.0/24"
+          ]
+        }
+      ],
       "icos": [
         {
           "cidr_blocks": [
@@ -3282,6 +3228,7 @@
       "city": "Sydney",
       "state": "",
       "country": "AUS",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3332,48 +3279,12 @@
       ]
     },
     {
-      "key": "syd4",
-      "name": "syd4",
-      "city": "",
-      "state": "",
-      "country": "",
-      "private_networks": null,
-      "service_network": null,
-      "ssl_vpn": null,
-      "evault": null,
-      "file_block": [
-        {
-          "cidr_blocks": [
-            "10.201.30.0/24"
-          ]
-        }
-      ],
-      "icos": null,
-      "advmon": null,
-      "rhe_ls": [
-        {
-          "cidr_blocks": [
-            "10.2.112.0/20",
-            "10.3.192.0/24"
-          ]
-        }
-      ],
-      "ims": [
-        {
-          "cidr_blocks": [
-            "10.200.80.0/20",
-            "10.3.160.0/20",
-            "10.201.0.0/20"
-          ]
-        }
-      ]
-    },
-    {
       "key": "tok02",
       "name": "tok02",
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3425,21 +3336,24 @@
       "file_block": [
         {
           "cidr_blocks": [
-            "10.3.78.0/24"
+            "10.3.78.0/24",
+            "10.201.174.0/24"
           ]
         }
       ],
       "icos": [
         {
           "cidr_blocks": [
-            "10.3.66.0/24"
+            "10.3.66.0/24",
+            "10.201.162.0/24"
           ]
         }
       ],
       "advmon": [
         {
           "cidr_blocks": [
-            "10.3.67.0/24"
+            "10.3.67.0/24",
+            "10.201.163.0/24"
           ]
         }
       ],
@@ -3461,66 +3375,12 @@
       ]
     },
     {
-      "key": "tok02az",
-      "name": "tok02az",
-      "city": "",
-      "state": "",
-      "country": "",
-      "private_networks": null,
-      "service_network": null,
-      "ssl_vpn": null,
-      "evault": [
-        {
-          "cidr_blocks": [
-            "10.201.166.0/24"
-          ]
-        }
-      ],
-      "file_block": [
-        {
-          "cidr_blocks": [
-            "10.201.174.0/24"
-          ]
-        }
-      ],
-      "icos": [
-        {
-          "cidr_blocks": [
-            "10.201.162.0/24"
-          ]
-        }
-      ],
-      "advmon": [
-        {
-          "cidr_blocks": [
-            "10.201.163.0/24"
-          ]
-        }
-      ],
-      "rhe_ls": [
-        {
-          "cidr_blocks": [
-            "10.2.112.0/20",
-            "10.3.192.0/24"
-          ]
-        }
-      ],
-      "ims": [
-        {
-          "cidr_blocks": [
-            "10.200.80.0/20",
-            "10.3.160.0/20",
-            "10.201.0.0/20"
-          ]
-        }
-      ]
-    },
-    {
       "key": "tok04",
       "name": "tok04",
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3600,6 +3460,7 @@
       "city": "Tokyo",
       "state": "",
       "country": "JPN",
+      "geo_region": "Asia Pacific",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3679,6 +3540,7 @@
       "city": "Toronto",
       "state": "",
       "country": "CAN",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3767,6 +3629,7 @@
       "city": "Toronto",
       "state": "",
       "country": "CAN",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3823,6 +3686,7 @@
       "city": "Toronto",
       "state": "",
       "country": "CAN",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -3879,6 +3743,7 @@
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr03",
@@ -3977,6 +3842,7 @@
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": null,
       "service_network": [
         {
@@ -4047,6 +3913,7 @@
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -4178,6 +4045,7 @@
       "city": "Washington D.C.",
       "state": "",
       "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",
@@ -4254,9 +4122,10 @@
     {
       "key": "wdc07",
       "name": "wdc07",
-      "city": "",
+      "city": "Washington D.C.",
       "state": "",
-      "country": "",
+      "country": "USA",
+      "geo_region": "Americas",
       "private_networks": [
         {
           "key": "bcr01",

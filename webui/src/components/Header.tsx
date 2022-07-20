@@ -30,7 +30,6 @@ const styles = {
 interface IProps {
   isLight: boolean,
   issuesUrl: string,
-  elementDisabled: boolean,
   setLight: (value: any) => void
   onToolbar: (value: any) => void
 }
@@ -38,7 +37,6 @@ interface IProps {
 export const HeaderNav = ({
   isLight,
   issuesUrl,
-  elementDisabled,
   setLight,
   onToolbar
 }: IProps) => {
