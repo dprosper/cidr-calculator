@@ -1275,7 +1275,7 @@ export const App = () => {
 
       <Footer style={{ textAlign: "center" }}>
         <p style={{ margin: "25px" }}>
-          A project by <a target="_blank" rel="noreferrer" href="http://blog.maisonprosper.com/">Dimitri Prosper</a>
+          A project by <a target="_blank" rel="noreferrer" href="https://maisonprosper.com/">Dimitri Prosper</a>
         </p>
       </Footer>
 
