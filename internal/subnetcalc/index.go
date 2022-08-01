@@ -367,10 +367,13 @@ func contains(s []string, str string) bool {
 }
 
 func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Config, error) {
-	var dataCenters []DataCenter
+	var tmpConfig Config
 	file, _ := ioutil.ReadFile("ip-ranges.json")
 
-	err := json.Unmarshal([]byte(file), &dataCenters)
+	err := json.Unmarshal([]byte(file), &tmpConfig)
+	dataCenters := tmpConfig.DataCenters
+
+	// var dataCenters []DataCenter
 	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
@@ -743,11 +746,13 @@ func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 }
 
 func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config, error) {
-	var dataCenters []DataCenter
-
+	var tmpConfig Config
 	file, _ := ioutil.ReadFile("ip-ranges.json")
 
-	err := json.Unmarshal([]byte(file), &dataCenters)
+	err := json.Unmarshal([]byte(file), &tmpConfig)
+	dataCenters := tmpConfig.DataCenters
+
+	// var dataCenters []DataCenter
 	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
