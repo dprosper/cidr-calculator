@@ -19,6 +19,7 @@ package subnetcalc
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/netip"
 	"strconv"
@@ -63,112 +64,74 @@ type Address struct {
 }
 
 type Config struct {
-	Name                 string             `json:"name"`
-	Type                 string             `json:"type"`
-	Version              string             `json:"version"`
-	LastUpdated          string             `json:"last_updated"`
-	ReleaseNotes         string             `json:"release_notes"`
-	Source               string             `json:"source"`
-	Issues               string             `json:"issues"`
-	RequestedCidr        string             `json:"requested_cidr"`
-	RequestedCidrNetwork CidrNetwork        `json:"requested_cidr_network"`
-	DataCenters          []DataCenterResult `json:"data_centers"`
+	Name                 string       `mapstructure:"name" json:"name"`
+	Type                 string       `mapstructure:"type" json:"type"`
+	Version              string       `mapstructure:"version" json:"version"`
+	LastUpdated          string       `mapstructure:"last_updated" json:"last_updated"`
+	ReleaseNotes         string       `mapstructure:"release_notes" json:"release_notes"`
+	Source               string       `mapstructure:"source" json:"source"`
+	Issues               string       `mapstructure:"issues" json:"issues"`
+	RequestedCidr        string       `mapstructure:"requested_cidr" json:"requested_cidr"`
+	RequestedCidrNetwork CidrNetwork  `mapstructure:"requested_cidr_network" json:"requested_cidr_network"`
+	DataCenters          []DataCenter `mapstructure:"data_centers" json:"data_centers"`
 }
 
 type DataCenter struct {
-	Key             string `mapstructure:"key"`
-	Name            string `mapstructure:"name"`
-	City            string `mapstructure:"city"`
-	State           string `mapstructure:"state"`
-	Country         string `mapstructure:"country"`
-	GeoRegion       string `mapstructure:"geo_region"`
-	PrivateNetworks []struct {
-		Key        string   `mapstructure:"key"`
-		Name       string   `mapstructure:"name"`
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"private_networks"`
-	ServiceNetwork []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"service_network"`
-	SslVpn []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"ssl_vpn"`
-	Evault []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"evault"`
-	FileBlock []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"file_block"`
-	Icos []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"icos"`
-	AdvMon []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"advmon"`
-	RHELS []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"rhe_ls"`
-	IMS []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"ims"`
+	Key             string           `mapstructure:"key" json:"key"`
+	Name            string           `mapstructure:"name" json:"name"`
+	City            string           `mapstructure:"city" json:"city"`
+	State           string           `mapstructure:"state" json:"state"`
+	Country         string           `mapstructure:"country" json:"country"`
+	GeoRegion       string           `mapstructure:"geo_region" json:"geo_region"`
+	PrivateNetworks []PrivateNetwork `mapstructure:"private_networks" json:"private_networks"`
+	ServiceNetwork  []ServiceNetwork `mapstructure:"service_network" json:"service_network"`
+	SslVpn          []SslVpn         `mapstructure:"ssl_vpn" json:"ssl_vpn"`
+	Evault          []Evault         `mapstructure:"evault" json:"evault"`
+	FileBlock       []FileBlock      `mapstructure:"file_block" json:"file_block"`
+	Icos            []Icos           `mapstructure:"icos" json:"icos"`
+	AdvMon          []AdvMon         `mapstructure:"advmon" json:"advmon"`
+	RHELS           []RHELS          `mapstructure:"rhe_ls" json:"rhe_ls"`
+	IMS             []IMS            `mapstructure:"ims" json:"ims"`
+	CidrNetworks    []CidrNetwork    `json:"cidr_networks"`
+	Conflict        bool             `json:"conflict"`
 }
 
 type PrivateNetwork struct {
-	Key        string   `json:"key"`
-	Name       string   `json:"name"`
-	CidrBlocks []string `json:"cidr_blocks"`
+	Key        string   `mapstructure:"key" json:"key"`
+	Name       string   `mapstructure:"name" json:"name"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type ServiceNetwork struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type SslVpn struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type Evault struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type FileBlock struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type Icos struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type AdvMon struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type RHELS struct {
-	CidrBlocks []string `json:"cidr_blocks"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type IMS struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type DataCenterResult struct {
-	Key             string           `json:"key"`
-	Name            string           `json:"name"`
-	City            string           `json:"city"`
-	State           string           `json:"state"`
-	Country         string           `json:"country"`
-	GeoRegion       string           `json:"geo_region"`
-	PrivateNetworks []PrivateNetwork `json:"private_networks"`
-	ServiceNetwork  []ServiceNetwork `json:"service_network"`
-	SslVpn          []SslVpn         `json:"ssl_vpn"`
-	Evault          []Evault         `json:"evault"`
-	FileBlock       []FileBlock      `json:"file_block"`
-	Icos            []Icos           `json:"icos"`
-	AdvMon          []AdvMon         `json:"advmon"`
-	RHELS           []RHELS          `json:"rhe_ls"`
-	IMS             []IMS            `json:"ims"`
-	CidrNetworks    []CidrNetwork    `json:"cidr_networks"`
-	Conflict        bool             `json:"conflict"`
+	CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
 }
 
 type CidrNetwork struct {
@@ -204,8 +167,6 @@ func getSubnetDetailsV2(cidr string) *Address {
 
 		return &indexResponseAddress
 	} else {
-		fmt.Println(cidrAddress)
-		fmt.Println(cidrBits)
 		sub := SubnetCalculator(cidrAddress, cidrBits)
 
 		addressResponse := Address{
@@ -366,14 +327,20 @@ func contains(s []string, str string) bool {
 }
 
 func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Config, error) {
-	var dataCenters []DataCenter
-	err := viper.UnmarshalKey("data_centers", &dataCenters)
+	var tmpConfig Config
+	file, _ := ioutil.ReadFile("ip-ranges.json")
+
+	err := json.Unmarshal([]byte(file), &tmpConfig)
+	dataCenters := tmpConfig.DataCenters
+
+	// var dataCenters []DataCenter
+	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 		return Config{}, err
 	}
 
-	dataCentersOutput := []DataCenterResult{}
+	dataCentersOutput := []DataCenter{}
 
 	requestedDetails := getSubnetDetailsV2(requestedCidr)
 	requestedCidrNetwork := CidrNetwork{
@@ -685,7 +652,7 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			}
 		}
 
-		dataCenterJson := DataCenterResult{
+		dataCenterJson := DataCenter{
 			Key:             dataCenter.Key,
 			Name:            dataCenter.Name,
 			City:            dataCenter.City,
@@ -739,9 +706,14 @@ func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 }
 
 func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config, error) {
+	var tmpConfig Config
+	file, _ := ioutil.ReadFile("ip-ranges.json")
 
-	var dataCenters []DataCenter
-	err := viper.UnmarshalKey("data_centers", &dataCenters)
+	err := json.Unmarshal([]byte(file), &tmpConfig)
+	dataCenters := tmpConfig.DataCenters
+
+	// var dataCenters []DataCenter
+	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 		return Config{}, err
@@ -751,7 +723,7 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
 	})
 
-	dataCentersOutput := []DataCenterResult{}
+	dataCentersOutput := []DataCenter{}
 
 	for _, value := range dataCentersFiltered {
 		// for _, value := range dataCenters {
@@ -813,7 +785,7 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 			imsOutput = append(imsOutput, imsJson)
 		}
 
-		dataCenterJson := DataCenterResult{
+		dataCenterJson := DataCenter{
 			Key:             dataCenter.Key,
 			Name:            dataCenter.Name,
 			City:            dataCenter.City,

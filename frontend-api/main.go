@@ -17,7 +17,10 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -79,6 +82,40 @@ func (w *Worker) indexRun(isReady chan bool) {
 	}
 }
 
+// getIPRangesJSON function
+func getIPRangesJSON(requestURL string) {
+	url1, err := url.ParseRequestURI(requestURL)
+	if err != nil || url1.Scheme == "" {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+	}
+
+	logger.SystemLogger.Info(fmt.Sprintf("checking for subnet %s ", requestURL))
+
+	httpRequest, _ := http.NewRequest("GET", requestURL, nil)
+	httpRequest.Header.Set("User-Agent", "calculator (dimitri.prosper@gmail.com)")
+	httpRequest.Header.Set("Content-Type", "text/plain; charset=utf-8")
+
+	httpClient := &http.Client{
+		Timeout: time.Duration(30 * time.Second),
+	}
+
+	httpResponse, err := httpClient.Do(httpRequest)
+	if err != nil {
+		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+	}
+	defer httpResponse.Body.Close()
+
+	logger.SystemLogger.Info(fmt.Sprintf("response: %s", httpResponse.Status))
+
+	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
+		body, _ := ioutil.ReadAll(httpResponse.Body)
+		err = ioutil.WriteFile("ip-ranges.json", body, 0644)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
 func main() {
 	logger.InitLogger(true, true, false, true)
 
@@ -108,6 +145,8 @@ func main() {
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		logger.SystemLogger.Info("Config file changed", zap.String("location", e.Name))
 	})
+
+	getIPRangesJSON(viper.GetString("source_json"))
 
 	// comment this next line to debug during development
 	gin.SetMode(gin.ReleaseMode)
