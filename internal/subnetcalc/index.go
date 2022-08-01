@@ -167,8 +167,6 @@ func getSubnetDetailsV2(cidr string) *Address {
 
 		return &indexResponseAddress
 	} else {
-		fmt.Println(cidrAddress)
-		fmt.Println(cidrBits)
 		sub := SubnetCalculator(cidrAddress, cidrBits)
 
 		addressResponse := Address{
