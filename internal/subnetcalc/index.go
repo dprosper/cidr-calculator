@@ -355,7 +355,7 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 		LastAssignableHost:  requestedDetails.LastAssignableHost,
 	}
 
-	// Depreacted: filtering by Country
+	// Deprecated: filtering by Country
 	// dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
 	// 	return strings.Contains(strings.ToLower(dataCenter.Country), strings.ToLower(filter))
 	// })
