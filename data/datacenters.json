@@ -312,10 +312,10 @@
     {
       "key": "dal01",
       "name": "dal01",
-      "city": "",
-      "state": "",
-      "country": "",
-      "geo_region": "",
+      "city": "Dallas",
+      "state": "Texas",
+      "country": "USA",
+      "geo_region": "Americas",
       "private_networks": null,
       "service_network": null,
       "ssl_vpn": null,
@@ -1662,10 +1662,10 @@
     {
       "key": "hou02",
       "name": "hou02",
-      "city": "",
-      "state": "",
-      "country": "",
-      "geo_region": "",
+      "city": "Dallas",
+      "state": "Texas",
+      "country": "USA",
+      "geo_region": "Americas",
       "private_networks": null,
       "service_network": null,
       "ssl_vpn": null,
@@ -2167,10 +2167,10 @@
     {
       "key": "mel01",
       "name": "mel01",
-      "city": "",
+      "city": "Melbourne",
       "state": "",
-      "country": "",
-      "geo_region": "",
+      "country": "AUS",
+      "geo_region": "Asia Pacific",
       "private_networks": null,
       "service_network": null,
       "ssl_vpn": null,
@@ -3317,8 +3317,7 @@
           "cidr_blocks": [
             "10.202.240.0/20",
             "161.26.208.0/22",
-            "166.9",
-            "84.0/24"
+            "166.9.84.0/24"
           ]
         }
       ],
