@@ -64,16 +64,16 @@ type Address struct {
 }
 
 type TmpConfig struct {
-	Name                 string       `mapstructure:"name"`
-	Type                 string       `mapstructure:"type"`
-	Version              string       `mapstructure:"version"`
-	LastUpdated          string       `mapstructure:"last_updated"`
-	ReleaseNotes         string       `mapstructure:"release_notes"`
-	Source               string       `mapstructure:"source"`
-	Issues               string       `mapstructure:"issues"`
-	RequestedCidr        string       `mapstructure:"requested_cidr"`
-	RequestedCidrNetwork CidrNetwork  `mapstructure:"requested_cidr_network"`
-	DataCenters          []DataCenter `mapstructure:"data_centers"`
+	Name                 string       `mapstructure:"name" json:"name"`
+	Type                 string       `mapstructure:"type" json:"type"`
+	Version              string       `mapstructure:"version" json:"version"`
+	LastUpdated          string       `mapstructure:"last_updated" json:"last_updated"`
+	ReleaseNotes         string       `mapstructure:"release_notes" json:"release_notes"`
+	Source               string       `mapstructure:"source" json:"source"`
+	Issues               string       `mapstructure:"issues" json:"issues"`
+	RequestedCidr        string       `mapstructure:"requested_cidr" json:"requested_cidr"`
+	RequestedCidrNetwork CidrNetwork  `mapstructure:"requested_cidr_network" json:"requested_cidr_network"`
+	DataCenters          []DataCenter `mapstructure:"data_centers" json:"data_centers"`
 }
 
 type Config struct {
@@ -90,41 +90,41 @@ type Config struct {
 }
 
 type DataCenter struct {
-	Key             string `mapstructure:"key"`
-	Name            string `mapstructure:"name"`
-	City            string `mapstructure:"city"`
-	State           string `mapstructure:"state"`
-	Country         string `mapstructure:"country"`
-	GeoRegion       string `mapstructure:"geo_region"`
+	Key             string `mapstructure:"key" json:"key"`
+	Name            string `mapstructure:"name" json:"name"`
+	City            string `mapstructure:"city" json:"city"`
+	State           string `mapstructure:"state" json:"state"`
+	Country         string `mapstructure:"country" json:"country"`
+	GeoRegion       string `mapstructure:"geo_region" json:"geo_region"`
 	PrivateNetworks []struct {
-		Key        string   `mapstructure:"key"`
-		Name       string   `mapstructure:"name"`
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"private_networks"`
+		Key        string   `mapstructure:"key" json:"key"`
+		Name       string   `mapstructure:"name" json:"name"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"private_networks" json:"private_networks"`
 	ServiceNetwork []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"service_network"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"service_network" json:"service_network"`
 	SslVpn []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"ssl_vpn"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"ssl_vpn" json:"ssl_vpn"`
 	Evault []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"evault"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"evault" json:"evault"`
 	FileBlock []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"file_block"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"file_block" json:"file_block"`
 	Icos []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"icos"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"icos" json:"icos"`
 	AdvMon []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"advmon"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"advmon" json:"advmon"`
 	RHELS []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"rhe_ls"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"rhe_ls" json:"rhe_ls"`
 	IMS []struct {
-		CidrBlocks []string `mapstructure:"cidr_blocks"`
-	} `mapstructure:"ims"`
+		CidrBlocks []string `mapstructure:"cidr_blocks" json:"cidr_blocks"`
+	} `mapstructure:"ims" json:"ims"`
 }
 
 type PrivateNetwork struct {
