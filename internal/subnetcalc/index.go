@@ -63,6 +63,19 @@ type Address struct {
 	LastAssignableHost  string `json:"last_assignable_host"`
 }
 
+type TmpConfig struct {
+	Name                 string       `mapstructure:"name"`
+	Type                 string       `mapstructure:"type"`
+	Version              string       `mapstructure:"version"`
+	LastUpdated          string       `mapstructure:"last_updated"`
+	ReleaseNotes         string       `mapstructure:"release_notes"`
+	Source               string       `mapstructure:"source"`
+	Issues               string       `mapstructure:"issues"`
+	RequestedCidr        string       `mapstructure:"requested_cidr"`
+	RequestedCidrNetwork CidrNetwork  `mapstructure:"requested_cidr_network"`
+	DataCenters          []DataCenter `mapstructure:"data_centers"`
+}
+
 type Config struct {
 	Name                 string             `json:"name"`
 	Type                 string             `json:"type"`
@@ -367,7 +380,7 @@ func contains(s []string, str string) bool {
 }
 
 func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Config, error) {
-	var tmpConfig Config
+	var tmpConfig TmpConfig
 	file, _ := ioutil.ReadFile("ip-ranges.json")
 
 	err := json.Unmarshal([]byte(file), &tmpConfig)
@@ -746,7 +759,7 @@ func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 }
 
 func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config, error) {
-	var tmpConfig Config
+	var tmpConfig TmpConfig
 	file, _ := ioutil.ReadFile("ip-ranges.json")
 
 	err := json.Unmarshal([]byte(file), &tmpConfig)
