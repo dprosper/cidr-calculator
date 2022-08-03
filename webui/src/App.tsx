@@ -1169,13 +1169,13 @@ export const App = () => {
               <Panel bordered style={{ padding: "5px" }}>
                 <React.Fragment>
                   <Row>
-                  <Col md={20}>
-                    <SelectDataCenter setDataCenters={setDataCenters} _allDataCenters={_allDataCenters} setSelectedDataCenters={setSelectedDataCenters} elementDisabled={elementDisabled} />
-                  </Col>
-                  <Col md={4}>
-                    <IconButton placement='right' color="blue" size="xs" appearance="subtle" onClick={onDownloadJSON} icon={<BsDownload />}> Export in JSON</IconButton>
-                    <IconButton placement='right' color="blue" size="xs" appearance="subtle" onClick={onDownloadCSV} icon={<BsDownload />}> Export in CSV</IconButton>
-                  </Col>
+                    <Col md={20}>
+                      <SelectDataCenter setDataCenters={setDataCenters} _allDataCenters={_allDataCenters} setSelectedDataCenters={setSelectedDataCenters} elementDisabled={elementDisabled} />
+                    </Col>
+                    <Col md={4}>
+                      <IconButton placement='right' color="blue" size="xs" appearance="subtle" onClick={onDownloadJSON} icon={<BsDownload />}> Export in JSON</IconButton>
+                      <IconButton placement='right' color="blue" size="xs" appearance="subtle" onClick={onDownloadCSV} icon={<BsDownload />}> Export in CSV</IconButton>
+                    </Col>
                   </Row>
                   <hr />
 
@@ -1237,13 +1237,13 @@ export const App = () => {
                 <span style={{ fontSize: '12px' }}>
                   <p><strong>{sourceName}</strong></p>
                   <p>
-                    Version {sourceVersion}
+                    {/* Version {sourceVersion}
+                    <br /> */}
+                    <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a>
                     <br />
                     Last updated on {sourceLastUpdated}
                     <br />
                     <a target="_blank" rel="noreferrer" href={sourceReleaseNotes}>Change History</a>
-                    <br />
-                    <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a>
                     <br />
                   </p>
 

@@ -45,7 +45,7 @@ export const HeaderNav = ({
     <Header>
       <Navbar appearance="inverse">
         <Navbar.Brand >
-          CIDR Conflict Calculator for IBM Cloud - Classic Infrastructure (Unofficial)
+          CIDR Conflict Calculator for IBM Cloud Classic Infrastructure (a community provided tool)
         </Navbar.Brand>
         <Nav pullRight style={{ marginTop: "15px", marginRight: "10px" }}>
           <Whisper
