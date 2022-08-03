@@ -48,10 +48,12 @@ var HistoryLogger *zap.Logger
 var ErrorLogger *zap.Logger
 
 // InitLogger function
-func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) {
+func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) zap.AtomicLevel {
+	atomicLevel := zap.NewAtomicLevel()
+
 	if accessLog {
 		accessLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("access.log"))
-		accessCore := zapcore.NewCore(getFileEncoder(), accessLogWriter, zapcore.DebugLevel)
+		accessCore := zapcore.NewCore(getFileEncoder(), accessLogWriter, atomicLevel)
 		AccessLogger = zap.New(accessCore, zap.AddCaller())
 		defer AccessLogger.Sync()
 
@@ -60,24 +62,26 @@ func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) 
 
 	if systemLog {
 		systemLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("system.log"))
-		systemCore := zapcore.NewCore(getFileEncoder(), systemLogWriter, zapcore.DebugLevel)
+		systemCore := zapcore.NewCore(getFileEncoder(), systemLogWriter, atomicLevel)
 		SystemLogger = zap.New(systemCore, zap.AddCaller())
 		defer SystemLogger.Sync()
 	}
 
 	if historyLog {
 		historyLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("history.log"))
-		historyCore := zapcore.NewCore(getFileEncoder(), historyLogWriter, zapcore.DebugLevel)
+		historyCore := zapcore.NewCore(getFileEncoder(), historyLogWriter, atomicLevel)
 		HistoryLogger = zap.New(historyCore, zap.AddCaller())
 		defer HistoryLogger.Sync()
 	}
 
 	if errorLog {
 		errorLogWriter := zap.CombineWriteSyncers(os.Stderr, getLogWriter("error.log"))
-		errorCore := zapcore.NewCore(getFileEncoder(), errorLogWriter, zapcore.DebugLevel)
+		errorCore := zapcore.NewCore(getFileEncoder(), errorLogWriter, atomicLevel)
 		ErrorLogger = zap.New(errorCore, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
 		defer ErrorLogger.Sync()
 	}
+
+	return atomicLevel
 }
 
 func getFileEncoder() zapcore.Encoder {
