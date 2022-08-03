@@ -78,7 +78,7 @@ func parseAndBuildDoc(indexType string, dir, filename string) (Indexable, *bluge
 }
 
 func indexData(writer *bluge.Writer, indexType string, sourcePath string) error {
-	logger.SystemLogger.Info("Indexing started.")
+	logger.SystemLogger.Debug("Indexing started.")
 
 	startTime := time.Now()
 	dirEntries, err := ioutil.ReadDir(sourcePath)
@@ -116,7 +116,7 @@ func indexData(writer *bluge.Writer, indexType string, sourcePath string) error 
 
 	indexTime := time.Since(startTime)
 	timePerDoc := float64(indexTime) / float64(indexedCount)
-	logger.SystemLogger.Info("Indexing completed.",
+	logger.SystemLogger.Debug("Indexing completed.",
 		zap.Int("docs_indexed", indexedCount),
 		zap.Duration("index_time", indexTime),
 		zap.Float64("doc_average_ms", timePerDoc/float64(time.Millisecond)),

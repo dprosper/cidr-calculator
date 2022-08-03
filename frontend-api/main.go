@@ -43,6 +43,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type Feedback struct {
+	Rating int `json:"rating" binding:"required"`
+}
+
 type ZapLog struct {
 	Level string `json:"level" binding:"required"`
 }
@@ -83,7 +87,7 @@ func (w *Worker) indexRun(isReady chan bool) {
 
 		finished := time.Now()
 		duration := finished.Sub(started)
-		logger.SystemLogger.Info("Index worker stats", zap.String("started:", started.String()), zap.String("finished:", finished.String()), zap.String("duration:", duration.String()))
+		logger.SystemLogger.Debug("Index worker stats", zap.String("started:", started.String()), zap.String("finished:", finished.String()), zap.String("duration:", duration.String()))
 
 		w.period = w.Interval - duration
 	}
@@ -171,6 +175,21 @@ func main() {
 
 	router.POST("/api/subnetcalc", subnetcalc.ReadMiddleware())
 	router.POST("/api/getdetails", subnetcalc.GetDetailsV2())
+
+	// Report the current log level
+	router.POST("/api/feedback", func(c *gin.Context) {
+		feedback := new(Feedback)
+
+		if err := c.BindJSON(&feedback); err == nil {
+			logger.SystemLogger.Info("feedback received", zap.Int("rating", feedback.Rating), zap.String("client_ip", c.ClientIP()))
+		} else {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid feedback object was provided."})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"status": "success",
+		})
+	})
 
 	// Report the current log level
 	router.GET("/loglevel", func(c *gin.Context) {
