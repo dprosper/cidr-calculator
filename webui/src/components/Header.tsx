@@ -62,15 +62,15 @@ export const HeaderNav = ({
                   }} title={!isLight ? 'light' : 'dark'} />
                 </ButtonGroup>
 
-                <Divider style={{ margin: "5px 0" }} />
+                {/* <Divider style={{ margin: "5px 0" }} />
                 <span style={styles.radioGroupLabel}>View</span>
                 <ButtonGroup style={{ paddingLeft: "30px" }}>
                   <IconButton icon={<MdTableRows />} onClick={() => onToolbar('list')} title='list' />
                   <IconButton icon={<FaRegFolder />} onClick={() => onToolbar('tab')} title='tab' />
                   <IconButton icon={<MdTableView />} onClick={() => onToolbar('spreadsheet')} title='table' />
-                </ButtonGroup>
-                <Divider style={{ margin: "5px 0" }} />
+                </ButtonGroup> */}
 
+                <Divider style={{ margin: "5px 0" }} />
                 <Nav.Item
                   href={issuesUrl}
                   target="_blank"
