@@ -276,6 +276,7 @@ func ReadMiddleware() gin.HandlerFunc {
 				logger.SystemLogger.Info("Processing new read request",
 					zap.String("cidr", cidr),
 					zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
+					zap.String("client_ip", c.ClientIP()),
 				)
 
 				data, err := readDataCenters(cidr, selectedDataCenters)
@@ -300,6 +301,7 @@ func ReadMiddleware() gin.HandlerFunc {
 		logger.SystemLogger.Info("Processing new calculator request",
 			zap.String("cidr", cidr),
 			zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
+			zap.String("client_ip", c.ClientIP()),
 		)
 
 		success := true
