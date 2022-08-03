@@ -42,14 +42,14 @@ func RateLimit() gin.HandlerFunc {
 		ip := c.ClientIP()
 		value := int(ips.Add(ip, 1))
 		if value%50 == 0 {
-			logger.SystemLogger.Info("rate limit thresholds", zap.String("ip", ip), zap.Int("count", value))
+			logger.SystemLogger.Info("Rate limit thresholds", zap.String("ip", ip), zap.Int("count", value))
 		}
 		if value >= 200 {
 			if value%200 == 0 {
-				logger.SystemLogger.Warn("ip blocked")
+				logger.SystemLogger.Warn("One ip address was blocked.")
 			}
 			c.Abort()
-			c.String(http.StatusServiceUnavailable, "you were automatically banned :)")
+			c.String(http.StatusServiceUnavailable, "You were automatically banned after reaching our rate limit.)")
 		}
 	}
 }

@@ -155,7 +155,8 @@ func getSubnetDetailsV2(cidr string) *Address {
 	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
 
 	if len(indexResponse) > 0 {
-		logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
+		// logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
+		logger.SystemLogger.Debug(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
 
 		var indexResponseAddress Address
 
@@ -163,7 +164,7 @@ func getSubnetDetailsV2(cidr string) *Address {
 		if err != nil {
 			logger.ErrorLogger.Fatal("error unmarshalling index response", zap.String("error: ", err.Error()))
 		}
-		logger.SystemLogger.Info(fmt.Sprintln(indexResponseAddress))
+		logger.SystemLogger.Debug(fmt.Sprintln(indexResponseAddress))
 
 		return &indexResponseAddress
 	} else {
@@ -251,6 +252,7 @@ func ReadMiddleware() gin.HandlerFunc {
 		json := new(SubmittedCidr)
 		cidr := "0.0.0.0/0"
 		// filter := ""
+
 		if err := c.ShouldBindJSON(&json); err == nil {
 
 			errValidate := Validator.Struct(json)
@@ -270,6 +272,12 @@ func ReadMiddleware() gin.HandlerFunc {
 			if json.Cidr == "0.0.0.0/0" {
 				success := true
 				selectedDataCenters = json.SelectedDataCenters
+
+				logger.SystemLogger.Info("Processing new read request",
+					zap.String("cidr", cidr),
+					zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
+				)
+
 				data, err := readDataCenters(cidr, selectedDataCenters)
 				if err != nil {
 					success = false
@@ -288,6 +296,11 @@ func ReadMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json was provided in the post."})
 			return
 		}
+
+		logger.SystemLogger.Info("Processing new calculator request",
+			zap.String("cidr", cidr),
+			zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
+		)
 
 		success := true
 		data, err := runSubnetCalculator(cidr, selectedDataCenters)

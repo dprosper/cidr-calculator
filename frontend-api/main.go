@@ -17,6 +17,8 @@ limitations under the License.
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -36,9 +38,14 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
+
+type ZapLog struct {
+	Level string `json:"level" binding:"required"`
+}
 
 type Worker struct {
 	Stopped         bool
@@ -86,13 +93,11 @@ func (w *Worker) indexRun(isReady chan bool) {
 func getIPRangesJSON(requestURL string) {
 	url1, err := url.ParseRequestURI(requestURL)
 	if err != nil || url1.Scheme == "" {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while parsing the request url: %v", err))
 	}
 
-	logger.SystemLogger.Info(fmt.Sprintf("checking for subnet %s ", requestURL))
-
 	httpRequest, _ := http.NewRequest("GET", requestURL, nil)
-	httpRequest.Header.Set("User-Agent", "calculator (dimitri.prosper@gmail.com)")
+	httpRequest.Header.Set("User-Agent", "cidr-calculator (dimitri.prosper@gmail.com)")
 	httpRequest.Header.Set("Content-Type", "text/plain; charset=utf-8")
 
 	httpClient := &http.Client{
@@ -101,7 +106,7 @@ func getIPRangesJSON(requestURL string) {
 
 	httpResponse, err := httpClient.Do(httpRequest)
 	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while performing http request: %v", err))
 	}
 	defer httpResponse.Body.Close()
 
@@ -111,13 +116,13 @@ func getIPRangesJSON(requestURL string) {
 		body, _ := ioutil.ReadAll(httpResponse.Body)
 		err = ioutil.WriteFile("ip-ranges.json", body, 0644)
 		if err != nil {
-			panic(err)
+			logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while writting ip-ranges.json to local file system: %v", err))
 		}
 	}
 }
 
 func main() {
-	logger.InitLogger(true, true, false, true)
+	atomicLevel := logger.InitLogger(true, true, false, true)
 
 	viper.SetConfigType("json")
 	viper.AddConfigPath("$HOME")
@@ -166,6 +171,36 @@ func main() {
 
 	router.POST("/api/subnetcalc", subnetcalc.ReadMiddleware())
 	router.POST("/api/getdetails", subnetcalc.GetDetailsV2())
+
+	// Report the current log level
+	router.GET("/loglevel", func(c *gin.Context) {
+		atomicLevel.ServeHTTP(c.Writer, c.Request)
+	})
+
+	// Dynamically update the log level, but only support a subset of what Zap offers: "info" and "debug".
+	// Zap offers the following levels: ("debug", "info", "warn", "error", "dpanic", "panic", and "fatal")
+	router.PUT("/loglevel", func(c *gin.Context) {
+		zaplog := new(ZapLog)
+
+		if err := c.ShouldBindBodyWith(&zaplog, binding.JSON); err == nil {
+			if zaplog.Level == "debug" || zaplog.Level == "info" {
+				var buf bytes.Buffer
+				err := json.NewEncoder(&buf).Encode(zaplog)
+				if err != nil {
+					logger.ErrorLogger.Fatal("Error writing to buffer", zap.String("error: ", err.Error()))
+				}
+
+				req, _ := http.NewRequest(http.MethodPut, "", &buf)
+				atomicLevel.ServeHTTP(c.Writer, req)
+			} else {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid log level was provided."})
+				return
+			}
+		} else {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid json object was provided."})
+			return
+		}
+	})
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
