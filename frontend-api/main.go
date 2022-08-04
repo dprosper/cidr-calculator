@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -95,6 +96,11 @@ func (w *Worker) indexRun(isReady chan bool) {
 
 // getIPRangesJSON function
 func getIPRangesJSON(requestURL string) {
+	e := os.Remove("ip-ranges.json")
+	if e != nil {
+		fmt.Println("ip-ranges.json file not found")
+	}
+
 	url1, err := url.ParseRequestURI(requestURL)
 	if err != nil || url1.Scheme == "" {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while parsing the request url: %v", err))
