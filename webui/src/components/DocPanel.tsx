@@ -12,11 +12,26 @@ import { MdOutlineQuestionAnswer, MdOutlineCelebration, MdSentimentVeryDissatisf
 import { Docs } from './Docs';
 import { AiOutlineLike, AiOutlineCheck, AiOutlineMinus, AiOutlineClose, AiOutlineDislike } from 'react-icons/ai';
 import axios from "axios";
+import ReactPlayer from 'react-player/youtube'
 
 interface IDemoProps {
   active: string,
   setActive: (value: string) => void,
 }
+
+const ResponsivePlayer = () => {
+    return (
+      <div className='player-wrapper'>
+        <ReactPlayer
+          className='react-player'
+          url='https://youtu.be/1MES_nOYYDw'
+          width='100%'
+          height='100%'
+          controls={true} 
+        />
+      </div>
+    )
+  }
 
 const Menu = ({
   active,
@@ -77,7 +92,7 @@ export const DocPanel = () => {
   return (
     <React.Fragment>
       <React.Fragment>
-        <p style={{ marginTop: '20px' }}><strong>Documentation</strong></p>
+        <p style={{ marginTop: '20px' }}><strong>Documentation & FAQs</strong></p>
         <p>
           Use this tool to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud.
         </p>
@@ -151,7 +166,10 @@ export const DocPanel = () => {
               }
 
               {active === 'start' &&
-                <Docs doc='getting-started.md' />
+                <React.Fragment>
+                  <Docs doc='getting-started.md' />
+                  <ResponsivePlayer />
+                </React.Fragment>
               }
 
               {active === 'help' &&

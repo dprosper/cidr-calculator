@@ -5,3 +5,6 @@ The CIDR Calculator tool is a community-based innovation.  It is supported on a 
 
 ###### Do you track access to the tool?
 We store usage and feedback information that is not traceable to any individual person or company in order to understand the value and improve on the tool.
+
+###### Where is the source code for this tool?
+All the code for this application is located on [GitHub](https://github.com/dprosper/cidr-calculator).

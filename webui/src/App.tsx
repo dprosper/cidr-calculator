@@ -212,27 +212,29 @@ export const App = () => {
           {
             activeKey === 'PN' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {pns.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 pns.map((pn: any, index: any) => {
                   const pnKey = pn.key;
                   return (
-                    <React.Fragment key={`${cellKey}-${pnKey}-${index}`}>
-                      {
-                        pn.cidr_blocks.map((cidr: any, index: any) => {
-                          let conflict = false;
-                          let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
-                          let obj = js && getObjects(js, 'cidr_notation', cidr);
-                          conflict = obj && obj[0].conflict;
+                  <React.Fragment key={`${cellKey}-${pnKey}-${index}`}>
+                    {
+                      pn.cidr_blocks.map((cidr: any, index: any) => {
+                        let conflict = false;
+                        let js = rowData["cidr_networks"] && JSON.parse(JSON.stringify(rowData["cidr_networks"]));
+                        let obj = js && getObjects(js, 'cidr_notation', cidr);
+                        conflict = obj && obj[0].conflict;
 
-                          return (
-                            <React.Fragment key={`${cellKey}-${pnKey}-${index}-a`}>
-                              <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
-                            </React.Fragment>
-                          )
-                        })
-                      }
-                      {pn.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
-                    </React.Fragment >
+                        return (
+                          <React.Fragment key={`${cellKey}-${pnKey}-${index}-a`}>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                          </React.Fragment>
+                        )
+                      })
+                    }
+                    {pn.cidr_blocks.length === 0 && <Tag color={undefined}> No data found </Tag>}
+                  </React.Fragment >
                   )
                 })
               }
@@ -242,6 +244,8 @@ export const App = () => {
           {
             activeKey === 'SN' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {serviceNetwork.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 serviceNetwork.map((service: any, index: any) => {
                   return (
@@ -271,6 +275,8 @@ export const App = () => {
           {
             activeKey === 'SV' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {sslVpn.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 sslVpn.map((ssl: any, index: any) => {
                   return (
@@ -300,6 +306,8 @@ export const App = () => {
           {
             activeKey === 'EV' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {evs.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 evs.map((ev: any, index: any) => {
                   return (
@@ -329,6 +337,8 @@ export const App = () => {
           {
             activeKey === 'FB' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {fileBlock.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 fileBlock.map((fb: any, index: any) => {
                   return (
@@ -358,6 +368,8 @@ export const App = () => {
           {
             activeKey === 'AM' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {advmons.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 advmons.map((am: any, index: any) => {
                   return (
@@ -387,6 +399,8 @@ export const App = () => {
           {
             activeKey === 'IC' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {icos.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 icos.map((ic: any, index: any) => {
                   return (
@@ -416,6 +430,8 @@ export const App = () => {
           {
             activeKey === 'RH' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {rhels.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 rhels.map((rh: any, index: any) => {
                   return (
@@ -445,6 +461,8 @@ export const App = () => {
           {
             activeKey === 'IM' &&
             <TagGroup style={{ marginBottom: "10px" }}>
+              {ims.length === 0 && <Tag color={undefined}> None available </Tag>}
+
               {
                 ims.map((im: any, index: any) => {
                   return (
@@ -1243,8 +1261,8 @@ export const App = () => {
                     <br />
                     Last updated on {sourceLastUpdated}
                     <br />
-                    <a target="_blank" rel="noreferrer" href={sourceReleaseNotes}>Change History</a>
-                    <br />
+                    {/* <a target="_blank" rel="noreferrer" href={sourceReleaseNotes}>Change History</a>
+                    <br /> */}
                   </p>
 
                   <hr />
