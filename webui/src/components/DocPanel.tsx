@@ -118,8 +118,6 @@ export const DocPanel = () => {
                   <Docs doc='feedback.md' />
                   {!feedbackSuccess &&
                     <React.Fragment>
-                      <strong>Is this tool helpful?</strong>
-                      <br />
                       <Row>
                         <Col md={2}>
                           <IconButton size="lg" disabled={feedbackDisabled} icon={<AiOutlineLike />} style={{ marginRight: 10 }} color="blue" appearance="subtle" circle onClick={() => onFeedback(5)} />

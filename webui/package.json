@@ -19,6 +19,7 @@
     "react-markdown": "^8.0.3",
     "react-player": "^2.10.1",
     "react-scripts": "^5.0.1",
+    "remark-gfm": "^3.0.1",
     "rsuite": "^5.16.1",
     "web-vitals": "^2.1.4"
   },
