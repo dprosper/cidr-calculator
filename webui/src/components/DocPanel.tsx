@@ -66,8 +66,8 @@ export const DocPanel = () => {
   const [active, setActive] = React.useState('start');
   const [rating, setRating] = React.useState(1);
 
-  const openDocPanel = React.useCallback(() => {
-    setActive('start');
+  const openDocPanel = React.useCallback((selected: string) => {
+    setActive(selected);
     setIsDocOpen(true);
   }, []);
 
@@ -92,13 +92,20 @@ export const DocPanel = () => {
   return (
     <React.Fragment>
       <React.Fragment>
-        <p style={{ marginTop: '20px' }}><strong>Documentation & FAQs</strong></p>
+        <p style={{ marginTop: '20px' }}><strong>About this tool</strong></p>
         <p>
-          Use this tool to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud.
+          Use this tool to identify potential conflicts between IP ranges in your on-premises environment(s) and IP ranges used in IBM Cloud Classic infrastructure.
         </p>
-        <Button size="xs" style={{ fontSize: '12px', marginTop: '10px' }} appearance='subtle' onClick={() => openDocPanel()}>
-          Learn more.
+        <Button size="xs" style={{ fontSize: '12px', marginTop: '10px', marginRight: '2px' }} appearance='primary' onClick={() => openDocPanel('start')}>
+          Getting started
         </Button>
+        <Button size="xs" style={{ fontSize: '12px', marginTop: '10px' }} appearance='primary' onClick={() => openDocPanel('feedback')}>
+          Feedback
+        </Button>
+        <Button size="xs" style={{ fontSize: '12px', marginTop: '10px' }} appearance='primary' onClick={() => openDocPanel('help')}>
+          Frequently asked questions
+        </Button>
+
       </React.Fragment>
       <Drawer size={'full'} placement={'right'} open={isDocOpen} onClose={() => setIsDocOpen(false)} >
         <Drawer.Header>

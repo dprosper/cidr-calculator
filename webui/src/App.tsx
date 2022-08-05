@@ -1278,8 +1278,8 @@ export const App = () => {
                       </a>
                     </p>
                     <p>
-                      This tutorial presents a brief overview of BYOIP implementation patterns that can be used with IBM Cloud
-                      and a decision tree for identifying the appropriate pattern
+                      This tutorial presents a brief overview of BYOIP implementation patterns that can be used with IBM Cloud Classic infrastructure
+                      and a decision tree for identifying the appropriate pattern.
                     </p>
                     <hr />
                   </div>
