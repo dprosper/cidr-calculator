@@ -10,7 +10,6 @@ import {
   Grid,
 } from 'rsuite';
 import { BsCalculator, BsCalculatorFill } from 'react-icons/bs';
-import { FiFilter } from 'react-icons/fi';
 import { BiReset } from 'react-icons/bi';
 import axios from "axios";
 
@@ -19,16 +18,11 @@ import { DataCenter, CidrNetwork, _copyAndSort } from './common';
 const cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
 
 const ErrorMessage = ({ children }: { children: any }) => <span style={{ color: 'red' }}>{children}</span>;
-type PlacementType = 'topStart' | 'topCenter' | 'topEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd';
 
 interface IProps {
   isSortedDescending: boolean,
-  filterValue: string | undefined,
-  _allItems: DataCenter[],
   requestedCidrNetwork: CidrNetwork | null | undefined,
   setRequestedCidrNetwork: (value: CidrNetwork) => void,
-  setAllItemsValue: (value: DataCenter[]) => void,
-  setFilterValue: (value: string) => void,
   setElementDisabled: (value: boolean) => void,
   setItemsValue: (value: DataCenter[]) => void,
   selectedDataCenters: string[]
@@ -36,12 +30,8 @@ interface IProps {
 
 export const InputSection = ({
   isSortedDescending,
-  filterValue,
-  _allItems,
   requestedCidrNetwork,
   setRequestedCidrNetwork,
-  setAllItemsValue,
-  setFilterValue,
   setItemsValue,
   setElementDisabled,
   selectedDataCenters
@@ -55,7 +45,6 @@ export const InputSection = ({
   const [cidrValue, setcidrValue] = React.useState('');
   const [cidrDisabled, setCidrDisabled] = React.useState(false);
   const [cidrMessage, setCidrMessage] = React.useState(false);
-  const [filterDisabled, setFilterDisabled] = React.useState(false);
 
   const onChangeCidrValue = React.useCallback(
     (value: string, event: any) => {
@@ -67,21 +56,12 @@ export const InputSection = ({
     [cidrMessage],
   );
 
-  const onFilterByCountry = React.useCallback(
-    (value: string, event: any) => {
-      value ? setItemsValue(_allItems?.filter((i: DataCenter) => i.country.toLowerCase().indexOf(value) > -1)) : setItemsValue(_allItems);
-      setFilterValue(value)
-    },
-    [_allItems, setItemsValue, setFilterValue],
-  );
-
   const _calculateClicked = () => {
     if (cidrValue.match(cidrFormat)) {
       setItemsValue([]);
       setCidrMessage(false);
       setElementDisabled(true);
       setCidrDisabled(true);
-      setFilterDisabled(!!filterValue);
 
       axios.post(`/api/subnetcalc`, {
         cidr: cidrValue,
@@ -94,9 +74,7 @@ export const InputSection = ({
         .then((response) => {
           const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
           setItemsValue(sortedItems);
-          // setAllItemsValue(sortedItems);
           setRequestedCidrNetwork(response.data.requested_cidr_network);
-          // setElementDisabled(false);
         })
     } else {
       setCidrMessage(true);
@@ -117,7 +95,6 @@ export const InputSection = ({
         const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
         setItemsValue(sortedItems);
         setCidrDisabled(false);
-        setFilterDisabled(false)
         setRequestedCidrNetwork({
           conflict: false,
           service: '',
@@ -182,22 +159,6 @@ export const InputSection = ({
                 </ErrorMessage>
                 : <div style={{ marginBottom: 5, minHeight: 20 }}></div>
               }
-
-              {/* 
-              -- Disabled in UI only Filter by Country --
-              <InputGroup style={styles}>
-                <Input
-                  value={filterValue}
-                  onChange={onFilterByCountry}
-                  placeholder="country code"
-                  disabled={filterDisabled}
-                />
-                <InputGroup.Addon>
-                  <FiFilter />
-                </InputGroup.Addon>
-              </InputGroup>
-              <div style={{ marginBottom: 5, minHeight: 20 }}></div> 
-              */}
 
               <hr style={{ marginTop: 0 }} />
               <label>CIDR Notation:</label>

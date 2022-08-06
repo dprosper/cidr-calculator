@@ -14,7 +14,7 @@ import { AiOutlineLike, AiOutlineCheck, AiOutlineMinus, AiOutlineClose, AiOutlin
 import axios from "axios";
 import ReactPlayer from 'react-player/youtube'
 
-interface IDemoProps {
+interface IMenuProps {
   active: string,
   setActive: (value: string) => void,
 }
@@ -36,7 +36,7 @@ const ResponsivePlayer = () => {
 const Menu = ({
   active,
   setActive,
-}: IDemoProps) => {
+}: IMenuProps) => {
 
   return (
     <React.Fragment>
