@@ -9,9 +9,6 @@ import {
   ButtonGroup
 } from 'rsuite';
 
-import { MdTableRows, MdTableView } from 'react-icons/md';
-import { FaRegFolder } from 'react-icons/fa';
-
 import MenuIcon from '@rsuite/icons/Menu';
 
 import { BsSunrise, BsSunsetFill } from 'react-icons/bs';
@@ -31,14 +28,12 @@ interface IProps {
   isLight: boolean,
   issuesUrl: string,
   setLight: (value: any) => void
-  onToolbar: (value: any) => void
 }
 
 export const HeaderNav = ({
   isLight,
   issuesUrl,
   setLight,
-  onToolbar
 }: IProps) => {
 
   return (
@@ -61,14 +56,6 @@ export const HeaderNav = ({
                     onClose();
                   }} title={!isLight ? 'light' : 'dark'} />
                 </ButtonGroup>
-
-                {/* <Divider style={{ margin: "5px 0" }} />
-                <span style={styles.radioGroupLabel}>View</span>
-                <ButtonGroup style={{ paddingLeft: "30px" }}>
-                  <IconButton icon={<MdTableRows />} onClick={() => onToolbar('list')} title='list' />
-                  <IconButton icon={<FaRegFolder />} onClick={() => onToolbar('tab')} title='tab' />
-                  <IconButton icon={<MdTableView />} onClick={() => onToolbar('spreadsheet')} title='table' />
-                </ButtonGroup> */}
 
                 <Divider style={{ margin: "5px 0" }} />
                 <Nav.Item
