@@ -133,7 +133,6 @@ export const App = () => {
   const [elementDisabled, setElementDisabled] = React.useState(false);
   const [isSortedDescending] = React.useState(true);
   const [active, setActive] = React.useState<(string | number | undefined)>('cidr1');
-  // const [placement] = React.useState<PlacementType | undefined>('topCenter');
 
   const [sourceName, setSourceName] = React.useState('');
   const [sourceLastUpdated, setSourceLastUpdated] = React.useState('');
@@ -449,7 +448,6 @@ export const App = () => {
             )
           }
           )}
-
         </Drawer.Body>
       </Drawer>
     </CustomProvider >
