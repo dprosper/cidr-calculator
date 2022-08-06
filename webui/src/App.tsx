@@ -37,8 +37,6 @@ import { sortData } from './utils';
 
 import { DataCenter, CidrNetwork, _copyAndSort } from './components/common';
 
-type PlacementType = 'topStart' | 'topCenter' | 'topEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd';
-
 interface IDSelectDataCenterProps {
   _allDataCenters: DataCenter[],
   setDataCenters: (value: DataCenter[]) => void,
@@ -135,7 +133,7 @@ export const App = () => {
   const [elementDisabled, setElementDisabled] = React.useState(false);
   const [isSortedDescending] = React.useState(true);
   const [active, setActive] = React.useState<(string | number | undefined)>('cidr1');
-  const [placement] = React.useState<PlacementType | undefined>('topCenter');
+  // const [placement] = React.useState<PlacementType | undefined>('topCenter');
 
   const [sourceName, setSourceName] = React.useState('');
   const [sourceLastUpdated, setSourceLastUpdated] = React.useState('');
@@ -150,9 +148,9 @@ export const App = () => {
       setPanelContent(cidrDetails);
       setPanelDataCenter(dataCenter);
     } else {
-      toaster.push(message, { placement })
+      toaster.push(message, { placement: 'topCenter' })
     }
-  }, [placement, toaster]);
+  }, [toaster]);
 
   const CompactCell = (props: any) => (
     <Table.Cell
@@ -218,7 +216,7 @@ export const App = () => {
       document.body.appendChild(link);
       link.click();
     } else {
-      toaster.push(message, { placement });
+      toaster.push(message, { placement: 'topCenter' });
     }
   }
 
@@ -240,7 +238,7 @@ export const App = () => {
       document.body.appendChild(link);
       link.click();
     } else {
-      toaster.push(message, { placement });
+      toaster.push(message, { placement: 'topCenter' });
     }
   }
 
