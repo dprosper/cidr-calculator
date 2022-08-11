@@ -277,7 +277,7 @@ func ReadMiddleware() gin.HandlerFunc {
 					zap.String("cidr", cidr),
 					zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
 					zap.String("client_ip", c.Request.Header.Get("x-calculator-Client-Ip")),
-					zap.String("location", c.Request.Header.Get("x-calculator-Location")),
+					zap.String("client_loc", c.Request.Header.Get("X-Calculator-Client-Loc")),
 				)
 
 				data, err := readDataCenters(cidr, selectedDataCenters)
@@ -303,7 +303,7 @@ func ReadMiddleware() gin.HandlerFunc {
 			zap.String("cidr", cidr),
 			zap.String("selected_datacenters", strings.Join(selectedDataCenters, ",")),
 			zap.String("client_ip", c.Request.Header.Get("X-Calculator-Client-Ip")),
-			zap.String("location", c.Request.Header.Get("X-Calculator-Location")),
+			zap.String("client_loc", c.Request.Header.Get("X-Calculator-Client-Loc")),
 		)
 
 		success := true
