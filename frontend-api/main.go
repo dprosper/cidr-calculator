@@ -187,7 +187,10 @@ func main() {
 		feedback := new(Feedback)
 
 		if err := c.BindJSON(&feedback); err == nil {
-			logger.SystemLogger.Info("feedback received", zap.Int("rating", feedback.Rating), zap.String("client_ip", c.ClientIP()))
+			logger.SystemLogger.Info("feedback received", zap.Int("rating", feedback.Rating),
+				zap.String("client_ip", c.Request.Header.Get("X-Calculator-Client-Ip")),
+				zap.String("location", c.Request.Header.Get("X-Calculator-Location")),
+			)
 		} else {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid feedback object was provided."})
 			return

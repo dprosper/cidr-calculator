@@ -25,7 +25,9 @@ interface IProps {
   setRequestedCidrNetwork: (value: CidrNetwork) => void,
   setElementDisabled: (value: boolean) => void,
   setItemsValue: (value: DataCenter[]) => void,
-  selectedDataCenters: string[]
+  selectedDataCenters: string[],
+  clientIP: string,
+  location: string
 }
 
 export const InputSection = ({
@@ -34,7 +36,9 @@ export const InputSection = ({
   setRequestedCidrNetwork,
   setItemsValue,
   setElementDisabled,
-  selectedDataCenters
+  selectedDataCenters,
+  clientIP,
+  location
 }: IProps) => {
 
   const styles = {
@@ -69,6 +73,8 @@ export const InputSection = ({
       }, {
         headers: {
           'content-type': 'application/json',
+          'X-Calculator-Client-Ip': clientIP,
+          'X-Calculator-Client-Loc': location
         }
       })
         .then((response) => {

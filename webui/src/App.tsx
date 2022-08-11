@@ -138,6 +138,8 @@ export const App = () => {
   const [sourceLastUpdated, setSourceLastUpdated] = React.useState('');
   const [sourceUrl, setSourceUrl] = React.useState('');
   const [issuesUrl, setIssuesUrl] = React.useState('');
+  const [clientIP, setClientIP] = React.useState('');
+  const [location, setLocation] = React.useState('');
 
   const toaster = useToaster();
 
@@ -174,26 +176,52 @@ export const App = () => {
     );
   }, [openPanel, requestedCidrNetwork]);
 
+
   React.useEffect(() => {
     setElementDisabled(true);
 
-    axios.post(`/api/subnetcalc`, {
-      cidr: '0.0.0.0/0'
-    }, {
-      headers: {
-        'content-type': 'application/json',
-      }
-    })
-      .then((response) => {
-        const sortedDataCenters: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
-        setSourceName(response.data.name);
-        setSourceLastUpdated(response.data.last_updated);
-        setSourceUrl(response.data.source);
-        setIssuesUrl(response.data.issues);
-        setDataCenters(sortedDataCenters);
-        setAllDataCenters(sortedDataCenters);
-        setElementDisabled(false);
+    const fetchData = async () => {
+      const cf_response = await axios.get(`https://cloudflare.com/cdn-cgi/trace`);
+
+      const trace = cf_response.data.split(/\r?\n/);
+      let ip: string = "";
+      let loc: string = "";
+      trace.map((entry: string) => {
+        if (entry && entry.substring(0, 2) === 'ip') {
+          ip = entry.substring(3);
+          setClientIP(ip);
+        }
+        if (entry && entry.substring(0, 3) === 'loc') {
+          loc = entry.substring(4);
+          setLocation(loc);
+        }
+        return null
+      })
+
+      const response = await axios.post(`/api/subnetcalc`, {
+        cidr: '0.0.0.0/0'
+      }, {
+        headers: {
+          'content-type': 'application/json',
+          'X-Calculator-Client-Ip': ip,
+          'X-Calculator-Client-Loc': loc
+        }
       });
+
+      const sortedDataCenters: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
+      setSourceName(response.data.name);
+      setSourceLastUpdated(response.data.last_updated);
+      setSourceUrl(response.data.source);
+      setIssuesUrl(response.data.issues);
+      setDataCenters(sortedDataCenters);
+      setAllDataCenters(sortedDataCenters);
+      setElementDisabled(false);
+
+    }
+
+    fetchData()
+      .catch(console.error);;
+
   }, [isSortedDescending]);
 
   const handleSortColumn = (sortColumn: any, sortType: any) => {
@@ -261,6 +289,8 @@ export const App = () => {
                   setItemsValue={setDataCenters}
                   setElementDisabled={setElementDisabled}
                   selectedDataCenters={selectedDataCenters}
+                  clientIP={clientIP}
+                  location={location}
                 />
               </Affix>
             </Col>
@@ -341,7 +371,7 @@ export const App = () => {
 
                   <hr />
 
-                  <DocPanel />
+                  <DocPanel clientIP={clientIP} location={location} />
 
                   <hr />
                   <div style={{ marginTop: "20px" }}>

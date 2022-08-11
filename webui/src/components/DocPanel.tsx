@@ -58,7 +58,15 @@ const Menu = ({
   );
 };
 
-export const DocPanel = () => {
+interface IProps {
+  clientIP: string,
+  location: string
+}
+
+export const DocPanel = ({
+  clientIP,
+  location
+}: IProps) => {
 
   const [isDocOpen, setIsDocOpen] = React.useState(false);
   const [feedbackDisabled, setFeedbackDisabled] = React.useState(false);
@@ -80,13 +88,15 @@ export const DocPanel = () => {
     }, {
       headers: {
         'content-type': 'application/json',
+        'X-Calculator-Client-Ip': clientIP,
+        'X-Calculator-Client-Loc': location
       }
     })
       .then((response) => {
         setFeedbackSuccess(true);
         setFeedbackDisabled(false);
       });
-  }, [])
+  }, [clientIP, location])
 
 
   return (
