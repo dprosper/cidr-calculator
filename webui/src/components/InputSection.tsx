@@ -95,6 +95,8 @@ export const InputSection = ({
     }, {
       headers: {
         'content-type': 'application/json',
+        'X-Calculator-Client-Ip': clientIP,
+        'X-Calculator-Client-Loc': location
       }
     })
       .then((response) => {
