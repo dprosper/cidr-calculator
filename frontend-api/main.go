@@ -188,6 +188,7 @@ func main() {
 
 		if err := c.BindJSON(&feedback); err == nil {
 			logger.SystemLogger.Info("feedback received", zap.Int("rating", feedback.Rating),
+				zap.String("intermediate_ip", c.ClientIP()),
 				zap.String("client_ip", c.Request.Header.Get("X-Calculator-Client-Ip")),
 				zap.String("client_loc", c.Request.Header.Get("X-Calculator-Client-Loc")),
 			)
