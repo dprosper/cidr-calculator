@@ -1,0 +1,332 @@
+{
+  "ams01": {
+    "city": "Amsterdam",
+    "state": "",
+    "country": "NLD",
+    "geo_region": "Europe"
+  },
+  "ams03": {
+    "city": "Amsterdam",
+    "state": "",
+    "country": "NLD",
+    "geo_region": "Europe"
+  },
+  "che01": {
+    "city": "Chennai",
+    "state": "",
+    "country": "IND",
+    "geo_region": "Asia Pacific"
+  },
+  "dal01": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },  
+  "dal05": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal06": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal07": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal08": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal09": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal10": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal12": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal13": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "fra02": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "fra04": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "fra05": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "hkg02": {
+    "city": "Hong Kong",
+    "state": "",
+    "country": "HKG",
+    "geo_region": "Asia Pacific"
+  },
+  "hou02": {
+    "city": "Houston",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "mel01": {
+    "city": "Melbourne",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "lon02": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon04": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon05": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon06": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "mex01": {
+    "city": "Mexico city",
+    "state": "",
+    "country": "MEX",
+    "geo_region": "Americas"
+  },
+  "mil01": {
+    "city": "Milan",
+    "state": "",
+    "country": "ITA",
+    "geo_region": "Europe"
+  },
+  "mon01": {
+    "city": "Montreal",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "osa21": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "osa22": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "osa23": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "osl01": {
+    "city": "Oslo",
+    "state": "",
+    "country": "NOR",
+    "geo_region": "Europe"
+  },
+  "par01": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par04": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par05": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par06": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "sao01": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "sao04": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "sao05": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "seo01": {
+    "city": "Seoul",
+    "state": "",
+    "country": "KOR",
+    "geo_region": "Asia Pacific"
+  },
+  "sjc01": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sjc03": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sjc04": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sng01": {
+    "city": "Jurong East",
+    "state": "",
+    "country": "SGP",
+    "geo_region": "Asia Pacific"
+  },
+  "syd01": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "syd04": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "syd05": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "tok02": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tok04": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tok05": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tor01": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "tor04": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "tor05": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "wdc01": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc03": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc04": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc06": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc07": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  }
+}
