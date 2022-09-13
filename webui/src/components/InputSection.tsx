@@ -130,7 +130,7 @@ export const InputSection = ({
                 <Input
                   value={cidrValue}
                   onChange={onChangeCidrValue}
-                  placeholder="10.10.10.0/24"
+                  placeholder="e.g., 10.10.10.0/24"
                   disabled={cidrDisabled}
                 />
                 {!cidrDisabled &&
