@@ -70,6 +70,7 @@ type Config struct {
 	LastUpdated          string       `mapstructure:"last_updated" json:"last_updated"`
 	ReleaseNotes         string       `mapstructure:"release_notes" json:"release_notes"`
 	Source               string       `mapstructure:"source" json:"source"`
+	SourceJson           string       `mapstructure:"source" json:"source_json"`
 	Issues               string       `mapstructure:"issues" json:"issues"`
 	RequestedCidr        string       `mapstructure:"requested_cidr" json:"requested_cidr"`
 	RequestedCidrNetwork CidrNetwork  `mapstructure:"requested_cidr_network" json:"requested_cidr_network"`
@@ -701,6 +702,7 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 		LastUpdated:          viper.GetString("last_updated"),
 		ReleaseNotes:         viper.GetString("release_notes"),
 		Source:               viper.GetString("source"),
+		SourceJson:           viper.GetString("source_json"),
 		Issues:               viper.GetString("issues"),
 		RequestedCidr:        requestedCidr,
 		RequestedCidrNetwork: requestedCidrNetwork,
@@ -832,6 +834,7 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 		LastUpdated:   viper.GetString("last_updated"),
 		ReleaseNotes:  viper.GetString("release_notes"),
 		Source:        viper.GetString("source"),
+		SourceJson:    viper.GetString("source_json"),
 		Issues:        viper.GetString("issues"),
 		RequestedCidr: requestedCidr,
 		DataCenters:   dataCentersOutput,

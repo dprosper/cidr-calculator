@@ -137,6 +137,7 @@ export const App = () => {
   const [sourceName, setSourceName] = React.useState('');
   const [sourceLastUpdated, setSourceLastUpdated] = React.useState('');
   const [sourceUrl, setSourceUrl] = React.useState('');
+  const [sourceJson, setSourceJson] = React.useState('');
   const [issuesUrl, setIssuesUrl] = React.useState('');
   const [clientIP, setClientIP] = React.useState('');
   const [location, setLocation] = React.useState('');
@@ -212,6 +213,7 @@ export const App = () => {
       setSourceName(response.data.name);
       setSourceLastUpdated(response.data.last_updated);
       setSourceUrl(response.data.source);
+      setSourceJson(response.data.source_json);
       setIssuesUrl(response.data.issues);
       setDataCenters(sortedDataCenters);
       setAllDataCenters(sortedDataCenters);
@@ -364,6 +366,7 @@ export const App = () => {
                   <p><strong>{sourceName}</strong></p>
                   <p>
                     <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a>
+                    (<BsDownload /> <a target="_blank" rel="noreferrer" href={sourceJson}> download in JSON</a>)
                     <br />
                     Last updated on {sourceLastUpdated}
                     <br />
