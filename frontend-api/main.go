@@ -19,11 +19,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -34,6 +30,7 @@ import (
 	"dprosper/calculator/internal/middleware/common"
 	"dprosper/calculator/internal/network"
 	"dprosper/calculator/internal/subnetcalc"
+	"dprosper/calculator/internal/util"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gin-contrib/static"
@@ -94,43 +91,6 @@ func (w *Worker) indexRun(isReady chan bool) {
 	}
 }
 
-// getIPRangesJSON function
-func getIPRangesJSON(requestURL string) {
-	e := os.Remove("ip-ranges.json")
-	if e != nil {
-		fmt.Println("ip-ranges.json file not found")
-	}
-
-	url1, err := url.ParseRequestURI(requestURL)
-	if err != nil || url1.Scheme == "" {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while parsing the request url: %v", err))
-	}
-
-	httpRequest, _ := http.NewRequest("GET", requestURL, nil)
-	httpRequest.Header.Set("User-Agent", "cidr-calculator (dimitri.prosper@gmail.com)")
-	httpRequest.Header.Set("Content-Type", "text/plain; charset=utf-8")
-
-	httpClient := &http.Client{
-		Timeout: time.Duration(30 * time.Second),
-	}
-
-	httpResponse, err := httpClient.Do(httpRequest)
-	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while performing http request: %v", err))
-	}
-	defer httpResponse.Body.Close()
-
-	logger.SystemLogger.Info(fmt.Sprintf("response: %s", httpResponse.Status))
-
-	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
-		body, _ := ioutil.ReadAll(httpResponse.Body)
-		err = ioutil.WriteFile("ip-ranges.json", body, 0644)
-		if err != nil {
-			logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while writting ip-ranges.json to local file system: %v", err))
-		}
-	}
-}
-
 func main() {
 	atomicLevel := logger.InitLogger(true, true, false, true)
 
@@ -161,7 +121,7 @@ func main() {
 		logger.SystemLogger.Info("Config file changed", zap.String("location", e.Name))
 	})
 
-	getIPRangesJSON(viper.GetString("source_json"))
+	util.GetIPRangesJSON(viper.GetString("source_json"), "ip-ranges.json")
 
 	// comment this next line to debug during development
 	gin.SetMode(gin.ReleaseMode)

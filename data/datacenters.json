@@ -2,7 +2,7 @@
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
   "version": "2.0.1",
-  "last_updated": "11/07/2022",
+  "last_updated": "11/14/2022",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "source_json": "https://raw.githubusercontent.com/dprosper/cidr-calculator/main/data/datacenters.json",
@@ -15,6 +15,20 @@
       "state": "",
       "country": "NLD",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "159.8.198.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "159.8.197.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -42,6 +56,14 @@
             "161.26.28.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.128.0/20",
+            "161.26.28.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -51,6 +73,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -112,12 +135,79 @@
       ]
     },
     {
+      "key": "atl01",
+      "name": "atl01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.41.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "che01",
       "name": "che01",
       "city": "Chennai",
       "state": "",
       "country": "IND",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.38.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.38.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -137,6 +227,15 @@
             "166.9.60.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.16.0/20",
+            "161.26.32.0/22",
+            "166.9.60.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -146,6 +245,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -206,12 +306,82 @@
       ]
     },
     {
+      "key": "chi01",
+      "name": "chi01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.49.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "dal05",
       "name": "dal05",
       "city": "Dallas",
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "173.192.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "50.23.203.0/24",
+            "108.168.157.0/24",
+            "173.192.117.0/24",
+            "192.155.205.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -259,6 +429,14 @@
             "161.26.12.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.1.128.0/19",
+            "161.26.12.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -268,6 +446,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -335,6 +514,14 @@
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "192.255.18.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": null,
       "service_network": [
         {
@@ -342,9 +529,17 @@
             "100.100.0.0/20",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "100.100.0.0/20",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -410,6 +605,21 @@
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "198.23.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.46.187.0/24",
+            "198.23.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "brc01",
@@ -466,6 +676,15 @@
             "161.26.4.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -475,6 +694,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -546,6 +766,20 @@
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.46.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.46.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -598,6 +832,20 @@
             "166.9.250.192/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -607,6 +855,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -681,6 +930,20 @@
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.47.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.47.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -712,6 +975,18 @@
             "166.9.250.224/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.112.0/20",
+            "161.26.108.0/22",
+            "166.9.14.0/23",
+            "166.9.51.0/24",
+            "166.9.229.0/24",
+            "166.9.250.224/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -721,6 +996,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -791,6 +1067,20 @@
       "state": "Texas",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.48.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.48.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -831,6 +1121,18 @@
             "166.9.251.0/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.128.0/20",
+            "161.26.112.0/22",
+            "166.9.16.0/23",
+            "166.9.58.0/24",
+            "166.9.230.0/24",
+            "166.9.251.0/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -840,6 +1142,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -906,12 +1209,79 @@
       ]
     },
     {
+      "key": "den01",
+      "name": "den01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.53.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "fra02",
       "name": "fra02",
       "city": "Frankfurt",
       "state": "",
       "country": "DEU",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "159.122.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "159.122.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -949,6 +1319,15 @@
             "166.9.28.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.80.0/20",
+            "161.26.36.0/22",
+            "166.9.28.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -958,6 +1337,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1031,6 +1411,20 @@
       "state": "",
       "country": "DEU",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "161.156.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "161.156.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1052,9 +1446,19 @@
             "166.9.30.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.112.0/20",
+            "161.26.144.0/22",
+            "166.9.30.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1123,6 +1527,20 @@
       "state": "",
       "country": "DEU",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "149.81.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "149.81.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1150,9 +1568,19 @@
             "166.0.32.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.128.0/20",
+            "161.26.148.0/22",
+            "166.0.32.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1215,12 +1643,79 @@
       ]
     },
     {
+      "key": "lax01",
+      "name": "lax01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.33.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "lon02",
       "name": "lon02",
       "city": "London",
       "state": "",
       "country": "ENG",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "5.10.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "5.10.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1251,6 +1746,14 @@
             "161.26.8.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.1.208.0/20",
+            "161.26.8.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1260,6 +1763,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1331,6 +1835,20 @@
       "state": "",
       "country": "ENG",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "158.175.127.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "158.175.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1351,6 +1869,15 @@
             "166.9.36.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.32.0/20",
+            "161.26.128.0/22",
+            "166.9.36.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1360,6 +1887,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1428,6 +1956,20 @@
       "state": "",
       "country": "ENG",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "141.125.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "141.125.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1447,6 +1989,15 @@
             "166.9.34.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.48.0/20",
+            "161.26.140.0/22",
+            "166.9.34.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1456,6 +2007,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1524,6 +2076,20 @@
       "state": "",
       "country": "ENG",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "158.176.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "158.176.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1544,6 +2110,15 @@
             "166.9.38.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.64.0/20",
+            "161.26.160.0/22",
+            "166.9.38.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1553,6 +2128,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1615,12 +2191,79 @@
       ]
     },
     {
+      "key": "mia01",
+      "name": "mia01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.37.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "mil01",
       "name": "mil01",
       "city": "Milan",
       "state": "",
       "country": "ITA",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "159.122.138.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "159.122.137.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1644,6 +2287,14 @@
             "161.26.52.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.144.0/20",
+            "161.26.52.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1653,6 +2304,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1720,6 +2372,20 @@
       "state": "",
       "country": "CAN",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.54.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.54.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -1749,6 +2415,14 @@
             "161.26.56.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.112.0/20",
+            "161.26.56.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1758,6 +2432,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1817,12 +2492,73 @@
       ]
     },
     {
+      "key": "nyc01",
+      "name": "nyc01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.45.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "osa21",
       "name": "osa21",
       "city": "Osaka",
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "163.68.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -1842,6 +2578,15 @@
             "166.9.70.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.112.0/20",
+            "161.26.184.0/22",
+            "166.9.70.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1851,6 +2596,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1911,6 +2657,14 @@
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "163.69.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -1930,6 +2684,15 @@
             "166.9.71.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.144.0/20",
+            "161.26.188.0/22",
+            "166.9.71.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -1939,6 +2702,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -1999,6 +2763,14 @@
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "163.73.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2018,6 +2790,15 @@
             "166.9.72.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.160.0/20",
+            "161.26.192.0/22",
+            "166.9.72.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2027,6 +2808,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2087,6 +2869,20 @@
       "state": "",
       "country": "FRA",
       "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "159.8.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "159.8.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -2112,6 +2908,16 @@
             "166.9.245.128/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.2.144.0/20",
+            "161.26.60.0/22",
+            "166.9.79.0/24",
+            "166.9.245.128/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2121,6 +2927,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2191,6 +2998,8 @@
       "state": "",
       "country": "FRA",
       "geo_region": "Europe",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2203,6 +3012,7 @@
       ],
       "service_network": null,
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -2253,6 +3063,8 @@
       "state": "",
       "country": "FRA",
       "geo_region": "Europe",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2265,6 +3077,7 @@
       ],
       "service_network": null,
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -2315,6 +3128,8 @@
       "state": "",
       "country": "FRA",
       "geo_region": "Europe",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2327,6 +3142,7 @@
       ],
       "service_network": null,
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -2377,6 +3193,20 @@
       "state": "",
       "country": "BRA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.57.138.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.57.137.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -2401,6 +3231,15 @@
             "166.9.82.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.0.0/20",
+            "161.26.64.0/22",
+            "166.9.82.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2410,6 +3249,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2479,6 +3319,8 @@
       "state": "",
       "country": "BRA",
       "geo_region": "Americas",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2498,9 +3340,19 @@
             "166.9.83.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.208.0/20",
+            "161.26.204.0/22",
+            "166.9.83.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -2549,6 +3401,8 @@
       "state": "",
       "country": "BRA",
       "geo_region": "Americas",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2568,9 +3422,19 @@
             "166.9.84.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.240.0/20",
+            "161.26.208.0/22",
+            "166.9.84.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": null,
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -2619,6 +3483,20 @@
       "state": "California",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "50.23.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "50.23.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -2654,6 +3532,14 @@
             "10.200.32.0/20",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.1.192.0/20",
+            "10.200.32.0/20",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2663,6 +3549,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2729,6 +3616,20 @@
       "state": "California",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.45.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.45.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -2754,6 +3655,14 @@
             "161.26.72.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.176.0/20",
+            "161.26.72.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2763,6 +3672,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2828,6 +3738,14 @@
       "state": "California",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.62.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -2846,6 +3764,14 @@
             "161.26.136.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.80.0/20",
+            "161.26.136.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2855,6 +3781,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -2920,6 +3847,20 @@
       "state": "",
       "country": "SGP",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "174.133.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "174.133.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -2949,6 +3890,15 @@
             "161.26.76.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.2.32.0/20",
+            "10.200.144.0/20",
+            "161.26.76.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -2958,6 +3908,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3027,6 +3978,20 @@
       "state": "",
       "country": "AUS",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "168.1.18.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "168.1.17.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3056,6 +4021,17 @@
             "166.9.52.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.96.0/20",
+            "10.202.32.0/20",
+            "161.26.80.0/22",
+            "161.26.168.0/22",
+            "166.9.52.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3065,6 +4041,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3135,6 +4112,20 @@
       "state": "",
       "country": "AUS",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "130.198.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "130.198.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3154,6 +4145,15 @@
             "166.9.54.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.16.0/20",
+            "161.26.124.0/22",
+            "166.9.54.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3163,6 +4163,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3230,6 +4231,20 @@
       "state": "",
       "country": "AUS",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "135.90.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "135.90.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3249,6 +4264,15 @@
             "166.9.56.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.16.0/20",
+            "161.26.164.0/22",
+            "166.9.56.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3258,6 +4282,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -3306,6 +4331,20 @@
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "161.202.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "161.202.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3337,6 +4376,16 @@
             "166.9.40.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.64.0/20",
+            "10.201.160.0/20",
+            "161.26.84.0/22",
+            "166.9.40.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3346,6 +4395,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3418,6 +4468,20 @@
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "128.168.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "128.168.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3437,6 +4501,15 @@
             "166.9.42.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.176.0/20",
+            "161.26.152.0/22",
+            "166.9.42.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3446,6 +4519,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3512,6 +4586,20 @@
       "state": "",
       "country": "JPN",
       "geo_region": "Asia Pacific",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "165.192.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "165.192.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3531,6 +4619,15 @@
             "166.9.44.0/23",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.201.192.0/20",
+            "161.26.156.0/22",
+            "166.9.44.0/23",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3540,6 +4637,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3606,6 +4704,20 @@
       "state": "",
       "country": "CAN",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "158.85.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "158.85.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -3634,6 +4746,16 @@
             "166.9.76.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.2.48.0/20",
+            "10.202.96.0/20",
+            "161.26.88.0/22",
+            "166.9.76.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3644,6 +4766,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3713,6 +4836,14 @@
       "state": "",
       "country": "CAN",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "163.74.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -3732,6 +4863,15 @@
             "166.9.77.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.176.0/20",
+            "161.26.196.0/22",
+            "166.9.77.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3741,6 +4881,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -3789,6 +4930,14 @@
       "state": "",
       "country": "CAN",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "163.75.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": [
         {
           "key": "bcr01",
@@ -3808,6 +4957,15 @@
             "166.9.78.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.202.192.0/20",
+            "161.26.200.0/22",
+            "166.9.78.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3817,6 +4975,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": null,
       "file_block": [
         {
@@ -3865,6 +5024,23 @@
       "state": "",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "208.43.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "50.22.248.0/25",
+            "169.54.27.0/24",
+            "198.11.250.0/24",
+            "208.43.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr03",
@@ -3899,6 +5075,14 @@
             "161.26.16.0/22",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.1.96.0/19",
+            "161.26.16.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -3908,6 +5092,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -3974,6 +5159,14 @@
       "state": "",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "192.255.38.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
       "private_networks": null,
       "service_network": null,
       "ssl_vpn": [
@@ -3983,6 +5176,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -4048,6 +5242,20 @@
       "state": "",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.55.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.55.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -4104,6 +5312,18 @@
             "166.9.231.0/24",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -4113,6 +5333,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -4197,6 +5418,20 @@
       "state": "",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.60.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.60.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -4218,6 +5453,17 @@
             "166.9.251.64/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.160.0/20",
+            "161.26.120.0/22",
+            "166.9.22.0/23",
+            "166.9.232.0/24",
+            "166.9.251.64/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -4227,6 +5473,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
@@ -4295,6 +5542,20 @@
       "state": "",
       "country": "USA",
       "geo_region": "Americas",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "169.61.118.0/23"
+          ]
+        }
+      ],
+      "load_balancers_ips": [
+        {
+          "cidr_blocks": [
+            "169.61.117.0/24"
+          ]
+        }
+      ],
       "private_networks": [
         {
           "key": "bcr01",
@@ -4317,6 +5578,17 @@
             "166.9.251.96/27",
             "10.0.64.0/19"
           ]
+        },
+        {
+          "cidr_blocks": [
+            "10.200.176.0/20",
+            "161.26.132.0/22",
+            "166.9.24.0/23",
+            "166.9.233.0/24",
+            "166.9.251.96/27",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
         }
       ],
       "ssl_vpn": [
@@ -4326,6 +5598,7 @@
           ]
         }
       ],
+      "ssl_vpn_pops": null,
       "evault": [
         {
           "cidr_blocks": [
