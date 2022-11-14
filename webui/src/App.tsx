@@ -366,9 +366,7 @@ export const App = () => {
                   <p><strong>{sourceName}</strong></p>
                   <p>
                     <a target="_blank" rel="noreferrer" href={sourceUrl}>Source Data</a>
-                    <br />
-                    <BsDownload />
-                    <a target="_blank" rel="noreferrer" href={sourceJson}>Download in JSON</a>
+                    (<BsDownload /> <a target="_blank" rel="noreferrer" href={sourceJson}> download in JSON</a>)
                     <br />
                     Last updated on {sourceLastUpdated}
                     <br />
