@@ -66,21 +66,32 @@ type TagPicker struct {
 }
 
 type DataCenter struct {
-	Key             string           `json:"key"`
-	Name            string           `json:"name"`
-	City            string           `json:"city"`
-	State           string           `json:"state"`
-	Country         string           `json:"country"`
-	GeoRegion       string           `json:"geo_region"`
-	PrivateNetworks []PrivateNetwork `json:"private_networks"`
-	ServiceNetwork  []ServiceNetwork `json:"service_network"`
-	SslVpn          []SslVpn         `json:"ssl_vpn"`
-	Evault          []Evault         `json:"evault"`
-	FileBlock       []FileBlock      `json:"file_block"`
-	Icos            []Icos           `json:"icos"`
-	AdvMon          []AdvMon         `json:"advmon"`
-	RHELS           []RHELS          `json:"rhe_ls"`
-	IMS             []IMS            `json:"ims"`
+	Key              string            `json:"key"`
+	Name             string            `json:"name"`
+	City             string            `json:"city"`
+	State            string            `json:"state"`
+	Country          string            `json:"country"`
+	GeoRegion        string            `json:"geo_region"`
+	FrontEndNetworks []FrontEndNetwork `json:"front_end_public_network"`
+	LoadBalancerIPs  []LoadBalancerIP  `json:"load_balancers_ips"`
+	PrivateNetworks  []PrivateNetwork  `json:"private_networks"`
+	ServiceNetworks  []ServiceNetwork  `json:"service_network"`
+	SslVpn           []SslVpn          `json:"ssl_vpn"`
+	SslVpnPops       []SslVpnPop       `json:"ssl_vpn_pops"`
+	Evault           []Evault          `json:"evault"`
+	FileBlock        []FileBlock       `json:"file_block"`
+	Icos             []Icos            `json:"icos"`
+	AdvMon           []AdvMon          `json:"advmon"`
+	RHELS            []RHELS           `json:"rhe_ls"`
+	IMS              []IMS             `json:"ims"`
+}
+
+type FrontEndNetwork struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type LoadBalancerIP struct {
+	CidrBlocks []string `json:"cidr_blocks"`
 }
 
 type PrivateNetwork struct {
@@ -90,6 +101,10 @@ type PrivateNetwork struct {
 }
 
 type ServiceNetwork struct {
+	CidrBlocks []string `json:"cidr_blocks"`
+}
+
+type SslVpnPop struct {
 	CidrBlocks []string `json:"cidr_blocks"`
 }
 
@@ -172,7 +187,9 @@ func main() {
 	if e != nil {
 		fmt.Println("ips.md file not found")
 	}
+
 	sourcemdRaw := "https://raw.githubusercontent.com/ibm-cloud-docs/cloud-infrastructure/master/ips.md"
+
 	getIPRangesMD(sourcemdRaw)
 
 	f, _ := os.Open("ips.md")
@@ -190,6 +207,12 @@ func main() {
 		line := scanner.Text()
 
 		switch line {
+		case "{: #front-end-network}":
+			ipType = "front-end-network"
+
+		case "{: #load-balancer-ips}":
+			ipType = "load-balancer-ips"
+
 		case "{: #customer-private-network-space}":
 			ipType = "customer-private-network-space"
 
@@ -223,6 +246,12 @@ func main() {
 
 		if ipType != "" {
 			if strings.HasPrefix(line, "|") {
+				if ipType == "front-end-network" {
+					parseFEN(line)
+				}
+				if ipType == "load-balancer-ips" {
+					parseLBIPS(line)
+				}
 				if ipType == "customer-private-network-space" {
 					parseCPNS(line, dc, pns)
 				}
@@ -234,6 +263,9 @@ func main() {
 				}
 				if ipType == "ssl-vpn-data-centers" {
 					parseSSLVPN(line)
+				}
+				if ipType == "ssl-vpn-pops" {
+					parseSSLVPNPOPS(line)
 				}
 				if ipType == "rhe-linux-server" {
 					parseRHELS(line)
@@ -300,6 +332,13 @@ func createDataCenters() {
 		})
 	}
 
+	// TODO: Get the old csv and compare to new csv
+	// getFromCOS()
+	// if err != nil {
+	// 	fmt.Println("error getting from COS")
+	// 	panic(err)
+	// }
+
 	output := runCmd("diff", []string{"ips.csv", "ips.old.csv"})
 	fmt.Println(output)
 
@@ -309,15 +348,13 @@ func createDataCenters() {
 		)
 		f, err = os.OpenFile("ips-sorted.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			fmt.Println("error opening ips-sorted.csv")
-			panic(err)
+			logger.ErrorLogger.Fatal("error opening ips-sorted.csv", zap.String("error: ", err.Error()))
 		}
 		defer f.Close()
 
 		for _, value := range ips {
 			if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", value.Network, value.DataCenter, value.Pod, strings.ReplaceAll(strings.Join(value.CidrBlocks, " "), "  ", " "))); err != nil {
-				fmt.Println("error writing ips-sorted.csv")
-				panic(err)
+				logger.ErrorLogger.Fatal("error writing ips-sorted.csv", zap.String("error: ", err.Error()))
 			}
 		}
 
@@ -327,6 +364,45 @@ func createDataCenters() {
 		logger.HistoryLogger.Info("changes found since last run.",
 			zap.String("diff", output),
 		)
+
+		lastRan := time.Now().Format("20060102.150405")
+
+		ips, err := os.Open("ips.csv")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer ips.Close()
+
+		ipsNew, err := os.Create(fmt.Sprintf("ips.%s.csv", lastRan))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer ipsNew.Close()
+
+		bytesWritten, err := io.Copy(ipsNew, ips)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
+
+		ipsOld, err := os.Open("ips.old.csv")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer ipsOld.Close()
+
+		ipsOldSave, err := os.Create(fmt.Sprintf("ips.old.%s.csv", lastRan))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer ipsOldSave.Close()
+
+		bytesWritten, err = io.Copy(ipsOldSave, ipsOld)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
+
 		// addToCOS()
 		// write the output somewhere (json object?)
 		// persist the json somewhere in order to display in the client (configmap)
@@ -336,7 +412,7 @@ func createDataCenters() {
 func createDataCentersJSON() {
 	f, err := os.Open("ips-sorted.csv")
 	if err != nil {
-		log.Fatal(err)
+		logger.ErrorLogger.Fatal("error opening ips-sorted.csv", zap.String("error: ", err.Error()))
 	}
 	defer f.Close()
 
@@ -348,9 +424,12 @@ func createDataCentersJSON() {
 
 	var tagPicker []TagPicker
 	var dataCenters []DataCenter
+	var frontEndNetworks []FrontEndNetwork
+	var loadBalancerIPs []LoadBalancerIP
 	var privateNetworks []PrivateNetwork
 	var serviceNetwork []ServiceNetwork
 	var sslVPN []SslVpn
+	var sslVPNPops []SslVpnPop
 	var eVault []Evault
 	var fileBlock []FileBlock
 	var iCOS []Icos
@@ -372,7 +451,7 @@ func createDataCentersJSON() {
 		panic(err)
 	}
 
-	last := "ams01"
+	last := "ams03"
 	for _, line := range data {
 		start := line[1]
 		// rhe_ls,any-left,,dal09
@@ -399,7 +478,7 @@ func createDataCentersJSON() {
 				imsCidr = append(imsCidr, temp...)
 				if geoRegion == "Europe" {
 					// Also requires AMS01
-					temp = getServiceNetwork("ams01")
+					temp = getServiceNetwork("ams03")
 					imsCidr = append(imsCidr, temp...)
 				}
 				ims = append(ims, IMS{
@@ -420,25 +499,31 @@ func createDataCentersJSON() {
 				})
 
 				dataCenters = append(dataCenters, DataCenter{
-					Key:             last,
-					Name:            last,
-					City:            city,
-					State:           state,
-					Country:         country,
-					GeoRegion:       geoRegion,
-					PrivateNetworks: privateNetworks,
-					ServiceNetwork:  serviceNetwork,
-					SslVpn:          sslVPN,
-					Evault:          eVault,
-					FileBlock:       fileBlock,
-					Icos:            iCOS,
-					AdvMon:          advMon,
-					RHELS:           rheLS,
-					IMS:             ims,
+					Key:              last,
+					Name:             last,
+					City:             city,
+					State:            state,
+					Country:          country,
+					GeoRegion:        geoRegion,
+					FrontEndNetworks: frontEndNetworks,
+					LoadBalancerIPs:  loadBalancerIPs,
+					PrivateNetworks:  privateNetworks,
+					ServiceNetworks:  serviceNetwork,
+					SslVpn:           sslVPN,
+					SslVpnPops:       sslVPNPops,
+					Evault:           eVault,
+					FileBlock:        fileBlock,
+					Icos:             iCOS,
+					AdvMon:           advMon,
+					RHELS:            rheLS,
+					IMS:              ims,
 				})
+				frontEndNetworks = nil
+				loadBalancerIPs = nil
 				privateNetworks = nil
 				serviceNetwork = nil
 				sslVPN = nil
+				sslVPNPops = nil
 				eVault = nil
 				fileBlock = nil
 				iCOS = nil
@@ -451,6 +536,25 @@ func createDataCentersJSON() {
 			}
 
 			cidr := strings.Split(strings.ReplaceAll(line[3], "  ", " "), " ")
+
+			if line[0] == "front_end_public_network" {
+				frontEndNetworks = append(frontEndNetworks, FrontEndNetwork{
+					CidrBlocks: cidr,
+				})
+			}
+
+			if line[0] == "load_balancers_ips" {
+				loadBalancerIPs = append(loadBalancerIPs, LoadBalancerIP{
+					CidrBlocks: cidr,
+				})
+			}
+
+			if line[0] == "service_network" {
+				cidr = append(cidr, allCidr...)
+				serviceNetwork = append(serviceNetwork, ServiceNetwork{
+					CidrBlocks: cidr,
+				})
+			}
 
 			if line[0] == "private_networks" {
 				privateNetworks = append(privateNetworks, PrivateNetwork{
@@ -469,6 +573,12 @@ func createDataCentersJSON() {
 
 			if line[0] == "ssl_vpn" {
 				sslVPN = append(sslVPN, SslVpn{
+					CidrBlocks: cidr,
+				})
+			}
+
+			if line[0] == "ssl_vpn_pops" {
+				sslVPNPops = append(sslVPNPops, SslVpnPop{
 					CidrBlocks: cidr,
 				})
 			}
@@ -519,20 +629,23 @@ func createDataCentersJSON() {
 	})
 
 	dataCenters = append(dataCenters, DataCenter{
-		Key:             last,
-		Name:            last,
-		City:            city,
-		State:           state,
-		Country:         country,
-		GeoRegion:       geoRegion,
-		PrivateNetworks: privateNetworks,
-		ServiceNetwork:  serviceNetwork,
-		SslVpn:          sslVPN,
-		Evault:          eVault,
-		FileBlock:       fileBlock,
-		Icos:            iCOS,
-		AdvMon:          advMon,
-		RHELS:           rheLS,
+		Key:              last,
+		Name:             last,
+		City:             city,
+		State:            state,
+		Country:          country,
+		GeoRegion:        geoRegion,
+		FrontEndNetworks: frontEndNetworks,
+		LoadBalancerIPs:  loadBalancerIPs,
+		PrivateNetworks:  privateNetworks,
+		ServiceNetworks:  serviceNetwork,
+		SslVpn:           sslVPN,
+		SslVpnPops:       sslVPNPops,
+		Evault:           eVault,
+		FileBlock:        fileBlock,
+		Icos:             iCOS,
+		AdvMon:           advMon,
+		RHELS:            rheLS,
 	})
 
 	// lastUpdated := time.Now().Format("2006-01-02 15:04:05")
@@ -578,6 +691,72 @@ func createDataCentersJSON() {
 
 	if _, err = f.WriteString(string(jsonData)); err != nil {
 		panic(err)
+	}
+}
+
+func parseFEN(content string) {
+	arr := strings.Split(content, "|")
+	// Empty space
+	// fmt.Println(arr[0])
+
+	city := strings.TrimSpace(arr[2])
+	if city != "---" && strings.ToLower(city) != "city" {
+
+		dataCenter := strings.TrimSpace(arr[1])
+
+		ipRange := strings.TrimSpace(arr[3])
+
+		// Empty space
+		// fmt.Println(arr[4])
+
+		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
+		// ips := strings.Split(ipRange, `\n`)
+		// FIXCR
+		// ips := strings.Split(ipRange, `  \n `)
+		ips := strings.Split(ipRange, `\n`)
+
+		f, err := os.OpenFile("ips.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", "front_end_public_network", strings.ToLower(dataCenter), "", strings.Join(strings.Fields(strings.Join(ips, " ")), " "))); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func parseLBIPS(content string) {
+	arr := strings.Split(content, "|")
+	// Empty space
+	// fmt.Println(arr[0])
+
+	city := strings.TrimSpace(arr[2])
+	if city != "---" && strings.ToLower(city) != "city" {
+
+		dataCenter := strings.TrimSpace(arr[1])
+
+		ipRange := strings.TrimSpace(arr[3])
+
+		// Empty space
+		// fmt.Println(arr[4])
+
+		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
+		// ips := strings.Split(ipRange, `\n`)
+		// FIXCR
+		// ips := strings.Split(ipRange, `  \n `)
+		ips := strings.Split(ipRange, `\n`)
+
+		f, err := os.OpenFile("ips.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", "load_balancers_ips", strings.ToLower(dataCenter), "", strings.Join(strings.Fields(strings.Join(ips, " ")), " "))); err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -727,6 +906,49 @@ func parseSSLVPN(content string) {
 		defer f.Close()
 
 		if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", "ssl_vpn", strings.ToLower(dataCenter), "", strings.Join(strings.Fields(strings.Join(ips, " ")), " "))); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func parseSSLVPNPOPS(content string) {
+	arr := strings.Split(content, "|")
+	// Empty space
+	// fmt.Println(arr[0])
+	// fmt.Println(arr[1])
+	// fmt.Println(arr[2])
+	// fmt.Println(arr[3])
+
+	city := strings.TrimSpace(arr[2])
+	// fmt.Println(city)
+
+	if city != "---" && strings.ToLower(city) != "city" {
+
+		dataCenter := strings.TrimSpace(arr[1])
+
+		// fmt.Println("city")
+		// fmt.Println(city)
+		// fmt.Println("dataCenter")
+		// fmt.Println(dataCenter)
+
+		ipRange := strings.TrimSpace(arr[3])
+
+		// Empty space
+		// fmt.Println(arr[4])
+
+		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
+		// ips := strings.Split(ipRange, `\n`)
+		// FIXCR
+		// ips := strings.Split(ipRange, `  \n `)
+		ips := strings.Split(ipRange, `\n`)
+
+		f, err := os.OpenFile("ips.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", "ssl_vpn_pops", strings.ToLower(dataCenter), "", strings.Join(strings.Fields(strings.Join(ips, " ")), " "))); err != nil {
 			panic(err)
 		}
 	}
