@@ -264,9 +264,9 @@ func main() {
 				if ipType == "ssl-vpn-data-centers" {
 					parseSSLVPN(line)
 				}
-				if ipType == "ssl-vpn-pops" {
-					parseSSLVPNPOPS(line)
-				}
+				// if ipType == "ssl-vpn-pops" {
+				// 	parseSSLVPNPOPS(line)
+				// }
 				if ipType == "rhe-linux-server" {
 					parseRHELS(line)
 				}
