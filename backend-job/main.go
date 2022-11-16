@@ -264,9 +264,9 @@ func main() {
 				if ipType == "ssl-vpn-data-centers" {
 					parseSSLVPN(line)
 				}
-				// if ipType == "ssl-vpn-pops" {
-				// 	parseSSLVPNPOPS(line)
-				// }
+				if ipType == "ssl-vpn-pops" {
+					parseSSLVPNPOPS(line)
+				}
 				if ipType == "rhe-linux-server" {
 					parseRHELS(line)
 				}
@@ -429,7 +429,7 @@ func createDataCentersJSON() {
 	var privateNetworks []PrivateNetwork
 	var serviceNetwork []ServiceNetwork
 	var sslVPN []SslVpn
-	// var sslVPNPops []SslVpnPop
+	var sslVPNPops []SslVpnPop
 	var eVault []Evault
 	var fileBlock []FileBlock
 	var iCOS []Icos
@@ -510,20 +510,20 @@ func createDataCentersJSON() {
 					PrivateNetworks:  privateNetworks,
 					ServiceNetworks:  serviceNetwork,
 					SslVpn:           sslVPN,
-					// SslVpnPops:       sslVPNPops,
-					Evault:    eVault,
-					FileBlock: fileBlock,
-					Icos:      iCOS,
-					AdvMon:    advMon,
-					RHELS:     rheLS,
-					IMS:       ims,
+					SslVpnPops:       sslVPNPops,
+					Evault:           eVault,
+					FileBlock:        fileBlock,
+					Icos:             iCOS,
+					AdvMon:           advMon,
+					RHELS:            rheLS,
+					IMS:              ims,
 				})
 				frontEndNetworks = nil
 				loadBalancerIPs = nil
 				privateNetworks = nil
 				serviceNetwork = nil
 				sslVPN = nil
-				// sslVPNPops = nil
+				sslVPNPops = nil
 				eVault = nil
 				fileBlock = nil
 				iCOS = nil
@@ -577,11 +577,11 @@ func createDataCentersJSON() {
 				})
 			}
 
-			// if line[0] == "ssl_vpn_pops" {
-			// 	sslVPNPops = append(sslVPNPops, SslVpnPop{
-			// 		CidrBlocks: cidr,
-			// 	})
-			// }
+			if line[0] == "ssl_vpn_pops" {
+				sslVPNPops = append(sslVPNPops, SslVpnPop{
+					CidrBlocks: cidr,
+				})
+			}
 
 			if line[0] == "evault" {
 				eVault = append(eVault, Evault{
@@ -640,12 +640,12 @@ func createDataCentersJSON() {
 		PrivateNetworks:  privateNetworks,
 		ServiceNetworks:  serviceNetwork,
 		SslVpn:           sslVPN,
-		// SslVpnPops:       sslVPNPops,
-		Evault:    eVault,
-		FileBlock: fileBlock,
-		Icos:      iCOS,
-		AdvMon:    advMon,
-		RHELS:     rheLS,
+		SslVpnPops:       sslVPNPops,
+		Evault:           eVault,
+		FileBlock:        fileBlock,
+		Icos:             iCOS,
+		AdvMon:           advMon,
+		RHELS:            rheLS,
 	})
 
 	// lastUpdated := time.Now().Format("2006-01-02 15:04:05")
