@@ -2,7 +2,7 @@
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
   "version": "2.0.1",
-  "last_updated": "11/14/2022",
+  "last_updated": "11/15/2022",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "source_json": "https://raw.githubusercontent.com/dprosper/cidr-calculator/main/data/datacenters.json",
@@ -135,6 +135,59 @@
       ]
     },
     {
+      "key": "atl01",
+      "name": "atl01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.41.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "che01",
       "name": "che01",
       "city": "Chennai",
@@ -228,6 +281,59 @@
             "10.200.16.0/20",
             "161.26.32.0/22",
             "166.9.60.0/24"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chi01",
+      "name": "chi01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.49.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
           ]
         }
       ],
@@ -1103,6 +1209,59 @@
       ]
     },
     {
+      "key": "den01",
+      "name": "den01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.53.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "fra02",
       "name": "fra02",
       "city": "Frankfurt",
@@ -1479,6 +1638,59 @@
             "166.9.231.0/24",
             "10.3.128.0/20",
             "161.26.28.0/22"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lax01",
+      "name": "lax01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.33.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
           ]
         }
       ]
@@ -1979,6 +2191,59 @@
       ]
     },
     {
+      "key": "mia01",
+      "name": "mia01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.37.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
       "key": "mil01",
       "name": "mil01",
       "city": "Milan",
@@ -2202,6 +2467,59 @@
           "cidr_blocks": [
             "10.3.112.0/20",
             "161.26.56.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nyc01",
+      "name": "nyc01",
+      "city": "",
+      "state": "",
+      "country": "",
+      "geo_region": "",
+      "front_end_public_network": null,
+      "load_balancers_ips": null,
+      "private_networks": null,
+      "service_network": null,
+      "ssl_vpn": null,
+      "ssl_vpn_pops": [
+        {
+          "cidr_blocks": [
+            "10.1.45.0/24"
+          ]
+        }
+      ],
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
           ]
         }
       ],

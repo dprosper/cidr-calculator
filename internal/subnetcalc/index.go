@@ -692,7 +692,9 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			Conflict:        dataCenterConflict,
 		}
 
-		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
+		if len(pnsOutput) > 0 {
+			dataCentersOutput = append(dataCentersOutput, dataCenterJson)
+		}
 	}
 
 	config := Config{
@@ -824,7 +826,11 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 			IMS:             imsOutput,
 			Conflict:        conflict,
 		}
-		dataCentersOutput = append(dataCentersOutput, dataCenterJson)
+
+		if len(pnsOutput) > 0 {
+			dataCentersOutput = append(dataCentersOutput, dataCenterJson)
+		}
+
 	}
 
 	config := Config{
