@@ -17,81 +17,58 @@ limitations under the License.
 package common
 
 import (
+	"dprosper/calculator/internal/logger"
+	"fmt"
 	"net/http"
-	"runtime"
 	"sync"
 	"time"
 
-	"dprosper/calculator/internal/logger"
-
 	"github.com/gin-gonic/gin"
-	"github.com/manucorporat/stats"
 	"go.uber.org/zap"
 )
 
 var (
-	ips        = stats.New()
-	messages   = stats.New()
-	users      = stats.New()
-	mutexStats sync.RWMutex
-	savedStats map[string]uint64
+	data sync.Map
 )
 
+type rate struct {
+	wait  time.Time
+	limit int
+}
+
 func RateLimit() gin.HandlerFunc {
+	const limit = 10
+	const wait = 30
+
 	return func(c *gin.Context) {
-		ip := c.ClientIP()
-		value := int(ips.Add(ip, 1))
-		if value%50 == 0 {
-			logger.SystemLogger.Info("Rate limit thresholds", zap.String("ip", ip), zap.Int("count", value))
+		r := rate{}
+		ip := c.GetHeader("X-Forwarded-For") + c.FullPath()
+
+		m, ok := data.Load(ip)
+		if !ok {
+			r = rate{time.Now(), limit}
+		} else {
+			r = m.(rate)
 		}
-		if value >= 200 {
-			if value%200 == 0 {
-				logger.SystemLogger.Warn("One ip address was blocked.")
-			}
-			c.Abort()
-			c.String(http.StatusServiceUnavailable, "You were automatically banned after reaching our rate limit.)")
+
+		currentRequest := time.Now()
+		lastRequest := currentRequest.Sub(r.wait).Seconds()
+
+		if lastRequest > wait {
+			r = rate{time.Now(), limit - 1}
+			data.Store(ip, r)
+			return
+		} else {
+			r.limit--
+			data.Store(ip, r)
+		}
+
+		if r.limit < 0 {
+			logger.SystemLogger.Warn("IP address was blocked.", zap.String("ip", ip))
+
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"message": fmt.Sprintf("You have reached our rate limit of %d requests per %d seconds interval. No soup for you!", limit, wait),
+			})
 		}
 	}
-}
-
-func statsWorker() {
-	c := time.Tick(1 * time.Second)
-	var lastMallocs uint64
-	var lastFrees uint64
-	for range c {
-		var stats runtime.MemStats
-		runtime.ReadMemStats(&stats)
-
-		mutexStats.Lock()
-		savedStats = map[string]uint64{
-			"timestamp":  uint64(time.Now().Unix()),
-			"HeapInuse":  stats.HeapInuse,
-			"StackInuse": stats.StackInuse,
-			"Mallocs":    stats.Mallocs - lastMallocs,
-			"Frees":      stats.Frees - lastFrees,
-			"Inbound":    uint64(messages.Get("inbound")),
-			"Outbound":   uint64(messages.Get("outbound")),
-			"Connected":  connectedUsers(),
-		}
-		lastMallocs = stats.Mallocs
-		lastFrees = stats.Frees
-		messages.Reset()
-		mutexStats.Unlock()
-	}
-}
-
-func connectedUsers() uint64 {
-	connected := users.Get("connected") - users.Get("disconnected")
-	if connected < 0 {
-		return 0
-	}
-	return uint64(connected)
-}
-
-// Stats returns savedStats data.
-func Stats() map[string]uint64 {
-	mutexStats.RLock()
-	defer mutexStats.RUnlock()
-
-	return savedStats
 }

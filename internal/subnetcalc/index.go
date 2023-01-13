@@ -19,9 +19,9 @@ package subnetcalc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/netip"
+	"os"
 	"strconv"
 	"strings"
 
@@ -348,17 +348,15 @@ func contains(s []string, str string) bool {
 
 func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Config, error) {
 	var tmpConfig Config
-	file, _ := ioutil.ReadFile("ip-ranges.json")
+	file, _ := os.ReadFile("ip-ranges.json")
 
 	err := json.Unmarshal([]byte(file), &tmpConfig)
-	dataCenters := tmpConfig.DataCenters
-
-	// var dataCenters []DataCenter
-	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 		return Config{}, err
 	}
+
+	dataCenters := tmpConfig.DataCenters
 
 	dataCentersOutput := []DataCenter{}
 
@@ -730,17 +728,15 @@ func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 
 func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config, error) {
 	var tmpConfig Config
-	file, _ := ioutil.ReadFile("ip-ranges.json")
+	file, _ := os.ReadFile("ip-ranges.json")
 
 	err := json.Unmarshal([]byte(file), &tmpConfig)
-	dataCenters := tmpConfig.DataCenters
-
-	// var dataCenters []DataCenter
-	// err := viper.UnmarshalKey("data_centers", &dataCenters)
 	if err != nil {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 		return Config{}, err
 	}
+
+	dataCenters := tmpConfig.DataCenters
 
 	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
 		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
@@ -749,7 +745,6 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 	dataCentersOutput := []DataCenter{}
 
 	for _, value := range dataCentersFiltered {
-		// for _, value := range dataCenters {
 		dataCenter := DataCenter{}
 		mapstructure.Decode(value, &dataCenter)
 		conflict := false

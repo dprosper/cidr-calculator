@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// GetIPRangesJSON function
-func GetIPRangesJSON(requestURL string, saveFile string) {
+// GetRemoteJSON function
+func GetRemoteJSON(requestURL string, saveFile string) {
 	e := os.Remove(saveFile)
 	if e != nil {
 		fmt.Println(saveFile + " file not found")
