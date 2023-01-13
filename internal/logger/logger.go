@@ -21,7 +21,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -29,8 +28,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
-
-var lock = &sync.Mutex{}
 
 // SugarLogger variable
 var SugarLogger *zap.SugaredLogger
@@ -41,14 +38,11 @@ var AccessLogger *zap.Logger
 // SystemLogger variable
 var SystemLogger *zap.Logger
 
-// HistoryLogger variable
-var HistoryLogger *zap.Logger
-
 // ErrorLogger variable
 var ErrorLogger *zap.Logger
 
 // InitLogger function
-func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) zap.AtomicLevel {
+func InitLogger(accessLog bool, systemLog bool, errorLog bool) zap.AtomicLevel {
 	atomicLevel := zap.NewAtomicLevel()
 
 	if accessLog {
@@ -65,13 +59,6 @@ func InitLogger(accessLog bool, systemLog bool, historyLog bool, errorLog bool) 
 		systemCore := zapcore.NewCore(getFileEncoder(), systemLogWriter, atomicLevel)
 		SystemLogger = zap.New(systemCore, zap.AddCaller())
 		defer SystemLogger.Sync()
-	}
-
-	if historyLog {
-		historyLogWriter := zap.CombineWriteSyncers(os.Stdout, getLogWriter("history.log"))
-		historyCore := zapcore.NewCore(getFileEncoder(), historyLogWriter, atomicLevel)
-		HistoryLogger = zap.New(historyCore, zap.AddCaller())
-		defer HistoryLogger.Sync()
 	}
 
 	if errorLog {

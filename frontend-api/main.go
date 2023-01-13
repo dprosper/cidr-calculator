@@ -91,8 +91,34 @@ func (w *Worker) indexRun(isReady chan bool) {
 	}
 }
 
+func (w *Worker) backendRun(isReady chan bool) {
+	// updater.UpdateIPRanges()
+	isReady <- true
+
+	for {
+		select {
+		case <-w.ShutdownChannel:
+			w.ShutdownChannel <- "Down"
+			return
+		case <-time.After(w.period):
+			// This breaks out of the select, not the for loop.
+			break
+		}
+
+		started := time.Now()
+
+		// updater.UpdateIPRanges()
+
+		finished := time.Now()
+		duration := finished.Sub(started)
+		logger.SystemLogger.Debug("Backend worker stats", zap.String("started:", started.String()), zap.String("finished:", finished.String()), zap.String("duration:", duration.String()))
+
+		w.period = w.Interval - duration
+	}
+}
+
 func main() {
-	atomicLevel := logger.InitLogger(true, true, false, true)
+	atomicLevel := logger.InitLogger(true, true, true)
 
 	viper.SetConfigType("json")
 	viper.AddConfigPath("$HOME")
@@ -121,7 +147,8 @@ func main() {
 		logger.SystemLogger.Info("Config file changed", zap.String("location", e.Name))
 	})
 
-	util.GetIPRangesJSON(viper.GetString("source_json"), "ip-ranges.json")
+	util.GetRemoteJSON(viper.GetString("source_json"), "ip-ranges.json")
+	// TODO: Connect to the COS repo and download the historical diff
 
 	// comment this next line to debug during development
 	gin.SetMode(gin.ReleaseMode)
@@ -223,6 +250,14 @@ func main() {
 
 	// Wait for the index to be initialzed by the worker before starting the HTTP server.
 	<-indexIsReady
+
+	// Create a worker to initialize and update the ips.md every 60 minutes.
+	backendIsReady := make(chan bool, 1)
+	backendWorker := newWorker(3600 * time.Second)
+	go backendWorker.backendRun(backendIsReady)
+
+	// Wait for the backend to be initialzed by the worker before starting the HTTP server.
+	// <-backendIsReady
 
 	// Disabled for now, use when new CIDRs are added to the datacenters.json file
 	// time.Sleep(60 * time.Second)

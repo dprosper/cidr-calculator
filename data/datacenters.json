@@ -1,8 +1,8 @@
 {
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
-  "version": "2.0.1",
-  "last_updated": "11/15/2022",
+  "version": "3.0.0",
+  "last_updated": "01/11/2023",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "source_json": "https://raw.githubusercontent.com/dprosper/cidr-calculator/main/data/datacenters.json",
@@ -393,14 +393,6 @@
             "10.40.0.0/14",
             "10.251.0.0/23",
             "10.251.64.0/23"
-          ]
-        },
-        {
-          "key": "bcr02",
-          "name": "bcr02",
-          "cidr_blocks": [
-            "10.60.0.0/15",
-            "10.62.0.0/16"
           ]
         },
         {
@@ -2399,13 +2391,6 @@
             "10.3.123.0/24",
             "10.140.0.0/15"
           ]
-        },
-        {
-          "key": "bcr02",
-          "name": "bcr02",
-          "cidr_blocks": [
-            "10.182.0.0/16"
-          ]
         }
       ],
       "service_network": [
@@ -3510,14 +3495,6 @@
           ]
         },
         {
-          "key": "bcr02",
-          "name": "bcr02",
-          "cidr_blocks": [
-            "10.88.0.0/14",
-            "10.251.74.0/23"
-          ]
-        },
-        {
           "key": "bcr03",
           "name": "bcr03",
           "cidr_blocks": [
@@ -4363,7 +4340,8 @@
           "key": "bcr02",
           "name": "bcr02",
           "cidr_blocks": [
-            "10.212.0.0/16"
+            "10.212.0.0/16",
+            "10.44.0.0/16"
           ]
         }
       ],
@@ -5042,17 +5020,6 @@
         }
       ],
       "private_networks": [
-        {
-          "key": "bcr03",
-          "name": "bcr03",
-          "cidr_blocks": [
-            "10.1.119.0/24",
-            "10.3.10.0/24",
-            "10.58.0.0/16",
-            "10.251.8.0/23",
-            "10.251.84.0/23"
-          ]
-        },
         {
           "key": "bcr05",
           "name": "bcr05",
