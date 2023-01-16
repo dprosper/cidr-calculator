@@ -30,6 +30,7 @@ import (
 	"dprosper/calculator/internal/middleware/common"
 	"dprosper/calculator/internal/network"
 	"dprosper/calculator/internal/subnetcalc"
+	"dprosper/calculator/internal/updater"
 	"dprosper/calculator/internal/util"
 
 	"github.com/fsnotify/fsnotify"
@@ -92,7 +93,7 @@ func (w *Worker) indexRun(isReady chan bool) {
 }
 
 func (w *Worker) backendRun(isReady chan bool) {
-	// updater.UpdateIPRanges()
+	updater.UpdateIPRanges()
 	isReady <- true
 
 	for {
@@ -107,7 +108,7 @@ func (w *Worker) backendRun(isReady chan bool) {
 
 		started := time.Now()
 
-		// updater.UpdateIPRanges()
+		updater.UpdateIPRanges()
 
 		finished := time.Now()
 		duration := finished.Sub(started)
