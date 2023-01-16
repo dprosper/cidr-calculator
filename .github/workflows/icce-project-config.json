@@ -6,6 +6,11 @@
          "path": "/data"
       }
    ],
+   "bindings": [
+      {
+         "serviceName": "calculator"
+      }
+   ],
    "runtime": 
       {
          "cpu": 1,
