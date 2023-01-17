@@ -223,19 +223,6 @@ func addToCOS() error {
 
 	cosClient := s3.New(sess, conf)
 
-	// deleteObjectInput := s3.DeleteObjectInput{
-	// 	Bucket: aws.String(BucketName),
-	// 	Key:    aws.String("file.added.csv"),
-	// }
-
-	// logger.SystemLogger.Info(fmt.Sprintf("Deleting object: %s", "file.added.csv"))
-
-	// _, err := cosClient.DeleteObject(&deleteObjectInput)
-	// if err != nil {
-	// 	logger.ErrorLogger.Error(fmt.Sprintf("ERROR deleting object: %s with error %s", "file.added.csv", err))
-	// }
-	// logger.SystemLogger.Info(fmt.Sprintf("Deleted object %s", "file.added.csv"))
-
 	content, err := os.ReadFile("ips")
 	if err != nil {
 		logger.ErrorLogger.Info("Error in reading file from disk.",
@@ -265,21 +252,6 @@ func addToCOS() error {
 			zap.String("error: ", err.Error()),
 		)
 	}
-
-	// input2 := &s3.CreateBucketInput{
-	// 	Bucket: aws.String(BucketName + "-history"),
-	// 	CreateBucketConfiguration: &s3.CreateBucketConfiguration{
-	// 		LocationConstraint: aws.String(cloudRegion + "-smart"),
-	// 	},
-	// }
-
-	// _, err = cosClient.CreateBucket(input2)
-	// if err != nil {
-	// 	logger.ErrorLogger.Info("Error in creating a bucket.",
-	// 		zap.String("bucket: ", BucketName+"-history"),
-	// 		zap.String("error: ", err.Error()),
-	// 	)
-	// }
 
 	d, _ := cosClient.ListBuckets(&s3.ListBucketsInput{})
 	fmt.Println(d)
@@ -339,55 +311,6 @@ func addToCOS() error {
 			}
 		}
 	}
-
-	// continuationToken := ""
-	// previousKey := ""
-
-	// start := time.Now().UTC()
-	// for {
-	// 	listInput := &s3.ListObjectsV2Input{
-	// 		Bucket:            aws.String(BucketName),
-	// 		MaxKeys:           aws.Int64(25),
-	// 		ContinuationToken: aws.String(continuationToken),
-	// 		StartAfter:        aws.String(previousKey),
-	// 	}
-
-	// 	objects, err := cosClient.ListObjectsV2(listInput)
-	// 	if err != nil {
-	// 		logger.ErrorLogger.Error("Error in getting bucket objects.", zap.String("error: ", err.Error()))
-	// 		return fmt.Errorf("cosClient.ListObjectsV2: %v", err)
-	// 	}
-
-	// 	logger.SystemLogger.Info(fmt.Sprintf("Adding objects to temp directory from: %s", BucketName))
-
-	// 	for _, object := range objects.Contents {
-	// 		key := *object.Key
-	// 		logger.SystemLogger.Info(key)
-
-	// 		objectInput := s3.GetObjectInput{
-	// 			Bucket: aws.String(BucketName),
-	// 			Key:    aws.String(key),
-	// 		}
-
-	// 		res, err := cosClient.GetObject(&objectInput)
-	// 		if err != nil {
-	// 			logger.ErrorLogger.Error(fmt.Sprintf("[%s] ERROR: %s", *aws.String(key), err))
-	// 			continue
-	// 		}
-
-	// 		object, _ := io.ReadAll(res.Body)
-
-	// 	}
-
-	// 	if *objects.IsTruncated {
-	// 		continuationToken = *objects.NextContinuationToken
-	// 	} else {
-	// 		break
-	// 	}
-	// }
-
-	// duration := time.Since(start)
-	// logger.SystemLogger.Info(fmt.Sprintf("Indexed (%s docs/sec)", duration.Truncate(time.Millisecond)))
 
 	return nil
 }
@@ -618,7 +541,6 @@ func createDataCenters() {
 
 		err = exec.Command("cp", fmt.Sprintf("ips.changes.%s", lastRan), fmt.Sprintf("../data/ips.changes.%s", lastRan)).Run()
 		if err != nil {
-			logger.SystemLogger.Debug("File not found", zap.String("file", fmt.Sprintf("ips.changes.%s", lastRan)))
 		}
 
 		createDataCentersJSON()
@@ -1145,28 +1067,13 @@ func parseSSLVPN(content string) {
 
 func parseSSLVPNPOPS(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
-	// fmt.Println(arr[1])
-	// fmt.Println(arr[2])
-	// fmt.Println(arr[3])
 
 	city := strings.TrimSpace(arr[2])
-	// fmt.Println(city)
 
 	if city != "---" && strings.ToLower(city) != "city" {
 
 		dataCenter := strings.TrimSpace(arr[1])
-
-		// fmt.Println("city")
-		// fmt.Println(city)
-		// fmt.Println("dataCenter")
-		// fmt.Println(dataCenter)
-
 		ipRange := strings.TrimSpace(arr[3])
-
-		// Empty space
-		// fmt.Println(arr[4])
 
 		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
 		// ips := strings.Split(ipRange, `\n`)
@@ -1188,8 +1095,6 @@ func parseSSLVPNPOPS(content string) {
 
 func parseRHELS(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	location := strings.TrimSpace(arr[1])
 	if location != "---" && strings.ToLower(location) != "server location" {
@@ -1219,9 +1124,6 @@ func parseRHELS(content string) {
 
 			serviceDataCenter := strings.TrimSpace(arr[2])
 
-			// Empty space
-			// fmt.Println(arr[3])
-
 			f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
 				panic(err)
@@ -1241,10 +1143,6 @@ func parseRHELS(content string) {
 func runCmd(name string, args []string) (output string, result string) {
 	out, err := exec.Command(name, args...).Output()
 	result = fmt.Sprintf("%s", err)
-
-	// if err != nil {
-	// 	fmt.Printf("%s", err)
-	// }
 
 	output = string(out[:])
 
@@ -1272,7 +1170,7 @@ func getIPRangesMD(requestURL string) {
 		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
 	}
 
-	logger.SystemLogger.Info(fmt.Sprintf("checking for subnet %s ", requestURL))
+	logger.SystemLogger.Info(fmt.Sprintf("Getting IP ranges source from %s ", requestURL))
 
 	httpRequest, _ := http.NewRequest("GET", requestURL, nil)
 	httpRequest.Header.Set("User-Agent", "cidr-calculator (dimitri.prosper@gmail.com)")
@@ -1284,11 +1182,11 @@ func getIPRangesMD(requestURL string) {
 
 	httpResponse, err := httpClient.Do(httpRequest)
 	if err != nil {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("found an error: %v", err))
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Error encountered while getting IP ranges: %v", err))
 	}
 	defer httpResponse.Body.Close()
 
-	logger.SystemLogger.Info(fmt.Sprintf("response: %s", httpResponse.Status))
+	logger.SystemLogger.Info(fmt.Sprintf("Get IP ranges response received: %s", httpResponse.Status))
 
 	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode < 300 {
 		body, _ := io.ReadAll(httpResponse.Body)
@@ -1299,7 +1197,7 @@ func getIPRangesMD(requestURL string) {
 	}
 
 	if httpResponse.StatusCode >= 300 {
-		logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get response: %s", httpResponse.Status))
+		logger.ErrorLogger.Fatal(fmt.Sprintf("Failed to get IP ranges: %s", httpResponse.Status))
 	}
 }
 
