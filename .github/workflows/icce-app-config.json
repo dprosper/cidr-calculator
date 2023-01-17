@@ -1,7 +1,7 @@
 {
-  "bindings": [
-     {
-        "serviceName": "calculator-cos"
-     }
-  ]
+   "bindings": [
+      {
+         "serviceName": "cidr-calculator"
+      }
+   ]
 }
