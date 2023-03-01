@@ -2,7 +2,7 @@
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
   "version": "3.0.0",
-  "last_updated": "01/30/2023",
+  "last_updated": "01/11/2023",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "source_json": "https://raw.githubusercontent.com/dprosper/cidr-calculator/main/data/datacenters.json",
@@ -3172,60 +3172,6 @@
       ]
     },
     {
-      "key": "sao",
-      "name": "sao",
-      "city": "",
-      "state": "",
-      "country": "",
-      "geo_region": "",
-      "front_end_public_network": null,
-      "load_balancers_ips": null,
-      "private_networks": null,
-      "service_network": null,
-      "ssl_vpn": [
-        {
-          "cidr_blocks": [
-            "10.202.8.0/24",
-            "10.202.12.0/24"
-          ]
-        }
-      ],
-      "ssl_vpn_pops": null,
-      "evault": null,
-      "file_block": null,
-      "icos": null,
-      "advmon": null,
-      "rhe_ls": [
-        {
-          "cidr_blocks": [
-            "10.2.112.0/20",
-            "10.3.192.0/24",
-            "161.26.4.0/22"
-          ]
-        }
-      ],
-      "ims": [
-        {
-          "cidr_blocks": [
-            "10.200.80.0/20",
-            "161.26.13.0/24",
-            "161.26.96.0/22",
-            "166.9.12.0/23",
-            "166.9.48.0/24",
-            "166.9.50.0/24",
-            "166.9.228.0/24",
-            "166.9.250.192/27",
-            "10.3.160.0/20",
-            "10.201.0.0/20",
-            "161.26.92.0/22",
-            "161.26.132.0/22",
-            "166.9.20.0/23",
-            "166.9.231.0/24"
-          ]
-        }
-      ]
-    },
-    {
       "key": "sao01",
       "name": "sao01",
       "city": "São Paulo",
@@ -3281,7 +3227,13 @@
           ]
         }
       ],
-      "ssl_vpn": null,
+      "ssl_vpn": [
+        {
+          "cidr_blocks": [
+            "10.200.236.0/24"
+          ]
+        }
+      ],
       "ssl_vpn_pops": null,
       "evault": [
         {

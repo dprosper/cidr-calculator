@@ -18,12 +18,16 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
+	"os"
+	"os/signal"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"dprosper/calculator/internal/logger"
@@ -157,6 +161,12 @@ func main() {
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
 
+	addr := ":" + strconv.Itoa(3000)
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: router,
+	}
+
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	router.Use(common.RedirectHttps())
@@ -225,6 +235,37 @@ func main() {
 		})
 	})
 
+	started := time.Now()
+
+	router.GET("/healthz", func(c *gin.Context) {
+		duration := time.Since(started)
+		if duration.Seconds() > 30 {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "Shuting down",
+			})
+
+			go func() {
+				logger.SystemLogger.Info("Shuting down server...")
+
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				if err := srv.Shutdown(ctx); err != nil {
+					logger.ErrorLogger.Fatal("Error during server shutdown:", zap.String("error: ", err.Error()))
+				}
+
+				logger.SystemLogger.Info("Server shutdown completed.")
+			}()
+		} else if duration.Seconds() > 10 {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"duration": duration.Seconds(),
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "UP",
+			})
+		}
+	})
+
 	// Serve the webui app
 	router.Use(static.Serve("/", static.LocalFile("./public", true)))
 
@@ -237,12 +278,6 @@ func main() {
 			c.File("./public" + path.Join(dir, file))
 		}
 	})
-
-	addr := ":" + strconv.Itoa(3000)
-	srv := &http.Server{
-		Addr:    addr,
-		Handler: router,
-	}
 
 	// Create a worker to initialize and update the index every 5 minutes.
 	indexIsReady := make(chan bool, 1)
@@ -258,14 +293,32 @@ func main() {
 	go backendWorker.backendRun(backendIsReady)
 
 	// Wait for the backend to be initialzed by the worker before starting the HTTP server.
-	// <-backendIsReady
+	<-backendIsReady
 
 	// Disabled for now, use when new CIDRs are added to the datacenters.json file
 	// time.Sleep(60 * time.Second)
 	// subnetcalc.CreateNewNetworksV2()
 
-	logger.SystemLogger.Info("Starting server")
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.ErrorLogger.Fatal("Error starting server", zap.String("error: ", err.Error()))
+	go func() {
+		logger.SystemLogger.Info("Starting server")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.ErrorLogger.Fatal("Error starting server", zap.String("error: ", err.Error()))
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(quit)
+
+	<-quit
+	logger.SystemLogger.Info("Shuting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.ErrorLogger.Fatal("Error during server shutdown:", zap.String("error: ", err.Error()))
 	}
+
+	logger.SystemLogger.Info("Server shutdown completed.")
 }
