@@ -235,36 +235,35 @@ func main() {
 		})
 	})
 
-	started := time.Now()
+	// started := time.Now()
+	// router.GET("/healthz", func(c *gin.Context) {
+	// 	duration := time.Since(started)
+	// 	if duration.Seconds() > 30 {
+	// 		c.JSON(http.StatusOK, gin.H{
+	// 			"status": "Shuting down",
+	// 		})
 
-	router.GET("/healthz", func(c *gin.Context) {
-		duration := time.Since(started)
-		if duration.Seconds() > 30 {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "Shuting down",
-			})
+	// 		go func() {
+	// 			logger.SystemLogger.Info("Shuting down server...")
 
-			go func() {
-				logger.SystemLogger.Info("Shuting down server...")
+	// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// 			defer cancel()
+	// 			if err := srv.Shutdown(ctx); err != nil {
+	// 				logger.ErrorLogger.Fatal("Error during server shutdown:", zap.String("error: ", err.Error()))
+	// 			}
 
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-				defer cancel()
-				if err := srv.Shutdown(ctx); err != nil {
-					logger.ErrorLogger.Fatal("Error during server shutdown:", zap.String("error: ", err.Error()))
-				}
-
-				logger.SystemLogger.Info("Server shutdown completed.")
-			}()
-		} else if duration.Seconds() > 10 {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"duration": duration.Seconds(),
-			})
-		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "UP",
-			})
-		}
-	})
+	// 			logger.SystemLogger.Info("Server shutdown completed.")
+	// 		}()
+	// 	} else if duration.Seconds() > 10 {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{
+	// 			"duration": duration.Seconds(),
+	// 		})
+	// 	} else {
+	// 		c.JSON(http.StatusOK, gin.H{
+	// 			"status": "UP",
+	// 		})
+	// 	}
+	// })
 
 	// Serve the webui app
 	router.Use(static.Serve("/", static.LocalFile("./public", true)))

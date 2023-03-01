@@ -143,6 +143,12 @@
     "country": "FRA",
     "geo_region": "Europe"
   },
+  "sao": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
   "sao01": {
     "city": "São Paulo",
     "state": "",
