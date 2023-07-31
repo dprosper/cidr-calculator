@@ -1,5 +1,5 @@
 {
-  "name": "IBM Cloud IP range",
+  "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
   "version": "3.0.0",
   "last_updated": "03/01/2023",
