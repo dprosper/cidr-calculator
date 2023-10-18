@@ -13,6 +13,9 @@ front_end_public_network,lon02,,5.10.118.0/23
 front_end_public_network,lon04,,158.175.127.0/24
 front_end_public_network,lon05,,141.125.118.0/23
 front_end_public_network,lon06,,158.176.118.0/23
+front_end_public_network,mad02,,13.120.118.0/24
+front_end_public_network,mad04,,13.121.118.0/24
+front_end_public_network,mad05,,13.122.118.0/24
 front_end_public_network,mil01,,159.122.138.0/23
 front_end_public_network,mon01,,169.54.118.0/23
 front_end_public_network,osa21,,163.68.118.0/24
@@ -102,6 +105,9 @@ private_networks,lon02,bcr02,10.164.0.0/15
 private_networks,lon04,bcr01,10.3.7.0/24 10.45.0.0/16 10.201.43.0/24 10.222.0.0/16
 private_networks,lon05,bcr01,10.3.21.0/24 10.196.0.0/15 10.201.59.0/24
 private_networks,lon06,bcr01,10.3.11.0/24 10.72.0.0/16 10.201.75.0/24 10.242.0.0/16
+private_networks,mad02,10.3.45.0/24  \n 10.118.0.0/18,
+private_networks,mad04,10.3.43.0/24  \n 10.118.64.0/18  \n 10.201.253.0/24,
+private_networks,mad05,10.3.41.0/24  \n 10.118.128.0/18  \n 10.201.254.0/24,
 private_networks,mil01,bcr01,10.1.241.0/24 10.3.50.8/29 10.3.50.16/28 10.3.50.32/27 10.3.50.64/26 10.3.50.128/25 10.3.155.0/24 10.144.0.0/15
 private_networks,mon01,bcr01,10.3.46.8/29 10.3.46.16/28 10.3.46.32/27 10.3.46.64/26 10.3.46.128/25 10.3.123.0/24 10.140.0.0/15
 private_networks,osa21,bcr01,10.3.59.0/24 10.8.0.0/16 10.201.246.0/24
@@ -158,6 +164,9 @@ service_network,lon02,,10.1.208.0/20 161.26.8.0/22
 service_network,lon04,,10.201.32.0/20 161.26.128.0/22 166.9.36.0/23
 service_network,lon05,,10.201.48.0/20 161.26.140.0/22 166.9.34.0/23
 service_network,lon06,,10.201.64.0/20 161.26.160.0/22 166.9.38.0/23
+service_network,mad02,,10.203.96.0/20 161.26.212.0/22
+service_network,mad04,,10.203.112.0/20 161.26.216.0/22
+service_network,mad05,,10.203.128.0/20 161.26.220.0/22
 service_network,mil01,,10.3.144.0/20 161.26.52.0/22
 service_network,mon01,,10.3.112.0/20 161.26.56.0/22
 service_network,osa21,,10.202.112.0/20 161.26.184.0/22 166.9.70.0/24
