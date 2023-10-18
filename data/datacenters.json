@@ -1,7 +1,7 @@
 {
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "last_updated": "10/18/2023",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
