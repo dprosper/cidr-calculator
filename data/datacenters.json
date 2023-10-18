@@ -2,7 +2,7 @@
   "name": "IBM Cloud IP ranges",
   "type": "classic_data_center_cidr",
   "version": "3.0.0",
-  "last_updated": "03/01/2023",
+  "last_updated": "10/18/2023",
   "release_notes": "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
   "source": "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
   "source_json": "https://raw.githubusercontent.com/dprosper/cidr-calculator/main/data/datacenters.json",
@@ -2156,6 +2156,243 @@
             "10.201.64.0/20",
             "161.26.160.0/22",
             "166.9.38.0/23"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24",
+            "10.3.128.0/20",
+            "161.26.28.0/22"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mad02",
+      "name": "mad02",
+      "city": "Madrid",
+      "state": "",
+      "country": "ESP",
+      "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "13.120.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
+      "private_networks": [
+        {
+          "key": "10.3.45.0/24  \\n 10.118.0.0/18",
+          "name": "10.3.45.0/24  \\n 10.118.0.0/18",
+          "cidr_blocks": [
+            ""
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.203.96.0/20",
+            "161.26.212.0/22",
+            "10.0.64.0/19"
+          ]
+        },
+        {
+          "cidr_blocks": [
+            "10.203.96.0/20",
+            "161.26.212.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
+        }
+      ],
+      "ssl_vpn": null,
+      "ssl_vpn_pops": null,
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24",
+            "10.3.128.0/20",
+            "161.26.28.0/22"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mad04",
+      "name": "mad04",
+      "city": "Madrid",
+      "state": "",
+      "country": "ESP",
+      "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "13.121.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
+      "private_networks": [
+        {
+          "key": "10.3.43.0/24  \\n 10.118.64.0/18  \\n 10.201.253.0/24",
+          "name": "10.3.43.0/24  \\n 10.118.64.0/18  \\n 10.201.253.0/24",
+          "cidr_blocks": [
+            ""
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.203.112.0/20",
+            "161.26.216.0/22",
+            "10.0.64.0/19"
+          ]
+        },
+        {
+          "cidr_blocks": [
+            "10.203.112.0/20",
+            "161.26.216.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
+        }
+      ],
+      "ssl_vpn": null,
+      "ssl_vpn_pops": null,
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
+          ]
+        }
+      ],
+      "ims": [
+        {
+          "cidr_blocks": [
+            "10.200.80.0/20",
+            "161.26.13.0/24",
+            "161.26.96.0/22",
+            "166.9.12.0/23",
+            "166.9.48.0/24",
+            "166.9.50.0/24",
+            "166.9.228.0/24",
+            "166.9.250.192/27",
+            "10.3.160.0/20",
+            "10.201.0.0/20",
+            "161.26.92.0/22",
+            "161.26.132.0/22",
+            "166.9.20.0/23",
+            "166.9.231.0/24",
+            "10.3.128.0/20",
+            "161.26.28.0/22"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mad05",
+      "name": "mad05",
+      "city": "Madrid",
+      "state": "",
+      "country": "ESP",
+      "geo_region": "Europe",
+      "front_end_public_network": [
+        {
+          "cidr_blocks": [
+            "13.122.118.0/24"
+          ]
+        }
+      ],
+      "load_balancers_ips": null,
+      "private_networks": [
+        {
+          "key": "10.3.41.0/24  \\n 10.118.128.0/18  \\n 10.201.254.0/24",
+          "name": "10.3.41.0/24  \\n 10.118.128.0/18  \\n 10.201.254.0/24",
+          "cidr_blocks": [
+            ""
+          ]
+        }
+      ],
+      "service_network": [
+        {
+          "cidr_blocks": [
+            "10.203.128.0/20",
+            "161.26.220.0/22",
+            "10.0.64.0/19"
+          ]
+        },
+        {
+          "cidr_blocks": [
+            "10.203.128.0/20",
+            "161.26.220.0/22",
+            "10.0.64.0/19",
+            "10.0.64.0/19"
+          ]
+        }
+      ],
+      "ssl_vpn": null,
+      "ssl_vpn_pops": null,
+      "evault": null,
+      "file_block": null,
+      "icos": null,
+      "advmon": null,
+      "rhe_ls": [
+        {
+          "cidr_blocks": [
+            "10.2.112.0/20",
+            "10.3.192.0/24",
+            "161.26.4.0/22"
           ]
         }
       ],

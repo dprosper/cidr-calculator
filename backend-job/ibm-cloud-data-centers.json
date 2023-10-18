@@ -89,6 +89,24 @@
     "country": "ENG",
     "geo_region": "Europe"
   },
+  "mad02": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
+  "mad04": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
+  "mad05": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
   "mil01": {
     "city": "Milan",
     "state": "",
