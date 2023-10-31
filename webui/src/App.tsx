@@ -442,7 +442,7 @@ export const App = () => {
                     <Grid fluid style={{ marginBottom: "10px" }}>
                       <Row>
                         <Col xs={24} sm={12} md={12}>
-                          <label>Reserved IP range for:</label>
+                          <label>Reserved IP range:</label>
                           <Input disabled value={String(cidrNetwork?.service)} />
                         </Col>
                         <Col xs={24} sm={12} md={12}>
