@@ -19,7 +19,7 @@ package subnetcalc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -113,7 +113,7 @@ func CreateNewNetworksV2() {
 				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error marshaling struct: %v", err))
 			}
 
-			err = ioutil.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
+			err = os.WriteFile(fmt.Sprintf("networks/%s.%d.json", cidrAddress, cidrBits), content, 0644)
 			if err != nil {
 				logger.ErrorLogger.Fatal(fmt.Sprintf("Encountered an error writing file: %v", err))
 			}
@@ -122,5 +122,5 @@ func CreateNewNetworksV2() {
 
 	logger.SystemLogger.Info(fmt.Sprintln(startTime))
 	indexTime := time.Since(startTime)
-	logger.SystemLogger.Info("Networks creationg finished", zap.String("time", fmt.Sprintf("Created in %s ", indexTime)))
+	logger.SystemLogger.Info("Networks creation finished", zap.String("time", fmt.Sprintf("Created in %s ", indexTime)))
 }

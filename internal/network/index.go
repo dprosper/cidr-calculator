@@ -19,7 +19,7 @@ package network
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -81,7 +81,22 @@ func indexData(writer *bluge.Writer, indexType string, sourcePath string) error 
 	logger.SystemLogger.Debug("Indexing started.")
 
 	startTime := time.Now()
-	dirEntries, err := ioutil.ReadDir(sourcePath)
+
+	/*
+		Deprecated: As of Go 1.16, os.ReadDir is a more efficient and correct choice: it returns a list of [fs.DirEntry] instead of [fs.FileInfo], and it returns partial results in the case of an error midway through reading a directory.
+
+		If you must continue obtaining a list of [fs.FileInfo], you still can:
+
+		entries, err := os.ReadDir(dirname)
+		if err != nil { ... }
+		infos := make([]fs.FileInfo, 0, len(entries))
+		for _, entry := range entries {
+				info, err := entry.Info()
+				if err != nil { ... }
+				infos = append(infos, info)
+		}
+	*/
+	dirEntries, err := os.ReadDir(sourcePath)
 	if err != nil {
 		return err
 	}
@@ -135,14 +150,14 @@ func indexBatch(indexWriter *bluge.Writer, docs []*bluge.Document) error {
 
 func parseJSONPath(indexType string, dir, filename string) (Indexable, []byte, error) {
 	docID := filename[:(len(filename) - len(filepath.Ext(filename)))]
-	jsonBytes, err := ioutil.ReadFile(filepath.Join(dir, filename))
+	jsonBytes, err := os.ReadFile(filepath.Join(dir, filename))
 	if err != nil {
 		return nil, nil, fmt.Errorf("error reading file '%s': %v", filename, err)
 	}
 	return unmarshalByType(indexType, docID, jsonBytes)
 }
 
-func unmarshalByType(_type, _id string, _source []byte) (rv Indexable, src []byte, err error) {
+func unmarshalByType(_, _id string, _source []byte) (rv Indexable, src []byte, err error) {
 	rv = NewNetwork(_id)
 	err = json.Unmarshal(_source, rv)
 	if err != nil {
