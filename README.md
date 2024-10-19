@@ -41,3 +41,9 @@ This version is scaled down and removes all dependencies of running with a backe
 ### Build and run on Pull Request
 
 Submit a pull request and the code will be deployed to Code Engine to facilitate the review.
+
+### Deploy Github pages
+
+```sh
+  npm run deploy
+```
