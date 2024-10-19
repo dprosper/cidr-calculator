@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/cidr-calculator/static/css/main.0b9e3de1.css",
+    "main.js": "/cidr-calculator/static/js/main.ae8604ad.js",
+    "reactPlayerPreview.js": "/cidr-calculator/static/js/reactPlayerPreview.44790a57.chunk.js",
+    "static/js/488.5ad02fa0.chunk.js": "/cidr-calculator/static/js/488.5ad02fa0.chunk.js",
+    "static/media/IBMPlexSans-BoldItalic.ttf": "/cidr-calculator/static/media/IBMPlexSans-BoldItalic.2078e351dd8d85240597.ttf",
+    "static/media/IBMPlexSans-Regular.ttf": "/cidr-calculator/static/media/IBMPlexSans-Regular.d77342fdcbcb6b3ce1b5.ttf",
+    "static/media/IBMPlexSans-Bold.ttf": "/cidr-calculator/static/media/IBMPlexSans-Bold.e933eba4e2fcc3d71b31.ttf",
+    "static/media/frontend_wasm_bg.wasm": "/cidr-calculator/static/media/frontend_wasm_bg.799bb4e4fc2279174dc4.wasm",
+    "index.html": "/cidr-calculator/index.html",
+    "main.0b9e3de1.css.map": "/cidr-calculator/static/css/main.0b9e3de1.css.map",
+    "main.ae8604ad.js.map": "/cidr-calculator/static/js/main.ae8604ad.js.map",
+    "reactPlayerPreview.44790a57.chunk.js.map": "/cidr-calculator/static/js/reactPlayerPreview.44790a57.chunk.js.map",
+    "488.5ad02fa0.chunk.js.map": "/cidr-calculator/static/js/488.5ad02fa0.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0b9e3de1.css",
+    "static/js/main.ae8604ad.js"
+  ]
+}

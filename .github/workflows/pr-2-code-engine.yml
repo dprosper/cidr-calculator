@@ -1,0 +1,143 @@
+# Copyright © 2022 Dimitri Prosper <dimitri.prosper@gmail.com>
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Create/Delete/Update a project in IBM Cloud Code Engine on PR
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, closed]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - 'docs/**'
+
+env:
+  REGISTRY_ORG_NAMESPACE: dprosper
+  REGISTRY_REPOSITORY: cidr-calculator
+  # REGION: us-east
+  # RESOURCE_GROUP: default
+  # CE_REGISTRY_SECRET: docker-hub
+  # REGISTRY: https://index.docker.io/v1/
+
+jobs:
+  build_publish_deploy:
+    if: github.event.action == 'opened'
+    name: Create
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push image
+        uses: docker/build-push-action@v2.8.0
+        with:
+          context: ./
+          file: ./frontend-api/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags:  ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Setup the IBM Cloud CLI and Login
+        uses: dprosper/ic-setup-cli@v0.1.0
+        with:
+          API_KEY: ${{ secrets.API_KEY }}
+          INSTALL_PLUGINS: code-engine
+          # REGION: ${{ env.REGION }}
+          # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+
+      - name: Deploy to IBM Cloud Code Engine
+        uses: ./.github/actions/icce-cud-cli # dprosper/icce-cud-cli@v0.4.3
+        with:
+          IMAGE: ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
+          REGISTRY_USER: ${{ secrets.DOCKERHUB_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+          CE_ACTION: create
+          CE_PROJECT_NAME: project-${{ github.event.pull_request.head.sha }}
+          CE_APP_NAME: app-${{ github.event.pull_request.head.sha }}
+          # REGISTRY: ${{ env.REGISTRY }}
+          # CE_REGISTRY_SECRET: ${{ env.CE_REGISTRY_SECRET }}
+
+  delete:
+    if: github.event.action == 'closed'
+    name: Delete
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Setup the IBM Cloud CLI and Login
+        uses: dprosper/ic-setup-cli@v0.1.0
+        with:
+          API_KEY: ${{ secrets.API_KEY }}
+          INSTALL_PLUGINS: code-engine
+          # REGION: ${{ env.REGION }}
+          # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+
+      - name: Delete from IBM Cloud Code Engine
+        uses: dprosper/icce-cud-cli@v0.4.3
+        with:
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+          # CE_PROJECT_NAME: project-${{ github.event.pull_request.head.sha }}
+          CE_ACTION: delete
+
+  update:
+    if: github.event.pull_request.merged == true
+    name: Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+    
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag image with latest
+        run: |
+          docker buildx imagetools create ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:${{ github.event.pull_request.head.sha }} --tag ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:latest
+
+      # - name: Setup the IBM Cloud CLI and Login
+      #   uses: dprosper/ic-setup-cli@v0.1.0
+      #   with:
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #     INSTALL_PLUGINS: code-engine
+      #     # REGION: ${{ env.REGION }}
+      #     # RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+
+      # - name: Update in IBM Cloud Code Engine
+      #   uses: dprosper/icce-cud-cli@v0.4.3
+      #   with:
+      #     CE_PROJECT_NAME: project-production
+      #     CE_APP_NAME: app-production
+      #     IMAGE: ${{ env.REGISTRY_ORG_NAMESPACE }}/${{ env.REGISTRY_REPOSITORY }}:latest
+      #     CE_ACTION: update
