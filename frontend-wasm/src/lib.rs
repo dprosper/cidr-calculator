@@ -208,12 +208,6 @@ impl Ip {
             let masked_quad = quad & subnet_mask_shifted;
             let offset = (number_ip_addresses >> (24 - i * 8)) & 0xFF;
             network_range_quads.push(format!("{}", masked_quad + offset));
-
-            // if i == 3 {
-            //     network_range_quads.push(format!("{}", masked_quad + offset - 1));
-            // } else {
-            //     network_range_quads.push(format!("{}", masked_quad + offset));
-            // }
         }
 
         network_range_quads.join(".")
