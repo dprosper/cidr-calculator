@@ -1,3 +1,6 @@
+
+This version is scaled down and removes all dependencies of running with a backend service, i.e. it can run on Github pages. The old version is still availabe under the v1 branch. 
+
 # calculator
 
 ![](./docs/assets/calculatorAppUI.png)
