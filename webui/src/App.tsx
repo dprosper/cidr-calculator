@@ -26,6 +26,8 @@ import { AiOutlineCloudServer } from 'react-icons/ai';
 
 import axios from "axios";
 
+import init from 'frontend-wasm';
+
 import { InputSection } from './components/InputSection';
 import { DocPanel } from './components/DocPanel';
 import { HeaderNav } from './components/Header';
@@ -39,19 +41,20 @@ import { DataCenter, CidrNetwork, _copyAndSort } from './components/common';
 
 interface IDSelectDataCenterProps {
   _allDataCenters: DataCenter[],
+  dataCenters: DataCenter[],
   setDataCenters: (value: DataCenter[]) => void,
   setSelectedDataCenters: (value: string[]) => void,
-  elementDisabled: boolean
+  selectDataCenterDisabled: boolean
 }
 
-const SelectDataCenter = ({ _allDataCenters, setDataCenters, setSelectedDataCenters, elementDisabled }: IDSelectDataCenterProps) => {
+const SelectDataCenter = ({ _allDataCenters, dataCenters, setDataCenters, setSelectedDataCenters, selectDataCenterDisabled }: IDSelectDataCenterProps) => {
   const handleOnChange = (value: string[]) => {
     if (value && value[0]) {
       setSelectedDataCenters(value)
-      setDataCenters(_allDataCenters?.filter(i => value.includes(i.name.toLowerCase())));
+      setDataCenters(JSON.parse(JSON.stringify(_allDataCenters?.filter(i => value.includes(i.name.toLowerCase())))));
     } else {
       setSelectedDataCenters([])
-      setDataCenters(_allDataCenters);
+      setDataCenters(JSON.parse(JSON.stringify(_allDataCenters)));
     }
   };
 
@@ -74,7 +77,7 @@ const SelectDataCenter = ({ _allDataCenters, setDataCenters, setSelectedDataCent
         placeholder="Select data center(s) to display and export"
         data={_allDataCenters}
         searchable
-        disabled={elementDisabled}
+        disabled={selectDataCenterDisabled}
         block
         groupBy="geo_region"
         sort={isGroup => {
@@ -122,15 +125,16 @@ export const App = () => {
   const [loading, setLoading] = React.useState(false);
   const [isLight, setLight] = React.useState<boolean>(true);
 
-  const [dataCenters, setDataCenters] = React.useState<DataCenter[]>([]);
-  const [_allDataCenters, setAllDataCenters] = React.useState<DataCenter[]>([]);
+  const [dataCenters, setDataCenters] = React.useState<DataCenter[]>([].slice());
+  const [_allDataCenters, setAllDataCenters] = React.useState<DataCenter[]>([].slice());
+
   const [selectedDataCenters, setSelectedDataCenters] = React.useState<string[]>([]);
 
   const [requestedCidrNetwork, setRequestedCidrNetwork] = React.useState<(CidrNetwork | null)>();
   const [panelContent, setPanelContent] = React.useState<(CidrNetwork | null)[]>();
   const [panelDataCenter, setPanelDataCenter] = React.useState<(string | null)>();
   const [isPanelOpen, setIsPanelOpen] = React.useState(false);
-  const [elementDisabled, setElementDisabled] = React.useState(false);
+  const [selectDataCenterDisabled, setSelectDataCenterDisabled] = React.useState(false);
   const [isSortedDescending] = React.useState(true);
   const [active, setActive] = React.useState<(string | number | undefined)>('cidr1');
 
@@ -139,12 +143,10 @@ export const App = () => {
   const [sourceUrl, setSourceUrl] = React.useState('');
   const [sourceJson, setSourceJson] = React.useState('');
   const [issuesUrl, setIssuesUrl] = React.useState('');
-  const [clientIP, setClientIP] = React.useState('');
-  const [location, setLocation] = React.useState('');
 
   const toaster = useToaster();
 
-  const openPanel = React.useCallback((dataCenter: string, cidrDetails: any) => {
+  const openpanel = React.useCallback((dataCenter: string, cidrDetails: any) => {
     if (cidrDetails) {
       setIsPanelOpen(true);
       setPanelContent(cidrDetails);
@@ -169,56 +171,37 @@ export const App = () => {
           <Tag
             color={!requestedCidrNetwork || requestedCidrNetwork?.cidr_notation === '' ? undefined : rowData['conflict'] === false ? 'green' : 'red'}
             style={{ cursor: "pointer" }}
-            onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>
+            onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>
             <AiOutlineCloudServer />  {rowData[dataKey]}
           </Tag>
         </React.Fragment>
       </Table.Cell>
     );
-  }, [openPanel, requestedCidrNetwork]);
+  }, [openpanel, requestedCidrNetwork]);
 
 
   React.useEffect(() => {
-    setElementDisabled(true);
+    setSelectDataCenterDisabled(true);
+
+    // Initialize wasm
+    init().then(() => {
+      console.log('WASM loaded')
+    });
 
     const fetchData = async () => {
-      const cf_response = await axios.get(`https://cloudflare.com/cdn-cgi/trace`);
+      const response = await axios.get(`https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/adding-wasm/data/datacenters.json`);
 
-      const trace = cf_response.data.split(/\r?\n/);
-      let ip: string = "";
-      let loc: string = "";
-      trace.map((entry: string) => {
-        if (entry && entry.substring(0, 2) === 'ip') {
-          ip = entry.substring(3);
-          setClientIP(ip);
-        }
-        if (entry && entry.substring(0, 3) === 'loc') {
-          loc = entry.substring(4);
-          setLocation(loc);
-        }
-        return null
-      })
+      let sortedDataCenters: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
+      sortedDataCenters = sortedDataCenters?.filter(i => i.private_networks != null);
 
-      const response = await axios.post(`/api/subnetcalc`, {
-        cidr: '0.0.0.0/0'
-      }, {
-        headers: {
-          'content-type': 'application/json',
-          'X-Calculator-Client-Ip': ip,
-          'X-Calculator-Client-Loc': loc
-        }
-      });
-
-      const sortedDataCenters: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
       setSourceName(response.data.name);
       setSourceLastUpdated(response.data.last_updated);
       setSourceUrl(response.data.source);
       setSourceJson(response.data.source_json);
       setIssuesUrl(response.data.issues);
-      setDataCenters(sortedDataCenters);
-      setAllDataCenters(sortedDataCenters);
-      setElementDisabled(false);
-
+      setDataCenters(JSON.parse(JSON.stringify(sortedDataCenters)));
+      setAllDataCenters(JSON.parse(JSON.stringify(sortedDataCenters)));
+      setSelectDataCenterDisabled(false);
     }
 
     fetchData()
@@ -288,11 +271,11 @@ export const App = () => {
                   isSortedDescending={isSortedDescending}
                   setRequestedCidrNetwork={setRequestedCidrNetwork}
                   requestedCidrNetwork={requestedCidrNetwork}
-                  setItemsValue={setDataCenters}
-                  setElementDisabled={setElementDisabled}
+                  setDataCenters={setDataCenters}
+                  dataCenters={dataCenters}
+                  _allDataCenters={_allDataCenters}
+                  setSelectDataCenterDisabled={setSelectDataCenterDisabled}
                   selectedDataCenters={selectedDataCenters}
-                  clientIP={clientIP}
-                  location={location}
                 />
               </Affix>
             </Col>
@@ -302,7 +285,7 @@ export const App = () => {
                 <React.Fragment>
                   <Row>
                     <Col md={20}>
-                      <SelectDataCenter setDataCenters={setDataCenters} _allDataCenters={_allDataCenters} setSelectedDataCenters={setSelectedDataCenters} elementDisabled={elementDisabled} />
+                      <SelectDataCenter setDataCenters={setDataCenters} _allDataCenters={_allDataCenters} dataCenters={dataCenters} setSelectedDataCenters={setSelectedDataCenters} selectDataCenterDisabled={selectDataCenterDisabled} />
                     </Col>
                     <Col md={4}>
                       <IconButton placement='right' color="blue" size="xs" appearance="subtle" onClick={onDownloadJSON} icon={<BsDownload />}> Export in JSON</IconButton>
@@ -352,7 +335,7 @@ export const App = () => {
 
                       <Table.Column width={1000} flexGrow={5}>
                         <Table.HeaderCell>IBM Cloud IP ranges</Table.HeaderCell>
-                        <TabView dataKey="name" openPanel={openPanel} />
+                        <TabView dataKey="name" openpanel={openpanel} />
                       </Table.Column>
                     </Table>
                   </React.Fragment>
@@ -374,7 +357,7 @@ export const App = () => {
 
                   <hr />
 
-                  <DocPanel clientIP={clientIP} location={location} />
+                  <DocPanel />
 
                   <hr />
                   <div style={{ marginTop: "20px" }}>

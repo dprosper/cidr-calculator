@@ -11,9 +11,10 @@ import {
 } from 'rsuite';
 import { BsCalculator, BsCalculatorFill } from 'react-icons/bs';
 import { BiReset } from 'react-icons/bi';
-import axios from "axios";
 
-import { DataCenter, CidrNetwork, _copyAndSort } from './common';
+import { compare_cidr_networks, get_cidr_details } from 'frontend-wasm';
+
+import { DataCenter, CidrNetwork } from './common';
 
 const cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/;
 
@@ -23,22 +24,22 @@ interface IProps {
   isSortedDescending: boolean,
   requestedCidrNetwork: CidrNetwork | null | undefined,
   setRequestedCidrNetwork: (value: CidrNetwork) => void,
-  setElementDisabled: (value: boolean) => void,
-  setItemsValue: (value: DataCenter[]) => void,
+  setSelectDataCenterDisabled: (value: boolean) => void,
+  setDataCenters: (value: DataCenter[]) => void,
   selectedDataCenters: string[],
-  clientIP: string,
-  location: string
+  dataCenters: DataCenter[],
+  _allDataCenters: DataCenter[],
 }
 
 export const InputSection = ({
   isSortedDescending,
   requestedCidrNetwork,
   setRequestedCidrNetwork,
-  setItemsValue,
-  setElementDisabled,
+  setDataCenters,
+  setSelectDataCenterDisabled,
   selectedDataCenters,
-  clientIP,
-  location
+  dataCenters,
+  _allDataCenters
 }: IProps) => {
 
   const styles = {
@@ -62,26 +63,41 @@ export const InputSection = ({
 
   const _calculateClicked = () => {
     if (cidrValue.match(cidrFormat)) {
-      setItemsValue([]);
       setCidrMessage(false);
-      setElementDisabled(true);
+      setSelectDataCenterDisabled(true);
       setCidrDisabled(true);
 
-      axios.post(`/api/subnetcalc`, {
-        cidr: cidrValue,
-        selected_data_centers: selectedDataCenters
-      }, {
-        headers: {
-          'content-type': 'application/json',
-          'X-Calculator-Client-Ip': clientIP,
-          'X-Calculator-Client-Loc': location
-        }
-      })
-        .then((response) => {
-          const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
-          setItemsValue(sortedItems);
-          setRequestedCidrNetwork(response.data.requested_cidr_network);
+      let conflict = false;
+
+      dataCenters = dataCenters.map((dataCenter) => {
+        dataCenter.cidr_networks?.map((cidr_network) => {
+          const compare = compare_cidr_networks(cidrValue, cidr_network.cidr_notation)
+          if (compare) {
+            cidr_network.conflict = true
+            dataCenter.conflict = true
+            conflict = true
+          }
+          return (cidr_network)
         })
+        return (dataCenter)
+      })
+
+      setDataCenters(JSON.parse(JSON.stringify(dataCenters)));
+      const cidr_details = get_cidr_details(cidrValue);
+
+      setRequestedCidrNetwork({
+        conflict: conflict,
+        service: '',
+        cidr_notation: cidrValue,
+        subnet_bits: 0,
+        subnet_mask: cidr_details.subnet_mask,
+        wildcard_mask: cidr_details.wildcard_mask,
+        network_address: cidr_details.network_address,
+        broadcast_address: cidr_details.broadcast_address,
+        assignable_hosts: cidr_details.assignable_hosts,
+        first_assignable_host: cidr_details.first_ip,
+        last_assignable_host: cidr_details.last_ip,
+      });
     } else {
       setCidrMessage(true);
     }
@@ -89,35 +105,28 @@ export const InputSection = ({
 
   const _reset = () => {
     setcidrValue('');
-    axios.post(`/api/subnetcalc`, {
-      cidr: '0.0.0.0/0',
-      selected_data_centers: selectedDataCenters
-    }, {
-      headers: {
-        'content-type': 'application/json',
-        'X-Calculator-Client-Ip': clientIP,
-        'X-Calculator-Client-Loc': location
-      }
-    })
-      .then((response) => {
-        const sortedItems: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
-        setItemsValue(sortedItems);
-        setCidrDisabled(false);
-        setRequestedCidrNetwork({
-          conflict: false,
-          service: '',
-          cidr_notation: '',
-          subnet_bits: 0,
-          subnet_mask: '',
-          wildcard_mask: '',
-          network_address: '',
-          broadcast_address: '',
-          assignable_hosts: 0,
-          first_assignable_host: '',
-          last_assignable_host: '',
-        });
-        setElementDisabled(false);
-      });
+
+    if (selectedDataCenters && selectedDataCenters[0]) {
+      setDataCenters(JSON.parse(JSON.stringify(_allDataCenters?.filter(i => selectedDataCenters.includes(i.name.toLowerCase())))));
+    } else {
+      setDataCenters(JSON.parse(JSON.stringify(_allDataCenters)));
+    }
+
+    setCidrDisabled(false);
+    setRequestedCidrNetwork({
+      conflict: false,
+      service: '',
+      cidr_notation: '',
+      subnet_bits: 0,
+      subnet_mask: '',
+      wildcard_mask: '',
+      network_address: '',
+      broadcast_address: '',
+      assignable_hosts: 0,
+      first_assignable_host: '',
+      last_assignable_host: '',
+    });
+    setSelectDataCenterDisabled(false);
   }
 
   return (
