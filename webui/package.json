@@ -52,5 +52,5 @@
     ]
   },
   "proxy": "http://localhost:3000/",
-  "homepage": "https://dprosper.github.io/cidr-calculator"
+  "homepage": "https://calculator.maisonprosper.com"
 }
