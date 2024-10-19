@@ -1,1 +1,0 @@
-{"type":"network","cidr_notation":"10.0.0.0/32","subnet_bits":32,"subnet_mask":"255.255.255.255","wildcard_mask":"0.0.0.0","network_address":"10.0.0.0","broadcast_address":"10.0.0.0","assignable_hosts":0,"first_assignable_host":"","last_assignable_host":""}

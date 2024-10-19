@@ -5,6 +5,7 @@ export interface DataCenter {
   state?: string;
   country: string;
   cidr_blocks?: string[];
+  private_networks?: string[];
   conflict?: boolean;
   cidr_networks?: CidrNetwork[]
 }

@@ -22,7 +22,7 @@ const topLevelTabs = [
 ];
 
 export const TabView = (props: any) => {
-  const { rowData, dataKey, openPanel } = props;
+  const { rowData, dataKey, openpanel } = props;
   const pns = rowData['private_networks'];
   const serviceNetwork = rowData['service_network'];
   const sslVpn = rowData['ssl_vpn'];
@@ -51,10 +51,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'PN' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {pns.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {pns && pns.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              pns.map((pn: any, index: any) => {
+              pns && pns.map((pn: any, index: any) => {
                 const pnKey = pn.key;
                 return (
                   <React.Fragment key={`${cellKey}-${pnKey}-${index}`}>
@@ -67,7 +67,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-${pnKey}-${index}-a`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment>
                         )
                       })
@@ -83,10 +83,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'SN' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {serviceNetwork.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {serviceNetwork && serviceNetwork.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              serviceNetwork.map((service: any, index: any) => {
+              serviceNetwork && serviceNetwork.map((service: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-service-${index}`}>
                     {
@@ -98,7 +98,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-service-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -114,10 +114,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'SV' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {sslVpn.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {sslVpn && sslVpn.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              sslVpn.map((ssl: any, index: any) => {
+              sslVpn && sslVpn.map((ssl: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-ssl-vpn-${index}`}>
                     {
@@ -129,7 +129,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-ssl-vpn-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -145,10 +145,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'EV' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {evs.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {evs && evs.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              evs.map((ev: any, index: any) => {
+              evs && evs.map((ev: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-evault-${index}`}>
                     {
@@ -160,7 +160,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-evault-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -176,10 +176,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'FB' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {fileBlock.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {fileBlock && fileBlock.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              fileBlock.map((fb: any, index: any) => {
+              fileBlock && fileBlock.map((fb: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-file-block-${index}`}>
                     {
@@ -191,7 +191,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-file-block-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -207,10 +207,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'AM' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {advmons.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {advmons && advmons.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              advmons.map((am: any, index: any) => {
+              advmons && advmons.map((am: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-advmon-${index}`}>
                     {
@@ -222,7 +222,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-advmon-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -238,10 +238,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'IC' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {icos.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {icos && icos.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              icos.map((ic: any, index: any) => {
+              icos && icos.map((ic: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-icos-${index}`}>
                     {
@@ -253,7 +253,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-icos-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -269,10 +269,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'RH' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {rhels.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {rhels && rhels.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              rhels.map((rh: any, index: any) => {
+              rhels && rhels.map((rh: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-rhels-${index}`}>
                     {
@@ -284,7 +284,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-rhels-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
@@ -300,10 +300,10 @@ export const TabView = (props: any) => {
         {
           activeKey === 'IM' &&
           <TagGroup style={{ marginBottom: "10px" }}>
-            {ims.length === 0 && <Tag color={undefined}> None available </Tag>}
+            {ims && ims.length === 0 && <Tag color={undefined}> None available </Tag>}
 
             {
-              ims.map((im: any, index: any) => {
+              ims && ims.map((im: any, index: any) => {
                 return (
                   <React.Fragment key={`${cellKey}-ims-${index}`}>
                     {
@@ -315,7 +315,7 @@ export const TabView = (props: any) => {
 
                         return (
                           <React.Fragment key={`${cellKey}-ims-${index}-c`}>
-                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openPanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
+                            <Tag color={conflict ? 'red' : undefined} style={{ cursor: "pointer" }} onClick={() => openpanel(rowData["name"], rowData["cidr_networks"])}>{cidr}</Tag>
                           </React.Fragment >
                         )
                       })
