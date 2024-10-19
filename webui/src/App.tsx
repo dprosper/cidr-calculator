@@ -189,7 +189,7 @@ export const App = () => {
     });
 
     const fetchData = async () => {
-      const response = await axios.get(`https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/adding-wasm/data/datacenters.json`);
+      const response = await axios.get(`https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/main/data/datacenters.json`);
 
       let sortedDataCenters: DataCenter[] = _copyAndSort(response.data.data_centers, "name", !isSortedDescending);
       sortedDataCenters = sortedDataCenters?.filter(i => i.private_networks != null);
