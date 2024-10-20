@@ -39,7 +39,7 @@ export const HeaderNav = ({
   return (
     <Header>
       <Navbar appearance="inverse">
-        <Navbar.Brand >
+        <Navbar.Brand href='https://calculator.maisonprosper.com' >
           CIDR Conflict Calculator for IBM Cloud Classic Infrastructure (a community provided tool)
         </Navbar.Brand>
         <Nav pullRight style={{ marginTop: "15px", marginRight: "10px" }}>
