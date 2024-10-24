@@ -101,7 +101,7 @@ export const InputSection = ({
       <Button
         variant="primary"
         onClick={_calculateClicked}
-        className="mt-2 bg-ibm-blue"
+        className="mt-4 bg-ibm-blue"
         disabled={cidrDisabled}
       >
         Primary
@@ -109,7 +109,7 @@ export const InputSection = ({
       <Button
         variant="tertiary"
         onClick={_reset}
-        className="mt-2"
+        className="mt-4"
         disabled={!cidrDisabled}
       >
         Reset

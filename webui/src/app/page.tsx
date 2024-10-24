@@ -37,8 +37,7 @@ export default function Home() {
     });
 
     const fetchData = async () => {
-      // const response = await fetch('https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/main/data/datacenters.json');
-      const response = await fetch('https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/new_ui/data/datacenters.json');
+      const response = await fetch('https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/main/data/datacenters.json');
       
       const data = await response.json();
       let sortedDataCenters: DataCenter[] = _copyAndSort(data.data_centers, "name", !isSortedDescending);

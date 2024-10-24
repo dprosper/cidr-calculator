@@ -32,7 +32,6 @@ import (
 	"go.uber.org/zap"
 
 	"dprosper/calculator/internal/logger"
-	"dprosper/calculator/internal/network"
 )
 
 type SubmittedCidr struct {
@@ -150,41 +149,25 @@ type CidrNetwork struct {
 }
 
 // getSubnetDetailsV2 function
-func getSubnetDetailsV2(cidr string) *Address {
+func GetSubnetDetailsV2(cidr string) *Address {
 	cidrAddress := strings.Split(cidr, "/")[0]
 	cidrBits, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
-	indexResponse := network.Search("networks.bluge", "network", cidrAddress, cidrBits)
 
-	if len(indexResponse) > 0 {
-		// logger.SystemLogger.Info(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
-		logger.SystemLogger.Debug(fmt.Sprintf("Checking for cidrAddress %s in the index.", cidrAddress))
+	sub := SubnetCalculator(cidrAddress, cidrBits)
 
-		var indexResponseAddress Address
-
-		err := json.Unmarshal(indexResponse, &indexResponseAddress)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error unmarshalling index response", zap.String("error: ", err.Error()))
-		}
-		logger.SystemLogger.Debug(fmt.Sprintln(indexResponseAddress))
-
-		return &indexResponseAddress
-	} else {
-		sub := SubnetCalculator(cidrAddress, cidrBits)
-
-		addressResponse := Address{
-			Type:                "network",
-			CidrNotation:        cidr,
-			SubnetBits:          sub.GetSubnetBits(),
-			SubnetMask:          sub.GetSubnetMask(),
-			WildcardMask:        sub.GetWildCardMask(),
-			NetworkAddress:      sub.GetNetworkPortion(),
-			BroadcastAddress:    sub.GetBroadcastAddress(),
-			AssignableHosts:     sub.GetAssignableHosts(),
-			FirstAssignableHost: sub.GetFirstIPAddress(),
-			LastAssignableHost:  sub.GetLastIPAddress(),
-		}
-		return &addressResponse
+	addressResponse := Address{
+		Type:                "network",
+		CidrNotation:        cidr,
+		SubnetBits:          sub.GetSubnetBits(),
+		SubnetMask:          sub.GetSubnetMask(),
+		WildcardMask:        sub.GetWildCardMask(),
+		NetworkAddress:      sub.GetNetworkPortion(),
+		BroadcastAddress:    sub.GetBroadcastAddress(),
+		AssignableHosts:     sub.GetAssignableHosts(),
+		FirstAssignableHost: sub.GetFirstIPAddress(),
+		LastAssignableHost:  sub.GetLastIPAddress(),
 	}
+	return &addressResponse
 }
 
 type IError struct {
@@ -321,7 +304,7 @@ func ReadMiddleware() gin.HandlerFunc {
 	}
 }
 
-func applyFilter(dataCenters []DataCenter, f filterFunc) []DataCenter {
+func ApplyFilter(dataCenters []DataCenter, f filterFunc) []DataCenter {
 	var filteredDataCenters []DataCenter
 	for _, dataCenter := range dataCenters {
 		if f(dataCenter) {
@@ -333,7 +316,7 @@ func applyFilter(dataCenters []DataCenter, f filterFunc) []DataCenter {
 
 type filterFunc func(dataCenter DataCenter) bool
 
-func contains(s []string, str string) bool {
+func Contains(s []string, str string) bool {
 	if len(s) > 0 {
 		for _, v := range s {
 			if v == str {
@@ -360,7 +343,7 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 
 	dataCentersOutput := []DataCenter{}
 
-	requestedDetails := getSubnetDetailsV2(requestedCidr)
+	requestedDetails := GetSubnetDetailsV2(requestedCidr)
 	requestedCidrNetwork := CidrNetwork{
 		CidrNotation:        requestedDetails.CidrNotation,
 		SubnetBits:          requestedDetails.SubnetBits,
@@ -379,8 +362,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 	// })
 
 	// selectedDataCenters := []string{"ams01", "ams03"}
-	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
-		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
+	dataCentersFiltered := ApplyFilter(dataCenters, func(dataCenter DataCenter) bool {
+		return Contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
 	})
 
 	for _, value := range dataCentersFiltered {
@@ -397,8 +380,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			pnsOutput = append(pnsOutput, pnsJson)
 
 			for _, cloudCidr := range pn.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "Private Network",
@@ -428,8 +411,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			serviceNetworkOutput = append(serviceNetworkOutput, serviceNetworkJson)
 
 			for _, cloudCidr := range service.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "Service Network",
@@ -459,8 +442,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			sslVpnsOutput = append(sslVpnsOutput, sslVpnsJson)
 
 			for _, cloudCidr := range sslVpn.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "SSL VPN",
@@ -490,8 +473,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			evaultOutput = append(evaultOutput, evaultJson)
 
 			for _, cloudCidr := range evault.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "eVault",
@@ -521,8 +504,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			icosOutput = append(icosOutput, icosJson)
 
 			for _, cloudCidr := range icos.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "ICOS",
@@ -552,8 +535,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			fileblockOutput = append(fileblockOutput, fileblockJson)
 
 			for _, cloudCidr := range fileblock.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "File & Block",
@@ -583,8 +566,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			advmonOutput = append(advmonOutput, advmonJson)
 
 			for _, cloudCidr := range advmon.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "AdvMon (Nimsoft)",
@@ -614,8 +597,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			rhelsOutput = append(rhelsOutput, rhelsJson)
 
 			for _, cloudCidr := range rhels.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "RHEL",
@@ -645,8 +628,8 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 			imsOutput = append(imsOutput, imsJson)
 
 			for _, cloudCidr := range ims.CidrBlocks {
-				cloudDetails := getSubnetDetailsV2(cloudCidr)
-				cidrConflict = compareCidrNetworksV2(requestedCidr, cloudCidr)
+				cloudDetails := GetSubnetDetailsV2(cloudCidr)
+				cidrConflict = CompareCidrNetworksV2(requestedCidr, cloudCidr)
 
 				cloudCidrNetwork := CidrNetwork{
 					Service:             "IMS",
@@ -712,7 +695,7 @@ func runSubnetCalculator(requestedCidr string, selectedDataCenters []string) (Co
 	return config, nil
 }
 
-func compareCidrNetworksV2(leftCidr string, rightCidr string) bool {
+func CompareCidrNetworksV2(leftCidr string, rightCidr string) bool {
 	leftPrefix, err := netip.ParsePrefix(leftCidr)
 	if err != nil {
 		panic(err)
@@ -738,8 +721,8 @@ func readDataCenters(requestedCidr string, selectedDataCenters []string) (Config
 
 	dataCenters := tmpConfig.DataCenters
 
-	dataCentersFiltered := applyFilter(dataCenters, func(dataCenter DataCenter) bool {
-		return contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
+	dataCentersFiltered := ApplyFilter(dataCenters, func(dataCenter DataCenter) bool {
+		return Contains(selectedDataCenters, strings.ToLower(dataCenter.Name))
 	})
 
 	dataCentersOutput := []DataCenter{}

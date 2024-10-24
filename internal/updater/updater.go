@@ -2,12 +2,10 @@ package updater
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,15 +16,9 @@ import (
 	"time"
 
 	"dprosper/calculator/internal/logger"
-	"dprosper/calculator/internal/util"
+	"dprosper/calculator/internal/subnetcalc"
 
-	"github.com/IBM/ibm-cos-sdk-go/aws"
-	"github.com/IBM/ibm-cos-sdk-go/aws/credentials/ibmiam"
-	"github.com/IBM/ibm-cos-sdk-go/aws/session"
-	"github.com/IBM/ibm-cos-sdk-go/service/s3"
 	"github.com/Jeffail/gabs/v2"
-	"github.com/spf13/viper"
-	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 )
 
@@ -38,15 +30,15 @@ type IPS struct {
 }
 
 type ICIPRanges struct {
-	Name         string       `json:"name"`
-	Type         string       `json:"type"`
-	Version      string       `json:"version"`
-	LastUpdated  string       `json:"last_updated"`
-	ReleaseNotes string       `json:"release_notes"`
-	Source       string       `json:"source"`
-	SourceJSON   string       `json:"source_json"`
-	Issues       string       `json:"issues"`
-	DataCenters  []DataCenter `json:"data_centers"`
+	Name         string                  `json:"name"`
+	Type         string                  `json:"type"`
+	Version      string                  `json:"version"`
+	LastUpdated  string                  `json:"last_updated"`
+	ReleaseNotes string                  `json:"release_notes"`
+	Source       string                  `json:"source"`
+	SourceJSON   string                  `json:"source_json"`
+	Issues       string                  `json:"issues"`
+	DataCenters  []subnetcalc.DataCenter `json:"data_centers"`
 }
 
 type TagPicker struct {
@@ -54,27 +46,6 @@ type TagPicker struct {
 	Name      string `json:"name"`
 	City      string `json:"city"`
 	GeoRegion string `json:"geo_region"`
-}
-
-type DataCenter struct {
-	Key              string            `json:"key"`
-	Name             string            `json:"name"`
-	City             string            `json:"city"`
-	State            string            `json:"state"`
-	Country          string            `json:"country"`
-	GeoRegion        string            `json:"geo_region"`
-	FrontEndNetworks []FrontEndNetwork `json:"front_end_public_network"`
-	LoadBalancerIPs  []LoadBalancerIP  `json:"load_balancers_ips"`
-	PrivateNetworks  []PrivateNetwork  `json:"private_networks"`
-	ServiceNetworks  []ServiceNetwork  `json:"service_network"`
-	SslVpn           []SslVpn          `json:"ssl_vpn"`
-	SslVpnPops       []SslVpnPop       `json:"ssl_vpn_pops"`
-	Evault           []Evault          `json:"evault"`
-	FileBlock        []FileBlock       `json:"file_block"`
-	Icos             []Icos            `json:"icos"`
-	AdvMon           []AdvMon          `json:"advmon"`
-	RHELS            []RHELS           `json:"rhe_ls"`
-	IMS              []IMS             `json:"ims"`
 }
 
 type FrontEndNetwork struct {
@@ -85,234 +56,8 @@ type LoadBalancerIP struct {
 	CidrBlocks []string `json:"cidr_blocks"`
 }
 
-type PrivateNetwork struct {
-	Key        string   `json:"key"`
-	Name       string   `json:"name"`
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type ServiceNetwork struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
 type SslVpnPop struct {
 	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type SslVpn struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type Evault struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type FileBlock struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type Icos struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type AdvMon struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type RHELS struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-type IMS struct {
-	CidrBlocks []string `json:"cidr_blocks"`
-}
-
-func validateKey(key string) bool {
-	return key != ""
-}
-
-// CosObject struct
-type CosObject struct {
-	Version              *string `json:"version"`
-	CollectorCrn         *string `json:"collector_crn"`
-	AttachedEndpointType *string `json:"attached_endpoint_type"`
-	NetworkInterfaceID   *string `json:"network_interface_id"`
-	InstanceCrn          *string `json:"instance_crn"`
-	VpcCrn               *string `json:"vpc_crn"`
-	CaptureStartTime     *string `json:"capture_start_time"`
-	CaptureEndTime       *string `json:"capture_end_time"`
-	State                *string `json:"state"`
-	NumberOfFlowLogs     *int64  `json:"number_of_flow_logs"`
-}
-
-// getFromCOS function
-func getFromCOS() error {
-	return nil
-}
-
-// addToCOS function
-func addToCOS() error {
-	const BucketName = "ipranges"
-
-	var (
-		apiKey             string
-		resourceInstanceID string
-		cosEndpoints       string
-		cloudRegion        string
-		authEndpoint       string
-	)
-
-	if apikey, ok := os.LookupEnv("CLOUD_OBJECT_STORAGE_APIKEY"); ok {
-		apiKey = strings.TrimSpace(apikey)
-	} else {
-		apiKey = viper.GetString("cloud-object-storage.0.credentials.apikey")
-	}
-	if !validateKey(apiKey) {
-		logger.ErrorLogger.Fatal("cloud-object-storage.0.credentials.apikey or CLOUD_OBJECT_STORAGE_APIKEY not provided.")
-	}
-
-	if resourceinstanceid, ok := os.LookupEnv("CLOUD_OBJECT_STORAGE_RESOURCE_INSTANCE_ID"); ok {
-		resourceInstanceID = strings.TrimSpace(resourceinstanceid)
-	} else {
-		resourceInstanceID = viper.GetString("cloud-object-storage.0.credentials.resource_instance_id")
-	}
-	if !validateKey(resourceInstanceID) {
-		logger.ErrorLogger.Fatal("cloud-object-storage.credentials.0.resource_instance_id or CLOUD_OBJECT_STORAGE_RESOURCE_INSTANCE_ID not provided.")
-	}
-
-	if cosendpoints, ok := os.LookupEnv("CLOUD_OBJECT_STORAGE_ENDPOINTS"); ok {
-		cosEndpoints = strings.TrimSpace(cosendpoints)
-	} else {
-		cosEndpoints = viper.GetString("cloud-object-storage.0.credentials.endpoints")
-	}
-	if !validateKey(cosEndpoints) {
-		logger.ErrorLogger.Fatal("cloud-object-storage.0.credentials.endpoints or CLOUD_OBJECT_STORAGE_ENDPOINTS not provided.")
-	}
-
-	if region, ok := os.LookupEnv("REGION"); ok {
-		cloudRegion = strings.TrimSpace(region)
-	} else {
-		cloudRegion = viper.GetString("ibmcloud.region")
-	}
-	if !validateKey(cloudRegion) {
-		logger.ErrorLogger.Fatal("ibmcloud.region or REGION not provided.")
-	}
-
-	util.GetRemoteJSON(cosEndpoints, "cos-endpoints.json")
-	cosEndpointsFile, _ := os.ReadFile("cos-endpoints.json")
-	serviceEndpoint := gjson.GetBytes(cosEndpointsFile, fmt.Sprintf("service-endpoints.regional.%s.%s.%s", cloudRegion, "public", cloudRegion)).String()
-
-	if authendpoint, ok := os.LookupEnv("IBMCLOUD_IAMURL"); ok {
-		authEndpoint = strings.TrimSpace(authendpoint)
-	} else {
-		authEndpoint = viper.GetString("ibmcloud.iamUrl")
-	}
-	if !validateKey(authEndpoint) {
-		logger.ErrorLogger.Fatal("ibmcloud.iamUrl or IBMCLOUD_IAMURL not provided.")
-	}
-
-	conf := aws.NewConfig().
-		WithRegion(cloudRegion).
-		WithEndpoint(serviceEndpoint).
-		WithCredentials(ibmiam.NewStaticCredentials(aws.NewConfig(), authEndpoint, apiKey, resourceInstanceID)).
-		WithS3ForcePathStyle(true)
-
-	sess := session.Must(session.NewSession(&aws.Config{
-		MaxRetries: aws.Int(3),
-	}))
-
-	cosClient := s3.New(sess, conf)
-
-	content, err := os.ReadFile("ips")
-	if err != nil {
-		logger.ErrorLogger.Info("Error in reading file from disk.",
-			zap.String("file: ", "ips"),
-			zap.String("error: ", err.Error()),
-		)
-	}
-
-	input := s3.PutObjectInput{
-		Bucket: aws.String(BucketName),
-		Key:    aws.String("ips"),
-		Body:   bytes.NewReader(content),
-	}
-
-	_, err = cosClient.PutObject(&input)
-	if err != nil {
-		logger.ErrorLogger.Info("Error in writing file to bucket.",
-			zap.String("file: ", "ips"),
-			zap.String("error: ", err.Error()),
-		)
-	}
-
-	content, err = os.ReadFile("ips.old")
-	if err != nil {
-		logger.ErrorLogger.Info("Error in reading file from disk.",
-			zap.String("file: ", "ips"),
-			zap.String("error: ", err.Error()),
-		)
-	}
-
-	d, _ := cosClient.ListBuckets(&s3.ListBucketsInput{})
-	fmt.Println(d)
-
-	input = s3.PutObjectInput{
-		Bucket: aws.String(BucketName),
-		Key:    aws.String("ips.old"),
-		Body:   bytes.NewReader(content),
-	}
-
-	_, err = cosClient.PutObject(&input)
-	if err != nil {
-		logger.ErrorLogger.Info("Error in writing file to bucket.",
-			zap.String("file: ", "ips.old"),
-			zap.String("error: ", err.Error()),
-		)
-	}
-
-	files, err := ioutil.ReadDir(".")
-	if err != nil {
-		logger.ErrorLogger.Info("Error in reading directory from disk.",
-			zap.String("error: ", err.Error()),
-		)
-	}
-
-	for _, file := range files {
-		if strings.Contains(file.Name(), ".csv") || strings.Contains(file.Name(), ".md") {
-			content, err := os.ReadFile(file.Name())
-			if err != nil {
-				logger.ErrorLogger.Info("Error in reading file from disk.",
-					zap.String("file: ", file.Name()),
-					zap.String("error: ", err.Error()),
-				)
-			}
-
-			input := s3.PutObjectInput{
-				Bucket: aws.String(BucketName + "-archive"),
-				Key:    aws.String(file.Name()),
-				Body:   bytes.NewReader(content),
-			}
-
-			// Call Function to upload (Put) an object
-			_, err = cosClient.PutObject(&input)
-			if err != nil {
-				logger.ErrorLogger.Info("Error in writing file to bucket.",
-					zap.String("file: ", file.Name()),
-					zap.String("error: ", err.Error()),
-				)
-			}
-
-			err = os.Remove(file.Name())
-			if err != nil {
-				logger.ErrorLogger.Info("Error in deleting file from disk.",
-					zap.String("file: ", file.Name()),
-					zap.String("error: ", err.Error()),
-				)
-			}
-		}
-	}
-
-	return nil
 }
 
 func removeTempFiles() {
@@ -332,10 +77,10 @@ func removeTempFiles() {
 	if e != nil {
 		logger.SystemLogger.Debug("File not found", zap.String("file", "tags.json"))
 	}
-	e = os.Remove("ips.md")
-	if e != nil {
-		logger.SystemLogger.Debug("File not found", zap.String("file", "ips.md"))
-	}
+	// e = os.Remove("ips.md")
+	// if e != nil {
+	// 	logger.SystemLogger.Debug("File not found", zap.String("file", "ips.md"))
+	// }
 	e = os.Remove("cos-endpoints.json")
 	if e != nil {
 		logger.SystemLogger.Debug("File not found", zap.String("file", "cos-endpoints.json"))
@@ -372,195 +117,173 @@ func createDataCenters() {
 		})
 	}
 
-	// TODO: Get the old csv and compare to new csv
-	// getFromCOS()
-	// if err != nil {
-	// 	fmt.Println("error getting from COS")
-	// 	panic(err)
-	// }
-
 	output, result := runCmd("diff", []string{"ips", "ips.old"})
 
-	if output != "" {
-		logger.SystemLogger.Info("changes found since last run.",
-			zap.String("diff_output", output),
-			zap.String("run_cmd_result", result),
-		)
+	// if output != "" {
+	logger.SystemLogger.Info("changes found since last run.",
+		zap.String("diff_output", output),
+		zap.String("run_cmd_result", result),
+	)
 
-		lastRan := time.Now().Format("20060102.150405")
+	lastRan := time.Now().Format("20060102.150405")
 
-		// Copies ips.md to ips.<date>.md as a backup.
-		ipsMd, err := os.Open("ips.md")
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in opening file.",
-				zap.String("file: ", "ips.md"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsMd.Close()
-
-		ipsMdCopy, err := os.Create(fmt.Sprintf("ips.%s.md", lastRan))
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in creating file.",
-				zap.String("file: ", fmt.Sprintf("ips.%s.md", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsMdCopy.Close()
-
-		_, err = io.Copy(ipsMdCopy, ipsMd)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in copying file.",
-				zap.String("file: ", fmt.Sprintf("ips.%s.md", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-
-		// Copies ips.old to ips.<date>.old.csv as a backup.
-		ipsOld, err := os.Open("ips.old")
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in opening file.",
-				zap.String("file: ", "ips.old"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsOld.Close()
-
-		ipsOldSave, err := os.Create(fmt.Sprintf("ips.old.%s.csv", lastRan))
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in creating file.",
-				zap.String("file: ", fmt.Sprintf("ips.old.%s.csv", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsOldSave.Close()
-
-		_, err = io.Copy(ipsOldSave, ipsOld)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in copying file.",
-				zap.String("file: ", fmt.Sprintf("ips.old.%s.csv", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-
-		// Copies ips to ips.<date>.csv as a backup.
-		ipsCSV, err := os.Open("ips")
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in opening file.",
-				zap.String("file: ", "ips"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsCSV.Close()
-
-		ipsNew, err := os.Create(fmt.Sprintf("ips.%s.csv", lastRan))
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in creating file.",
-				zap.String("file: ", fmt.Sprintf("ips.%s.csv", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsNew.Close()
-
-		_, err = io.Copy(ipsNew, ipsCSV)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in copying file.",
-				zap.String("file: ", fmt.Sprintf("ips.%s.csv", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-
-		err = addToCOS()
-		if err != nil {
-			logger.ErrorLogger.Fatal("error adding to cos",
-				zap.String("error: ", err.Error()),
-			)
-		}
-
-		// Copies ips to ips.old
-		e := os.Remove("ips.old")
-		if e != nil {
-			fmt.Println("ips.old file not found")
-		}
-
-		ipsCSV, err = os.Open("ips")
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in opening file.",
-				zap.String("file: ", "ips"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsCSV.Close()
-
-		ipsOld2, err := os.Create("ips.old")
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in creating file.",
-				zap.String("file: ", "ips.old"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer ipsOld2.Close()
-
-		_, err = io.Copy(ipsOld2, ipsCSV)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error in copying file.",
-				zap.String("file: ", "ips.old"),
-				zap.String("error: ", err.Error()),
-			)
-		}
-
-		f, err = os.OpenFile("ips-sorted.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error opening ips-sorted.csv",
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer f.Close()
-
-		for _, value := range ips {
-			if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", value.Network, value.DataCenter, value.Pod, strings.ReplaceAll(strings.Join(value.CidrBlocks, " "), "  ", " "))); err != nil {
-				logger.ErrorLogger.Fatal("error writing ips-sorted.csv", zap.String("error: ", err.Error()))
-			}
-		}
-
-		f, err = os.OpenFile(fmt.Sprintf("ips.changes.%s", lastRan), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-		if err != nil {
-			logger.ErrorLogger.Fatal("error opening file",
-				zap.String("file: ", fmt.Sprintf("ips.changes.%s", lastRan)),
-				zap.String("error: ", err.Error()),
-			)
-		}
-		defer f.Close()
-
-		if _, err = f.WriteString(output); err != nil {
-			logger.ErrorLogger.Fatal("error writing file",
-				zap.String("error: ", err.Error()),
-				zap.String("file: ", fmt.Sprintf("ips.changes.%s", lastRan)),
-			)
-		}
-
-		err = exec.Command("cp", fmt.Sprintf("ips.changes.%s", lastRan), fmt.Sprintf("../data/ips.changes.%s", lastRan)).Run()
-		if err != nil {
-		}
-
-		createDataCentersJSON()
-
-		// addtocos should be here, testing in other areas for ease of repeat testing
-		// err = addToCOS()
-		// if err != nil {
-		// 	logger.ErrorLogger.Fatal("error adding to cos",
-		// 		zap.String("error: ", err.Error()),
-		// 	)
-		// }
-
-		// write the ips, ips.old and ips.md
-		// write output variable to a output.csv
-	} else {
-		logger.SystemLogger.Info("no changes found since last run.",
-			zap.String("diff_output", output),
-			zap.String("run_cmd_result", ""),
+	// Copies ips.md to ips.<date>.md as a backup.
+	ipsMd, err := os.Open("ips.md")
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in opening file.",
+			zap.String("file: ", "ips.md"),
+			zap.String("error: ", err.Error()),
 		)
 	}
+	defer ipsMd.Close()
+
+	ipsMdCopy, err := os.Create(fmt.Sprintf("ips.%s.md", lastRan))
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in creating file.",
+			zap.String("file: ", fmt.Sprintf("ips.%s.md", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsMdCopy.Close()
+
+	_, err = io.Copy(ipsMdCopy, ipsMd)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in copying file.",
+			zap.String("file: ", fmt.Sprintf("ips.%s.md", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+
+	// Copies ips.old to ips.<date>.old.csv as a backup.
+	ipsOld, err := os.Open("ips.old")
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in opening file.",
+			zap.String("file: ", "ips.old"),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsOld.Close()
+
+	ipsOldSave, err := os.Create(fmt.Sprintf("ips.old.%s.csv", lastRan))
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in creating file.",
+			zap.String("file: ", fmt.Sprintf("ips.old.%s.csv", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsOldSave.Close()
+
+	_, err = io.Copy(ipsOldSave, ipsOld)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in copying file.",
+			zap.String("file: ", fmt.Sprintf("ips.old.%s.csv", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+
+	// Copies ips to ips.<date>.csv as a backup.
+	ipsCSV, err := os.Open("ips")
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in opening file.",
+			zap.String("file: ", "ips"),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsCSV.Close()
+
+	ipsNew, err := os.Create(fmt.Sprintf("ips.%s.csv", lastRan))
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in creating file.",
+			zap.String("file: ", fmt.Sprintf("ips.%s.csv", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsNew.Close()
+
+	_, err = io.Copy(ipsNew, ipsCSV)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in copying file.",
+			zap.String("file: ", fmt.Sprintf("ips.%s.csv", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+
+	// Copies ips to ips.old
+	e := os.Remove("ips.old")
+	if e != nil {
+		fmt.Println("ips.old file not found")
+	}
+
+	ipsCSV, err = os.Open("ips")
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in opening file.",
+			zap.String("file: ", "ips"),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsCSV.Close()
+
+	ipsOld2, err := os.Create("ips.old")
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in creating file.",
+			zap.String("file: ", "ips.old"),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer ipsOld2.Close()
+
+	_, err = io.Copy(ipsOld2, ipsCSV)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error in copying file.",
+			zap.String("file: ", "ips.old"),
+			zap.String("error: ", err.Error()),
+		)
+	}
+
+	f, err = os.OpenFile("ips-sorted.csv", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error opening ips-sorted.csv",
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer f.Close()
+
+	for _, value := range ips {
+		if _, err = f.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", value.Network, value.DataCenter, value.Pod, strings.ReplaceAll(strings.Join(value.CidrBlocks, " "), "  ", " "))); err != nil {
+			logger.ErrorLogger.Fatal("error writing ips-sorted.csv", zap.String("error: ", err.Error()))
+		}
+	}
+
+	f, err = os.OpenFile(fmt.Sprintf("ips.changes.%s", lastRan), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		logger.ErrorLogger.Fatal("error opening file",
+			zap.String("file: ", fmt.Sprintf("ips.changes.%s", lastRan)),
+			zap.String("error: ", err.Error()),
+		)
+	}
+	defer f.Close()
+
+	if _, err = f.WriteString(output); err != nil {
+		logger.ErrorLogger.Fatal("error writing file",
+			zap.String("error: ", err.Error()),
+			zap.String("file: ", fmt.Sprintf("ips.changes.%s", lastRan)),
+		)
+	}
+
+	err = exec.Command("cp", fmt.Sprintf("ips.changes.%s", lastRan), fmt.Sprintf("../data/ips.changes.%s", lastRan)).Run()
+	if err != nil {
+	}
+
+	createDataCentersJSON()
+
+	// write the ips, ips.old and ips.md
+	// write output variable to a output.csv
+	// } else {
+	// 	logger.SystemLogger.Info("no changes found since last run.",
+	// 		zap.String("diff_output", output),
+	// 		zap.String("run_cmd_result", ""),
+	// 	)
+	// }
 }
 
 func createDataCentersJSON() {
@@ -577,19 +300,19 @@ func createDataCentersJSON() {
 	}
 
 	var tagPicker []TagPicker
-	var dataCenters []DataCenter
+	var dataCenters []subnetcalc.DataCenter
 	var frontEndNetworks []FrontEndNetwork
 	var loadBalancerIPs []LoadBalancerIP
-	var privateNetworks []PrivateNetwork
-	var serviceNetwork []ServiceNetwork
-	var sslVPN []SslVpn
+	var privateNetworks []subnetcalc.PrivateNetwork
+	var serviceNetwork []subnetcalc.ServiceNetwork
+	var sslVPN []subnetcalc.SslVpn
 	var sslVPNPops []SslVpnPop
-	var eVault []Evault
-	var fileBlock []FileBlock
-	var iCOS []Icos
-	var advMon []AdvMon
-	var rheLS []RHELS
-	var ims []IMS
+	var eVault []subnetcalc.Evault
+	var fileBlock []subnetcalc.FileBlock
+	var iCOS []subnetcalc.Icos
+	var advMon []subnetcalc.AdvMon
+	var rheLS []subnetcalc.RHELS
+	var ims []subnetcalc.IMS
 	var allCidr []string
 	var rhelsCidr []string
 	var imsCidr []string
@@ -635,12 +358,12 @@ func createDataCentersJSON() {
 					temp = getServiceNetwork("ams03")
 					imsCidr = append(imsCidr, temp...)
 				}
-				ims = append(ims, IMS{
+				ims = append(ims, subnetcalc.IMS{
 					CidrBlocks: imsCidr,
 				})
 
 				if rheLS == nil {
-					rheLS = append(rheLS, RHELS{
+					rheLS = append(rheLS, subnetcalc.RHELS{
 						CidrBlocks: rhelsCidr,
 					})
 				}
@@ -652,26 +375,229 @@ func createDataCentersJSON() {
 					GeoRegion: geoRegion,
 				})
 
-				dataCenters = append(dataCenters, DataCenter{
-					Key:              last,
-					Name:             last,
-					City:             city,
-					State:            state,
-					Country:          country,
-					GeoRegion:        geoRegion,
-					FrontEndNetworks: frontEndNetworks,
-					LoadBalancerIPs:  loadBalancerIPs,
-					PrivateNetworks:  privateNetworks,
-					ServiceNetworks:  serviceNetwork,
-					SslVpn:           sslVPN,
-					SslVpnPops:       sslVPNPops,
-					Evault:           eVault,
-					FileBlock:        fileBlock,
-					Icos:             iCOS,
-					AdvMon:           advMon,
-					RHELS:            rheLS,
-					IMS:              ims,
+				cloudCidrNetworks := []subnetcalc.CidrNetwork{}
+				for _, pn := range privateNetworks {
+					for _, cloudCidr := range pn.CidrBlocks {
+
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "Private Network",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, service := range serviceNetwork {
+					for _, cloudCidr := range service.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "Service Network",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, sslVpn := range sslVPN {
+					for _, cloudCidr := range sslVpn.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "SSL VPN",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, evault := range eVault {
+					for _, cloudCidr := range evault.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "eVault",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, icos := range iCOS {
+					for _, cloudCidr := range icos.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "ICOS",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, fileblock := range fileBlock {
+					for _, cloudCidr := range fileblock.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "File & Block",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, advmon := range advMon {
+					for _, cloudCidr := range advmon.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "AdvMon (Nimsoft)",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, rhels := range rheLS {
+					for _, cloudCidr := range rhels.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "RHEL",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				for _, ims := range ims {
+					for _, cloudCidr := range ims.CidrBlocks {
+						cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+						cloudCidrNetwork := subnetcalc.CidrNetwork{
+							Service:             "IMS",
+							CidrNotation:        cloudDetails.CidrNotation,
+							SubnetBits:          cloudDetails.SubnetBits,
+							SubnetMask:          cloudDetails.SubnetMask,
+							WildcardMask:        cloudDetails.WildcardMask,
+							NetworkAddress:      cloudDetails.NetworkAddress,
+							BroadcastAddress:    cloudDetails.BroadcastAddress,
+							AssignableHosts:     cloudDetails.AssignableHosts,
+							FirstAssignableHost: cloudDetails.FirstAssignableHost,
+							LastAssignableHost:  cloudDetails.LastAssignableHost,
+							Conflict:            false,
+						}
+
+						cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+					}
+				}
+
+				dataCenters = append(dataCenters, subnetcalc.DataCenter{
+					Key:             last,
+					Name:            last,
+					City:            city,
+					State:           state,
+					Country:         country,
+					GeoRegion:       geoRegion,
+					PrivateNetworks: privateNetworks,
+					ServiceNetwork:  serviceNetwork,
+					SslVpn:          sslVPN,
+					Evault:          eVault,
+					Icos:            iCOS,
+					FileBlock:       fileBlock,
+					AdvMon:          advMon,
+					RHELS:           rheLS,
+					IMS:             ims,
+					// FrontEndNetworks: frontEndNetworks,
+					// LoadBalancerIPs:  loadBalancerIPs,
+					// SslVpnPops:       sslVPNPops,
+					CidrNetworks: cloudCidrNetworks,
+					Conflict:     false,
 				})
+
 				frontEndNetworks = nil
 				loadBalancerIPs = nil
 				privateNetworks = nil
@@ -705,13 +631,13 @@ func createDataCentersJSON() {
 
 			if line[0] == "service_network" {
 				cidr = append(cidr, allCidr...)
-				serviceNetwork = append(serviceNetwork, ServiceNetwork{
+				serviceNetwork = append(serviceNetwork, subnetcalc.ServiceNetwork{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "private_networks" {
-				privateNetworks = append(privateNetworks, PrivateNetwork{
+				privateNetworks = append(privateNetworks, subnetcalc.PrivateNetwork{
 					Key:        line[2],
 					Name:       line[2],
 					CidrBlocks: cidr,
@@ -720,13 +646,13 @@ func createDataCentersJSON() {
 
 			if line[0] == "service_network" {
 				cidr = append(cidr, allCidr...)
-				serviceNetwork = append(serviceNetwork, ServiceNetwork{
+				serviceNetwork = append(serviceNetwork, subnetcalc.ServiceNetwork{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "ssl_vpn" {
-				sslVPN = append(sslVPN, SslVpn{
+				sslVPN = append(sslVPN, subnetcalc.SslVpn{
 					CidrBlocks: cidr,
 				})
 			}
@@ -738,32 +664,32 @@ func createDataCentersJSON() {
 			}
 
 			if line[0] == "evault" {
-				eVault = append(eVault, Evault{
+				eVault = append(eVault, subnetcalc.Evault{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "file_block" {
-				fileBlock = append(fileBlock, FileBlock{
+				fileBlock = append(fileBlock, subnetcalc.FileBlock{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "icos" {
-				iCOS = append(iCOS, Icos{
+				iCOS = append(iCOS, subnetcalc.Icos{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "advmon" {
-				advMon = append(advMon, AdvMon{
+				advMon = append(advMon, subnetcalc.AdvMon{
 					CidrBlocks: cidr,
 				})
 			}
 
 			if line[0] == "rhe_ls" {
 				cidr = getServiceNetwork(line[1])
-				rheLS = append(rheLS, RHELS{
+				rheLS = append(rheLS, subnetcalc.RHELS{
 					CidrBlocks: cidr,
 				})
 			}
@@ -782,33 +708,234 @@ func createDataCentersJSON() {
 		GeoRegion: geoRegion,
 	})
 
-	dataCenters = append(dataCenters, DataCenter{
-		Key:              last,
-		Name:             last,
-		City:             city,
-		State:            state,
-		Country:          country,
-		GeoRegion:        geoRegion,
-		FrontEndNetworks: frontEndNetworks,
-		LoadBalancerIPs:  loadBalancerIPs,
-		PrivateNetworks:  privateNetworks,
-		ServiceNetworks:  serviceNetwork,
-		SslVpn:           sslVPN,
-		SslVpnPops:       sslVPNPops,
-		Evault:           eVault,
-		FileBlock:        fileBlock,
-		Icos:             iCOS,
-		AdvMon:           advMon,
-		RHELS:            rheLS,
+	cloudCidrNetworks := []subnetcalc.CidrNetwork{}
+	for _, pn := range privateNetworks {
+		for _, cloudCidr := range pn.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "Private Network",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, service := range serviceNetwork {
+		for _, cloudCidr := range service.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "Service Network",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, sslVpn := range sslVPN {
+		for _, cloudCidr := range sslVpn.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "SSL VPN",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, evault := range eVault {
+		for _, cloudCidr := range evault.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "eVault",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, icos := range iCOS {
+		for _, cloudCidr := range icos.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "ICOS",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, fileblock := range fileBlock {
+		for _, cloudCidr := range fileblock.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "File & Block",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, advmon := range advMon {
+		for _, cloudCidr := range advmon.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "AdvMon (Nimsoft)",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, rhels := range rheLS {
+		for _, cloudCidr := range rhels.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "RHEL",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	for _, ims := range ims {
+		for _, cloudCidr := range ims.CidrBlocks {
+			cloudDetails := subnetcalc.GetSubnetDetailsV2(cloudCidr)
+
+			cloudCidrNetwork := subnetcalc.CidrNetwork{
+				Service:             "IMS",
+				CidrNotation:        cloudDetails.CidrNotation,
+				SubnetBits:          cloudDetails.SubnetBits,
+				SubnetMask:          cloudDetails.SubnetMask,
+				WildcardMask:        cloudDetails.WildcardMask,
+				NetworkAddress:      cloudDetails.NetworkAddress,
+				BroadcastAddress:    cloudDetails.BroadcastAddress,
+				AssignableHosts:     cloudDetails.AssignableHosts,
+				FirstAssignableHost: cloudDetails.FirstAssignableHost,
+				LastAssignableHost:  cloudDetails.LastAssignableHost,
+				Conflict:            false,
+			}
+
+			cloudCidrNetworks = append(cloudCidrNetworks, cloudCidrNetwork)
+		}
+	}
+
+	dataCenters = append(dataCenters, subnetcalc.DataCenter{
+		Key:             last,
+		Name:            last,
+		City:            city,
+		State:           state,
+		Country:         country,
+		GeoRegion:       geoRegion,
+		PrivateNetworks: privateNetworks,
+		ServiceNetwork:  serviceNetwork,
+		SslVpn:          sslVPN,
+		Evault:          eVault,
+		Icos:            iCOS,
+		FileBlock:       fileBlock,
+		AdvMon:          advMon,
+		RHELS:           rheLS,
+		IMS:             ims,
+		// FrontEndNetworks: frontEndNetworks,
+		// LoadBalancerIPs:  loadBalancerIPs,
+		// SslVpnPops:       sslVPNPops,
+		CidrNetworks: cloudCidrNetworks,
+		Conflict:     false,
 	})
 
-	// lastUpdated := time.Now().Format("2006-01-02 15:04:05")
 	lastUpdated := time.Now().Format("01/02/2006")
 
 	fullObject := ICIPRanges{
 		Name:         "IBM Cloud IP ranges",
 		Type:         "classic_data_center_cidr",
-		Version:      "3.0.0",
+		Version:      "3.0.2",
 		LastUpdated:  lastUpdated,
 		ReleaseNotes: "https://github.com/dprosper/cidr-calculator/blob/main/docs/history.md",
 		Source:       "https://cloud.ibm.com/docs/cloud-infrastructure?topic=cloud-infrastructure-ibm-cloud-ip-ranges",
@@ -850,8 +977,6 @@ func createDataCentersJSON() {
 
 func parseFEN(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	city := strings.TrimSpace(arr[2])
 	if city != "---" && strings.ToLower(city) != "city" {
@@ -860,13 +985,6 @@ func parseFEN(content string) {
 
 		ipRange := strings.TrimSpace(arr[3])
 
-		// Empty space
-		// fmt.Println(arr[4])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// FIXCR
-		// ips := strings.Split(ipRange, `  \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -883,8 +1001,6 @@ func parseFEN(content string) {
 
 func parseLBIPS(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	city := strings.TrimSpace(arr[2])
 	if city != "---" && strings.ToLower(city) != "city" {
@@ -893,13 +1009,6 @@ func parseLBIPS(content string) {
 
 		ipRange := strings.TrimSpace(arr[3])
 
-		// Empty space
-		// fmt.Println(arr[4])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// FIXCR
-		// ips := strings.Split(ipRange, `  \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -936,10 +1045,8 @@ func getServiceNetwork(dataCenter string) (cidr []string) {
 	return
 }
 
-func parseCPNS(content string, dc DataCenter, pns []PrivateNetwork) {
+func parseCPNS(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	city := strings.TrimSpace(arr[1])
 	if city != "---" && strings.ToLower(city) != "city" {
@@ -949,12 +1056,6 @@ func parseCPNS(content string, dc DataCenter, pns []PrivateNetwork) {
 
 		ipRange := strings.TrimSpace(arr[4])
 
-		// Empty space
-		// fmt.Println(arr[5])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// FIXCR
-		// ips := strings.Split(ipRange, `  \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -971,8 +1072,6 @@ func parseCPNS(content string, dc DataCenter, pns []PrivateNetwork) {
 
 func parseSN(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	city := strings.TrimSpace(arr[2])
 	if city != "---" && strings.ToLower(city) != "city" {
@@ -981,15 +1080,7 @@ func parseSN(content string) {
 
 		ipRange := strings.TrimSpace(arr[3])
 
-		// Empty space
-		// fmt.Println(arr[4])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// in addtion removing a special character that is sometimes added in the .md
-		// FIXCR
 		ips := strings.Split(strings.ReplaceAll(ipRange, "[^fn1]", ""), ` \n `)
-		// ips = delete_empty(ips)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
@@ -1011,13 +1102,6 @@ func parseSDC(content string, nextService string) {
 
 		ipRange := strings.TrimSpace(arr[2])
 
-		// Empty space
-		// fmt.Println(arr[4])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// FIXCR
-		// ips := strings.Split(ipRange, ` \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -1034,8 +1118,6 @@ func parseSDC(content string, nextService string) {
 
 func parseSSLVPN(content string) {
 	arr := strings.Split(content, "|")
-	// Empty space
-	// fmt.Println(arr[0])
 
 	city := strings.TrimSpace(arr[2])
 	if city != "---" && strings.ToLower(city) != "city" {
@@ -1044,13 +1126,6 @@ func parseSSLVPN(content string) {
 
 		ipRange := strings.TrimSpace(arr[3])
 
-		// Empty space
-		// fmt.Println(arr[4])
-
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// FIXCR
-		// ips := strings.Split(ipRange, `  \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -1075,10 +1150,6 @@ func parseSSLVPNPOPS(content string) {
 		dataCenter := strings.TrimSpace(arr[1])
 		ipRange := strings.TrimSpace(arr[3])
 
-		// typically it should be this: strings.Split(arr[4], "\n") for a true new line character.
-		// ips := strings.Split(ipRange, `\n`)
-		// FIXCR
-		// ips := strings.Split(ipRange, `  \n `)
 		ips := strings.Split(ipRange, `\n`)
 
 		f, err := os.OpenFile("ips", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -1204,9 +1275,9 @@ func getIPRangesMD(requestURL string) {
 func UpdateIPRanges() {
 	removeTempFiles()
 
-	sourcemdRaw := "https://raw.githubusercontent.com/ibm-cloud-docs/cloud-infrastructure/master/ips.md"
+	// sourcemdRaw := "https://raw.githubusercontent.com/ibm-cloud-docs/cloud-infrastructure/master/ips.md"
 
-	getIPRangesMD(sourcemdRaw)
+	// getIPRangesMD(sourcemdRaw)
 
 	f, _ := os.Open("ips.md")
 	defer f.Close()
@@ -1214,9 +1285,6 @@ func UpdateIPRanges() {
 	scanner := bufio.NewScanner(f)
 	var ipType string
 	nextService := "evault"
-
-	dc := DataCenter{}
-	pns := []PrivateNetwork{}
 
 	for i := 0; scanner.Scan(); i++ {
 
@@ -1272,7 +1340,7 @@ func UpdateIPRanges() {
 					parseLBIPS(line)
 				}
 				if ipType == "customer-private-network-space" {
-					parseCPNS(line, dc, pns)
+					parseCPNS(line)
 				}
 				if ipType == "service-network" {
 					parseSN(line)
