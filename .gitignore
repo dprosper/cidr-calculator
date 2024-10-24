@@ -22,6 +22,7 @@ local.md
 
 *.bluge
 webui.fluentui
+webui.rsuite
 
 ips.changes.*
 
