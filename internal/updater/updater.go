@@ -1275,9 +1275,9 @@ func getIPRangesMD(requestURL string) {
 func UpdateIPRanges() {
 	removeTempFiles()
 
-	// sourcemdRaw := "https://raw.githubusercontent.com/ibm-cloud-docs/cloud-infrastructure/master/ips.md"
+	sourcemdRaw := "https://raw.githubusercontent.com/ibm-cloud-docs/cloud-infrastructure/master/ips.md"
 
-	// getIPRangesMD(sourcemdRaw)
+	getIPRangesMD(sourcemdRaw)
 
 	f, _ := os.Open("ips.md")
 	defer f.Close()
