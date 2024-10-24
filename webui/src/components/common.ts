@@ -1,13 +1,22 @@
 
+export interface Geography {
+  name: string;
+  data: DataCenter[];
+  conflict?: boolean;
+  calculating?: boolean;
+}
+
 export interface DataCenter {
+  key: string;
   name: string;
   city?: string;
   state?: string;
   country: string;
+  geo_region: string;
   cidr_blocks?: string[];
   private_networks?: string[];
   conflict?: boolean;
-  cidr_networks?: CidrNetwork[]
+  cidr_networks?: CidrNetwork[];
 }
 
 export interface CidrNetwork {

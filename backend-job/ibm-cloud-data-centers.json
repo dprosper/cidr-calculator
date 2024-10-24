@@ -1,0 +1,290 @@
+{
+  "ams03": {
+    "city": "Amsterdam",
+    "state": "",
+    "country": "NLD",
+    "geo_region": "Europe"
+  },
+  "che01": {
+    "city": "Chennai",
+    "state": "",
+    "country": "IND",
+    "geo_region": "Asia Pacific"
+  }, 
+  "dal05": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal08": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal09": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal10": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal12": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "dal13": {
+    "city": "Dallas",
+    "state": "Texas",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "fra02": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "fra04": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "fra05": {
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DEU",
+    "geo_region": "Europe"
+  },
+  "lon02": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon04": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon05": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "lon06": {
+    "city": "London",
+    "state": "",
+    "country": "ENG",
+    "geo_region": "Europe"
+  },
+  "mad02": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
+  "mad04": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
+  "mad05": {
+    "city": "Madrid",
+    "state": "",
+    "country": "ESP",
+    "geo_region": "Europe"
+  },
+  "mil01": {
+    "city": "Milan",
+    "state": "",
+    "country": "ITA",
+    "geo_region": "Europe"
+  },
+  "mon01": {
+    "city": "Montreal",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "osa21": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "osa22": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "osa23": {
+    "city": "Osaka",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "par01": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par04": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par05": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "par06": {
+    "city": "Paris",
+    "state": "",
+    "country": "FRA",
+    "geo_region": "Europe"
+  },
+  "sao01": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "sao04": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "sao05": {
+    "city": "São Paulo",
+    "state": "",
+    "country": "BRA",
+    "geo_region": "Americas"
+  },
+  "sjc01": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sjc03": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sjc04": {
+    "city": "San Jose",
+    "state": "California",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "sng01": {
+    "city": "Jurong East",
+    "state": "",
+    "country": "SGP",
+    "geo_region": "Asia Pacific"
+  },
+  "syd01": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "syd04": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "syd05": {
+    "city": "Sydney",
+    "state": "",
+    "country": "AUS",
+    "geo_region": "Asia Pacific"
+  },
+  "tok02": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tok04": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tok05": {
+    "city": "Tokyo",
+    "state": "",
+    "country": "JPN",
+    "geo_region": "Asia Pacific"
+  },
+  "tor01": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "tor04": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "tor05": {
+    "city": "Toronto",
+    "state": "",
+    "country": "CAN",
+    "geo_region": "Americas"
+  },
+  "wdc01": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc03": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc04": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc06": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  },
+  "wdc07": {
+    "city": "Washington D.C.",
+    "state": "",
+    "country": "USA",
+    "geo_region": "Americas"
+  }
+}

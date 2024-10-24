@@ -10,5 +10,6 @@ WORKDIR /app
 COPY --from=buildwasm /app/pkg /frontend-wasm/pkg
 ADD ./webui/ ./
 RUN npm install
-CMD ["npm", "start"]
+RUN npm run build
+CMD ["npx", "serve@latest", "out"]
 EXPOSE 3000
