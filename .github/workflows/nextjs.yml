@@ -30,11 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: webui
+        working-directory: ./webui
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect package manager
+        working-directory: ./webui
         id: detect-package-manager
         run: |
           if [ -f "${{ github.workspace }}/yarn.lock" ]; then
@@ -52,12 +53,14 @@ jobs:
             exit 1
           fi
       - name: Setup Node
+        working-directory: ./webui
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        working-directory: ./webui
         with:
           # Automatically inject basePath in your Next.js configuration file and disable
           # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
@@ -65,6 +68,7 @@ jobs:
           # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: next
       - name: Restore cache
+        working-directory: ./webui
         uses: actions/cache@v4
         with:
           path: |
@@ -75,10 +79,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
+        working-directory: ./webui
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
+        working-directory: ./webui
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
+        working-directory: ./webui
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
