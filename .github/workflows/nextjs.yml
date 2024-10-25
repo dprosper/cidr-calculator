@@ -55,7 +55,7 @@ jobs:
           WASM_TARGET: wasm32-unknown-unknown
         run: |
           cd frontend-wasm
-          cargo build --target $WASM_TARGET --release
+          wasm-pack build --target web
           echo "WASM binaries generated"
      
       - name: Detect package manager
