@@ -47,6 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd frontend-wasm
+          rustup target add wasm32-unknown-unknown
           cargo build --release
 
       - name: Generate WASM binaries
