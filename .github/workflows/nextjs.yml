@@ -57,7 +57,7 @@ jobs:
         working-directory: webui
         run: |
           npm install
-          npm run next build
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
