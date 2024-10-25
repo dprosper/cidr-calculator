@@ -41,21 +41,14 @@ jobs:
       #   run: |
       #     wasm-pack build --target web
       - name: Set up Rust environment
-        uses: rustup-init/rustup-init-action@v1
-        with:
-          rust-previous-version: '1.82.0' # You can change this to your desired version of Rust
+        run: |
+          sudo apt-get update && sudo apt-get install -y rust
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
       - name: Install dependencies
         run: |
-          cargo build --release
-
-      - name: Generate WASM binaries
-        env:
-          WASM_TARGET: wasm32-unknown-unknown
-        run: |
           cd frontend-wasm
-          cargo build --target $WASM_TARGET --release
-          echo "WASM binaries generated"
+          cargo build --release
 
       - name: Generate WASM binaries
         env:
