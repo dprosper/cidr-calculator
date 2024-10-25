@@ -31,6 +31,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Build WASM
+        working-directory: frontend-wasm
+        run: |
+          wasm-pack build --target web
       - name: Detect package manager
         id: detect-package-manager
         run: |
