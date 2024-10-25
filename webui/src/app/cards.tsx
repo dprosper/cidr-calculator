@@ -138,7 +138,7 @@ export default function DataCenterCards({
                 value={geography.name}
                 className="group"
               >
-                <span className="group-data-[state=active]:text-gray-900 group-data-[state=active]:dark:text-gray-50">
+                <span className="group-data-[state=active]:text-gray-900 group-data-[state=active]:dark:text-gray-50 text-gray-600">
                   {geography.name}
                 </span>
                 {!geography.conflict &&
@@ -162,71 +162,69 @@ export default function DataCenterCards({
               </TabsTrigger>
             ))}
           </TabsList>
-          <ul role="list">
-            {geographies.map((geography) => (
-              <TabsContent
-                key={geography.name}
-                value={geography.name}
-                className="space-y-4 px-6 pb-6 pt-6"
+          {geographies.map((geography) => (
+            <TabsContent
+              key={geography.name}
+              value={geography.name}
+              className="space-y-4 px-6 pb-6 pt-6"
+            >
+              <div
+                className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
               >
-                <ul
-                  role="list"
-                  className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                >
-                  {geography.data.map((datacenter) => (
-                    <Card
-                      key={datacenter.name}
-                      className="rounded-md p-4 dark:border-gray-800"
-                      asChild
-                      onClick={() => displayDataCenter(datacenter)}
-                    >
-                      <li>
-                        <div className="flex items-center space-x-2">
-                          <RiBuildingLine
+                {geography.data.map((datacenter) => (
+                  <Card
+                    key={datacenter.name}
+                    className="rounded-md p-4 dark:border-gray-800"
+                    asChild
+                    onClick={() => displayDataCenter(datacenter)}
+                  >
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <RiBuildingLine
+                          className="size-5 text-gray-400 dark:text-gray-600"
+                          aria-hidden={true}
+                        />
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {datacenter.name}
+                        </p>
+
+                        {
+                          geography.calculating == true ?
+                            datacenter.conflict === true ? (
+                              <span className="inline-flex items-center rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-500  dark:bg-red-400/10">
+                                conflicts
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-400">
+                                no conflicts
+                              </span>
+                            )
+                            :
+                            null
+                        }
+                      </div>
+                      <ul
+                        role="list"
+                        className="mt-3 text-sm text-gray-500 dark:text-gray-500"
+                      >
+                        <li className="flex items-center space-x-2 py-1">
+                          <RiMapPin2Line
                             className="size-5 text-gray-400 dark:text-gray-600"
                             aria-hidden={true}
                           />
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {datacenter.name}
+                            {datacenter.city}
+                            {datacenter.state != "" ? ", " + datacenter.state + ", " + datacenter.country : ", " + datacenter.country}
                           </p>
+                        </li>
+                      </ul>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          ))}
 
-                          {
-                            geography.calculating == true ?
-                              datacenter.conflict === true ? (
-                                <span className="inline-flex items-center rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-500  dark:bg-red-400/10">
-                                  conflicts
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-400">
-                                  no conflicts
-                                </span>
-                              )
-                              :
-                              null
-                          }
-                        </div>
-                        <ul
-                          role="list"
-                          className="mt-3 text-sm text-gray-500 dark:text-gray-500"
-                        >
-                          <li className="flex items-center space-x-2 py-1">
-                            <RiMapPin2Line
-                              className="size-5 text-gray-400 dark:text-gray-600"
-                              aria-hidden={true}
-                            />
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {datacenter.city}
-                              {datacenter.state != "" ? ", " + datacenter.state + ", " + datacenter.country : ", " + datacenter.country}
-                            </p>
-                          </li>
-                        </ul>
-                      </li>
-                    </Card>
-                  ))}
-                </ul>
-              </TabsContent>
-            ))}
-          </ul>
         </Tabs>
       </Card>
       <div className="flex justify-center">
