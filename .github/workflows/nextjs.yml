@@ -82,7 +82,6 @@ jobs:
         working-directory: ./webui
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
-        working-directory: ./webui
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
