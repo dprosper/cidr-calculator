@@ -56,8 +56,8 @@ jobs:
       - name: Install dependencies and build
         working-directory: webui
         run: |
-          ${{ steps.detect-package-manager.outputs.runner }} install
-          ${{ steps.detect-package-manager.outputs.runner }} next build
+          npm run install
+          npm run next build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
