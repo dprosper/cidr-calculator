@@ -11,12 +11,8 @@ import { RiMenuLine } from '@remixicon/react';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
-
-  // const [dataCenters, setDataCenters] = React.useState<DataCenter[]>([].slice());
-
   const [data, setData] = React.useState<Geography[]>([].slice());
-  const [filteredData, setFilteredData] = React.useState<Geography[]>(data);
-  const [isSortedDescending] = React.useState(true);
+  const [filteredData, setFilteredData] = React.useState<Geography[]>([].slice());
   const [search, setSearch] = React.useState("")
   const [title, setTitle] = React.useState("")
   const [lastUpdated, setLastUpdated] = React.useState("")
@@ -38,9 +34,9 @@ export default function Home() {
 
     const fetchData = async () => {
       const response = await fetch('https://raw.githubusercontent.com/dprosper/cidr-calculator/refs/heads/main/data/datacenters.json');
-      
+
       const data = await response.json();
-      let sortedDataCenters: DataCenter[] = _copyAndSort(data.data_centers, "name", !isSortedDescending);
+      let sortedDataCenters: DataCenter[] = _copyAndSort(data.data_centers, "name", false);
       sortedDataCenters = sortedDataCenters?.filter(i => i.private_networks != null);
 
       setTitle(data.name);
@@ -50,15 +46,28 @@ export default function Home() {
       const Europe = sortedDataCenters?.filter(i => i.geo_region == "Europe");
       const Asia = sortedDataCenters?.filter(i => i.geo_region == "Asia Pacific");
 
-      const dcs: Geography[] = [{ name: "Americas", data: Americas }, { name: "EMEA", data: Europe }, { name: "APAC", data: Asia }]
+      const geos: Geography[] = [{ name: "Americas", data: Americas }, { name: "EMEA", data: Europe }, { name: "APAC", data: Asia }]
 
-      setData(JSON.parse(JSON.stringify(dcs)));
+      setData(JSON.parse(JSON.stringify(geos)));
+      const updateFilteredData = () => {
+        if (data.length > 0) {
+          setFilteredData(data.map((geo: Geography) => ({ ...geo, data: geo.data })));
+        }
+      };
+
+      updateFilteredData();
     }
 
     fetchData()
       .catch(console.error);;
 
-  }, [isSortedDescending]);
+  }, []);
+
+  React.useEffect(() => {
+    if (data.length > 0) {
+      setFilteredData(data.map(geo => ({ ...geo, data: geo.data })));
+    }
+  }, [data]);
 
   return (
     <>
@@ -90,6 +99,7 @@ export default function Home() {
             <InputSection
               data={data}
               setData={setData}
+              setSearch={setSearch}
             />
             <span className="mt-auto">
               <Divider />
@@ -164,7 +174,6 @@ export default function Home() {
                       </a>
                     </li>
                   </ul>
-
 
                   <Divider />
 

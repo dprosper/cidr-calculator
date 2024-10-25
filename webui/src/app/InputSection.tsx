@@ -11,11 +11,13 @@ const cidrFormat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9
 interface IProps {
   data: Geography[],
   setData: (value: Geography[]) => void,
+  setSearch: (value: string) => void,
 }
 
 export const InputSection = ({
   data,
   setData,
+  setSearch
 }: IProps) => {
 
   const [cidrValue, setcidrValue] = React.useState('');
@@ -34,6 +36,7 @@ export const InputSection = ({
 
   const _calculateClicked = () => {
     if (cidrValue.match(cidrFormat)) {
+      setSearch('');
       setCidrMessage(false);
       setCidrDisabled(true);
 
@@ -66,6 +69,7 @@ export const InputSection = ({
 
   const _reset = () => {
     setcidrValue('');
+    setSearch('');
 
     let conflict = false;
     data = data.map((geo) => {
