@@ -31,15 +31,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install wasm-pack
-        run: |
-          curl https://crates.io/api/v1/crates/wasm-pack/0.10.2/download | tar xvf -
-          chmod +x wasm-pack-0.10.2/wasm-pack
-          sudo mv wasm-pack-0.10.2/wasm-pack /usr/local/bin/
-      - name: Build WASM
-        working-directory: frontend-wasm
-        run: |
-          wasm-pack build --target web
+      # - name: Install wasm-pack
+      #   run: |
+      #     curl https://crates.io/api/v1/crates/wasm-pack/0.10.2/download | tar xvf -
+      #     chmod +x wasm-pack-0.10.2/wasm-pack
+      #     sudo mv wasm-pack-0.10.2/wasm-pack /usr/local/bin/
+      # - name: Build WASM
+      #   working-directory: frontend-wasm
+      #   run: |
+      #     wasm-pack build --target web
       - name: Detect package manager
         id: detect-package-manager
         run: |
