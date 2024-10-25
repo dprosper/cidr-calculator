@@ -53,14 +53,12 @@ jobs:
             exit 1
           fi
       - name: Setup Node
-        working-directory: ./webui
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        working-directory: ./webui
         with:
           # Automatically inject basePath in your Next.js configuration file and disable
           # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
@@ -68,7 +66,6 @@ jobs:
           # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: next
       - name: Restore cache
-        working-directory: ./webui
         uses: actions/cache@v4
         with:
           path: |
