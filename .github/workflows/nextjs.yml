@@ -42,7 +42,7 @@ jobs:
       #     wasm-pack build --target web
       - name: Set up Rust environment
         run: |
-          sudo apt-get update && apt-get install rustup -y
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
       - name: Install dependencies
         run: |
