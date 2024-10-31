@@ -108,7 +108,7 @@ export const InputSection = ({
         className="mt-4 bg-ibm-blue"
         disabled={cidrDisabled}
       >
-        Primary
+        Calculate
       </Button>
       <Button
         variant="tertiary"
